@@ -28,9 +28,9 @@ factor_positions <- function(data,
 
   data %<>%
     filter(field == !! sort_variable) %>%
-    mutate(period = if(update_frequency == "year") year(date) %>% factor()
-           else if(update_frequency == "day") paste(year(date), yday(date), sep = ".") %>% factor()
-           else paste(year(date), get(paste0(update_frequency))(date), sep = ".") %>% factor())
+    mutate(period = if(update_frequency == "year") paste0(year(date))
+           else if(update_frequency == "day") paste(year(date), yday(date), sep = ".")
+           else paste(year(date), get(paste0(update_frequency))(date), sep = "."))
 
   positions <- data %>%
     select(name, period, field, value) %>%
@@ -91,9 +91,9 @@ factor_returns <- function(data,
 
   data %<>%
     filter(field == !! price_variable) %>%
-    mutate(period = if(update_frequency == "year") year(date) %>% factor()
-           else if(update_frequency == "day") paste(year(date), yday(date), sep = ".") %>% factor()
-           else paste(year(date), get(paste0(update_frequency))(date), sep = ".") %>% factor()) %>%
+    mutate(period = if(update_frequency == "year") paste0(year(date))
+           else if(update_frequency == "day") paste(year(date), yday(date), sep = ".")
+           else paste(year(date), get(paste0(update_frequency))(date), sep = ".")) %>%
     group_by(name) %>%
     mutate(return = value/lag(value, 1L) - 1L ) %>%
     ungroup() %>%
@@ -121,9 +121,9 @@ factor_returns <- function(data,
 
   full_join(long, short, by = "date") %>%
     mutate(factor = apply(select(., long, short), function(x) mean(x, na.rm = TRUE), MARGIN = 1L)) %>%
-    mutate(period = if(return_frequency == "year") year(date) %>% factor()
-           else if(return_frequency == "day") paste(year(date), yday(date), sep = ".") %>% factor()
-           else paste(year(date), get(paste0(return_frequency))(date), sep = ".") %>% factor()) %>%
+    mutate(period = if(return_frequency == "year") paste0(year(date))
+           else if(return_frequency == "day") paste(year(date), yday(date), sep = ".")
+           else paste(year(date), get(paste0(return_frequency))(date), sep = ".")) %>%
     group_by(period) %>%
     nest() %>%
     mutate(returns = map(data, function(x) {

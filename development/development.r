@@ -56,6 +56,8 @@ CHP <- CHP_factor(price_data = `test price data`,
                   long_threshold = 0.25,
                   short_threshold = 0.25)
 
+plot_positions(CHP)
+
 ?CHP_factor
 ?factorem
 
