@@ -3,8 +3,7 @@
 \docType{class}
 \name{AssetPricingFactor-class}
 \alias{AssetPricingFactor-class}
-\alias{.AssetPricingFactor}
-\title{S4 class for asset pricing factor object}
+\title{S4 class for asset pricing factor objects}
 \description{
-S4 class for asset pricing factor object
+S4 class for asset pricing factor objects
 }

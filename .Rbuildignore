@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 ^development$
 ^data-raw$
+^LICENSE\.md$
+^README\.Rmd$

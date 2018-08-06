@@ -8,18 +8,20 @@ factor_returns(data, positions, update_frequency = "month",
   return_frequency = "day", price_variable = "PX_LAST", geometric = TRUE)
 }
 \arguments{
-\item{data}{A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
+\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}
 
-\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+\item{positions}{a dataframe/tibble. Returned by function \code{factor_positions}.}
 
-\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'month'.}
 
-\item{price_variable}{A scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
+\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'day'.}
 
-\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
+\item{price_variable}{a scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the \code{field} columns of \code{data}.}
+
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
-A tibble with columns `date`, `long` , `short` and `factor`.
+A tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.
 }
 \description{
 Get return time series for factor as well as for long and short legs independently.
