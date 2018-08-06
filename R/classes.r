@@ -16,18 +16,23 @@ setOldClass(c("tbl_df", "tbl", "data.frame"))
 #' @export
 setMethod("show", "AssetPricingFactor", function(object) {
   cat(is(object)[[1]], "\n",
-      "  name: ", object@name, "\n",
+      "  name: ", paste(object@name, "factor", " "), "\n",
       "  parameters\n",
-      "    sort on:\t\t", ifelse(object@params$sort_levels, "levels", "relative changes"), "\n",
-      "    update frequency:\t", object@params$update_frequency, "\n",
-      "    return type:\t", ifelse(object@params$geometric, "geometric", "arithmetic"), "\n",
-      "    return frequency:\t", object@params$return_frequency, "\n",
-      "    ranking period:\t", object@params$ranking_period, " ", paste0(object@params$update_frequency, ifelse(object@params$ranking_period > 1L, "s", "")), "\n",
-      "    long threshold:\t", paste0(object@params$long_threshold * 100L, "%"), "\n",
-      "    short threshold:\t", paste0(object@params$short_threshold * 100L, "%"), "\n",
+      paste0(rep("    ", ncol(object@params)),
+             gsub(pattern = "_", replacement = " ", names(object@params)),
+             sapply(names(object@params), function(x) if (nchar(x) <= 10L) ":\t\t " else ":\t "),
+             object@params[1L, ],
+             rep("\n", ncol(object@params))),
       sep = ""
   )
 })
+
+
+
+
+
+
+
 
 
 setGeneric("name", function(factor) standardGeneric("name"))
@@ -108,9 +113,9 @@ setGeneric("plot_performance", function(factor) standardGeneric("plot_performanc
 #' @export
 setMethod("plot_performance", "AssetPricingFactor", function(factor) {
   data <- factor@returns
-  data[, c("long", "short", "factor")] <- data[, c("long", "short", "factor")] + 1L
+  data[, matches("long|short|factor", vars = names(data))] <- data[, matches("long|short|factor", vars = names(data))] + 1L
   data %<>%
-    mutate_at(vars(long, short, factor), funs(c(1L, sapply(2L:NROW(.), function(x) .[x] * .[x - 1L]))))%>%
+    mutate_at(vars(matches("long|short|factor")), funs(c(1L, sapply(2L:NROW(.), function(x) .[x] * .[x - 1L]))))%>%
     gather(leg, `wealth index`, -date) %>%
     mutate(leg = ifelse(leg %in% c("long", "short"), paste(leg, "leg", sep = " "), paste(factor@name, leg, sep = " ")),
            leg = factor(leg, levels = c(paste(factor@name, "factor", sep = " "), "long leg", "short leg")))
@@ -124,6 +129,7 @@ setMethod("plot_performance", "AssetPricingFactor", function(factor) {
     facet_wrap(~leg, ncol = 1L)
 
 })
+
 
 
 

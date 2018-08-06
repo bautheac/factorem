@@ -10,13 +10,13 @@ factor_returns(data, positions, update_frequency = "month",
 \arguments{
 \item{data}{A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
 
-\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
 
-\item{return_frequency}{A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
-\item{price_variable}{A unit length character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
+\item{price_variable}{A scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
 
-\item{geometric}{Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
+\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
 }
 \value{
 A tibble with columns `date`, `long` , `short` and `factor`.

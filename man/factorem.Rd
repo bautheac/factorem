@@ -7,25 +7,25 @@
 factorem(name = NA, ...)
 }
 \arguments{
-\item{name}{A unit character vector specifying the name to use for the factor.}
+\item{name}{A scalar character vector specifying the name to use for the factor.}
 
 \item{...}{Factor construction parameters:
 \itemize{
   \item{data: a dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
-  \item{update_frequency: a unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
-  \item{return_frequency: a unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
-  \item{sort_variable: a unit length character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
-  \item{price_variable: a unit length character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
-  \item{sort_levels: logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
-  \item{ranking_period: a unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
-  \item{long_threshold: a unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.}
-  \item{short_threshold: a unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+  \item{update_frequency: a scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+  \item{return_frequency: a scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+  \item{sort_variable: a scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
+  \item{price_variable: a scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
+  \item{sort_levels: a scalar logical vector. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
+  \item{ranking_period: a scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
+  \item{long_threshold: a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+  \item{short_threshold: a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
 }}
 }
 \value{
 An S4 object of class \linkS4class{AssetPricingFactor} with slots:
   \itemize{
-    \item{name: a unit character vector specifying the name to use for the factor.}
+    \item{name: a scalar character vector specifying the name to use for the factor.}
     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
     \item{positions: a tibble with columns `date`, `name` and `position`.}
     \item{data: a tibble containing the original dataset used for factor construction.}

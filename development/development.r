@@ -94,13 +94,42 @@ plot_positions(OI_factor)
 momentum_factor <- momentum_factor(data = `test price data`,
                                    update_frequency = "week",
                                    return_frequency = "week",
-                                   sort_levels = FALSE,
                                    ranking_period = 0L,
                                    long_threshold = 0.5,
                                    short_threshold = 0.5,
                                    geometric = TRUE)
 
+plot_performance(momentum_factor)
+plot_positions(momentum_factor)
+?momentum_factor
 
+TS <- TS_factor(data = `test price data`,
+                update_frequency = "week",
+                return_frequency = "week",
+                front = 1L,
+                back = 2L,
+                ranking_period = 4L,
+                long_threshold = 0.5,
+                short_threshold = 0.5,
+                geometric = TRUE)
+
+plot_performance(TS_factor)
+plot_positions(TS_factor)
+summary(TS_factor)
+?TS_factor
+
+paste0(rep("    ", ncol(TS_factor@params)), names(TS_factor@params), rep(":\t ", ncol(TS_factor@params)), TS_factor@params[1L, ])
+
+names(TS_factor@params)
+
+market_factor <- market_factor(data = `test price data`,
+                               return_frequency = "month",
+                               long = FALSE,
+                               geometric = TRUE)
+
+plot_performance(market_factor)
+plot_positions(market_factor)
+?market_factor
 
 
 

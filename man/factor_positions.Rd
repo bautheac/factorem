@@ -11,17 +11,17 @@ factor_positions(data, update_frequency = "month",
 \arguments{
 \item{data}{A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
 
-\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
 
-\item{sort_variable}{A unit length character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
+\item{sort_variable}{A scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
 
-\item{sort_levels}{Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
+\item{sort_levels}{A scalar logical vector. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
 
-\item{ranking_period}{A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`}
+\item{ranking_period}{A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`}
 
-\item{long_threshold}{A unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{long_threshold}{A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
 
-\item{short_threshold}{A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{short_threshold}{A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
 }
 \value{
 A tibble with columns `date`, `name` and `position`.

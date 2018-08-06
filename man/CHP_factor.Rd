@@ -9,7 +9,7 @@ CHP_factor(price_data, CHP_data, update_frequency = "month",
   short_threshold = 0.5, geometric = TRUE)
 }
 \arguments{
-\item{price_data}{A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `field` and `value`. `field` must contain `PX_LAST` variable.}
+\item{price_data}{A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`. `field` must contain `PX_LAST` variable.}
 
 \item{CHP_data}{A dataframe/tibble. Columns must include:
 \itemize{
@@ -21,24 +21,22 @@ CHP_factor(price_data, CHP_data, update_frequency = "month",
   \item{PX_LAST: contains the corresponding values.}
 }}
 
-\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".}
+\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".}
 
-\item{return_frequency}{A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
-\item{ranking_period}{A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
+\item{ranking_period}{A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for CHP average calculation.}
 
-\item{long_threshold}{A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{long_threshold}{A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
 
-\item{short_threshold}{A unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{short_threshold}{A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
 
-\item{geometric}{Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
-
-\item{sort_levels}{Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
+\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
 }
 \value{
-an \linkS4class{AssetPricingFactor} object with slots:
+An S4 object of class \linkS4class{AssetPricingFactor} with slots:
   \itemize{
-    \item{name: a unit character vector: "CHP factor".}
+    \item{name: a scalar character vector: "CHP factor".}
     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
     \item{positions: a tibble with columns `date`, `name` and `position`.}
     \item{data: a tibble containing the original dataset used for factor construction.}
