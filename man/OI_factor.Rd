@@ -9,30 +9,30 @@ OI_factor(data, update_frequency = "month", return_frequency = "day",
   aggregate = FALSE, geometric = TRUE)
 }
 \arguments{
-\item{data}{A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`. `field` must contain `PX_LAST` and `OPEN_INT` variables.}
+\item{data}{a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}. \code{field} must contain \code{PX_LAST} and \code{OPEN_INT} variables.}
 
-\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".}
+\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".}
 
-\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
-\item{ranking_period}{A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
+\item{ranking_period}{a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.}
 
-\item{long_threshold}{A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{long_threshold}{a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
 
-\item{short_threshold}{A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{short_threshold}{a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
 
-\item{aggregate}{A scalar logical vector. If `TRUE` open interest is aggregated over the whole term structure supplied in `data`. Defaults to `FALSE`.}
+\item{aggregate}{a scalar logical vector. If \code{TRUE} open interest is aggregated over the whole term structure supplied in \code{data}. Defaults to \code{FALSE}.}
 
-\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
-An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
   \itemize{
-    \item{name: a scalar character vector: "OI factor".}
-    \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-    \item{positions: a tibble with columns `date`, `name` and `position`.}
-    \item{data: a tibble containing the original dataset used for factor construction.}
-    \item{params: a tibble containing the original parameters supplied for factor construction.}
+    \item{\code{name}: a scalar character vector: "OI factor".}
+    \item{\code{returns}: a tibble with columns \code{date}, \code{long}, \code{short} and \code{factor}.}
+    \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+    \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+    \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
   }
 }
 \description{

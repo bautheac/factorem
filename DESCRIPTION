@@ -1,10 +1,25 @@
 Package: factorem
-Title: What the Package Does (one line, title case)
+Title: factor'em!
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.5.1)
-License: What license is it under?
+Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
+Description: Construct asset pricing factors.
+Depends: R (>= 3.4.0)
+Imports:
+  dplyr,
+  ggplot2,
+  ggthemes,
+  lubridate,
+  magrittr,
+  methods,
+  PerformanceAnalytics,
+  purrr,
+  RcppRoll,
+  scales,
+  tibble,
+  tidyr,
+  tidyselect,
+  xts
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

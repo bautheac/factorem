@@ -9,32 +9,32 @@ TS_factor(data, update_frequency = "month", return_frequency = "day",
   short_threshold = 0.5, geometric = TRUE)
 }
 \arguments{
-\item{data}{A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`.}
+\item{data}{a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}.}
 
-\item{update_frequency}{A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".}
+\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".}
 
-\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
-\item{front}{A scalar integer vector. Specifies the term structure position to use as front contract in roll yield (sort variable) calculation. Defaults to 1.}
+\item{front}{a scalar integer vector. Specifies the term structure position to use as front contract in roll yield (sort variable) calculation. Defaults to 1.}
 
-\item{back}{A scalar integer vector. Specifies the term structure position to use as back contract in roll yield (sort variable) calculation. Defaults to 2.}
+\item{back}{a scalar integer vector. Specifies the term structure position to use as back contract in roll yield (sort variable) calculation. Defaults to 2.}
 
-\item{ranking_period}{A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
+\item{ranking_period}{a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.}
 
-\item{long_threshold}{A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{long_threshold}{a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
 
-\item{short_threshold}{A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{short_threshold}{a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
 
-\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
-An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
   \itemize{
-    \item{name: a scalar character vector: "term structure factor".}
-    \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-    \item{positions: a tibble with columns `date`, `name` and `position`.}
-    \item{data: a tibble containing the original dataset used for factor construction.}
-    \item{params: a tibble containing the original parameters supplied for factor construction.}
+    \item{\code{name}: a scalar character vector: "term structure factor".}
+    \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+    \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+    \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+    \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
   }
 }
 \description{

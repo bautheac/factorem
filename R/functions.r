@@ -1,20 +1,25 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "inverse CHP", "active contract ticker", "average", "date", "field", "leg", "long", "leg", "name",
+                                                        "participant", "period", "PX_LAST", "returns", "roll yield", "short", "TS position", "underlying", "unit", "value"))
+
+
 #' Get time series of long and short factor positions
 #'
-#' @param data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".
-#' @param sort_variable A scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.
-#' @param sort_levels A scalar logical vector. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.
-#' @param ranking_period A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`
-#' @param short_threshold A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
-#' @param long_threshold A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param data a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "month".
+#' @param sort_variable a scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the \code{field} columns of \code{data}.
+#' @param sort_levels a scalar logical vector. If \code{TRUE}, sort is done on 'sort_variable's levels, else on relative changes. Default: \code{FALSE}.
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
 #'
-#' @return A tibble with columns `date`, `name` and `position`.
+#' @return A tibble with columns \code{date}, \code{name} and \code{position}.
 #'
-#' @importFrom dplyr arrange desc distinct filter group_by mutate select slice row_number ungroup
+#' @importFrom dplyr arrange desc distinct filter group_by mutate n row_number select slice ungroup
 #' @importFrom lubridate yday month quarter semester week year
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom purrr flatten_chr flatten_dbl is_scalar_character is_scalar_double is_scalar_integer is_scalar_logical pmap
 #' @importFrom RcppRoll roll_meanr
+#' @importFrom stats complete.cases
 #' @importFrom tibble tibble
 #' @importFrom tidyr nest spread unnest
 
@@ -79,19 +84,21 @@ factor_positions <- function(data,
 
 #' Get return time series for factor as well as for long and short legs independently.
 #'
-#' @param data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param price_variable A scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param data a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.
+#' @param positions  a dataframe/tibble. Returned by function \code{factor_positions}.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'month'.
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'day'.
+#' @param price_variable a scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the \code{field} columns of \code{data}.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return A tibble with columns `date`, `long` , `short` and `factor`.
+#' @return A tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.
 #'
 #' @importFrom dplyr distinct filter full_join group_by lag lead left_join mutate select summarise ungroup
 #' @importFrom lubridate yday month quarter semester week year
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom PerformanceAnalytics Return.cumulative
 #' @importFrom purrr flatten_chr is_scalar_character is_scalar_logical map
+#' @importFrom stats complete.cases
 #' @importFrom tidyr nest unnest
 
 factor_returns <- function(data,
@@ -107,6 +114,8 @@ factor_returns <- function(data,
   if (! is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
   if (! is_scalar_character(price_variable)) stop("Parameter 'price_variable' must be supplied as a scalar character vector.")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+
+  if(getRversion() >= "2.15.1")  utils::globalVariables(c("date", "field", "name", "period", "value"))
 
   if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
   if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
@@ -163,48 +172,68 @@ factor_returns <- function(data,
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param name A scalar character vector specifying the name to use for the factor.
-#' @param ... Factor construction parameters:
+#' @param name a scalar character vector specifying the name to use for the factor.
+#' @param data a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency.
+#'   Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output.
+#'   Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param price_variable a scalar character vector. Specifies the name of the variable hosting asset prices.
+#'   Must be found in the \code{field} columns of \code{data}.
+#' @param sort_variable a scalar character vector. Specifies the name of the variable to use for sorting.
+#'   Must be found in the \code{field} columns of \code{data}.
+#' @param sort_levels a scalar logical vector. If \code{TRUE}, sort is done on \code{sort_variable}'s levels, else on relative changes.
+#'   Default: \code{FALSE}.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency}
+#'   looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#'
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{data: a dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
-#'     \item{update_frequency: a scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
-#'     \item{return_frequency: a scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
-#'     \item{sort_variable: a scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
-#'     \item{price_variable: a scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
-#'     \item{sort_levels: a scalar logical vector. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
-#'     \item{ranking_period: a scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.}
-#'     \item{long_threshold: a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
-#'     \item{short_threshold: a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+#'     \item{\code{name}: a scalar character vector specifying the name to use for the factor.}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
-#'   \itemize{
-#'     \item{name: a scalar character vector specifying the name to use for the factor.}
-#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
-#'   }
-#'
-#' @importFrom dplyr flatten_dfc
 #' @importFrom magrittr "%>%"
-#' @importFrom purrr is_scalar_character
+#' @importFrom purrr flatten_dfc is_scalar_character
+#' @importFrom utils modifyList
 #'
 #' @export
 
-factorem <- function(name = NA, ...){
+factorem <- function(name = "",
+                     data,
+                     update_frequency = "month",
+                     return_frequency = "day",
+                     price_variable = "PX_LAST",
+                     sort_variable = "PX_LAST",
+                     sort_levels = FALSE,
+                     geometric = TRUE,
+                     ranking_period = 0L,
+                     long_threshold = 0.5,
+                     short_threshold = 0.5){
 
   if (! is_scalar_character(name)) stop("Parameter 'name' must be supplied as a scalar character vector.")
 
-  positions <- do.call("factor_positions", list(...)[c("data", "update_frequency", "sort_variable", "sort_levels", "ranking_period", "long_threshold", "short_threshold")])
-  returns <- do.call("factor_returns", modifyList(x = list(...)[c("data", "price_variable", "update_frequency", "return_frequency")],
-                                                  val = list(positions = positions)))
+  positions <- factor_positions(data = data, update_frequency = update_frequency, sort_variable = sort_variable, ranking_period = ranking_period,
+                                long_threshold = long_threshold, short_threshold = short_threshold)
+  returns <- factor_returns(data = data, positions = positions, price_variable = price_variable, update_frequency = update_frequency,
+                            return_frequency =return_frequency)
+
+  params <- list(`update frequency` = update_frequency, `return frequency` = return_frequency, `price variable` = price_variable,
+                 `sort variable` = sort_variable, `sort levels` = sort_levels, geometric = geometric, `ranking period` = ranking_period,
+                 `long threshold` = long_threshold, `short threshold` = short_threshold) %>%
+    flatten_dfc()
 
   .AssetPricingFactor(name = name,
                       positions = positions,
                       returns = returns,
-                      data = list(...)[["data"]],
-                      params = list(...)[names(list(...)) != "data"] %>% flatten_dfc()
+                      data = data,
+                      params = params
                       )
 }
 
@@ -213,34 +242,35 @@ factorem <- function(name = NA, ...){
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param price_data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`. `field` must contain `PX_LAST` variable.
-#' @param CHP_data A dataframe/tibble. Columns must include:
+#' @param price_data a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}. \code{field} must contain \code{PX_LAST} variable.
+#' @param CHP_data a dataframe/tibble. Columns must include:
 #'   \itemize{
-#'     \item{format: must contain `legacy`.}
-#'     \item{underlying: must contain `futures only`.}
-#'     \item{unit: must contain `# positions`.}
-#'     \item{participant: must contain `commercial`.}
-#'     \item{position: must contain `long` & `short`.}
-#'     \item{PX_LAST: contains the corresponding values.}
+#'     \item{\code{format}: must contain 'legacy'.}
+#'     \item{\code{underlying}: must contain 'futures only'.}
+#'     \item{\code{unit}: must contain '# positions'.}
+#'     \item{\code{participant}: must contain 'commercial'.}
+#'     \item{\code{position}: must contain 'long' & 'short'.}
+#'     \item{\code{PX_LAST}: contains the corresponding values.}
 #'   }
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param ranking_period A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for CHP average calculation.
-#' @param long_threshold A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
-#' @param short_threshold A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', 'semester', 'quarter', 'month' or 'week'. Defaults to 'month'.
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for CHP average calculation.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{name: a scalar character vector: "CHP factor".}
-#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'     \item{\code{name}: a scalar character vector: "CHP factor".}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @importFrom dplyr filter flatten_chr flatten_dfc mutate select
+#' @importFrom dplyr filter mutate select
 #' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom purrr flatten_chr flatten_dfc
 #' @importFrom tidyr gather spread
 #'
 #' @export
@@ -262,27 +292,27 @@ CHP_factor <- function(price_data,
   if (! is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
-  if (! all(c("active_contract_ticker", "date", "TS_position", "field", "value") %in% names(data)))
-    stop("The columns of the dataframe supplied in 'data' must include 'active_contract_ticker', 'date', `TS_position`, 'field' and 'value'.")
+  if (! all(c("active contract ticker", "date", "TS position", "field", "value") %in% names(data)))
+    stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
   if (! "PX_LAST" %in% (distinct(data, field) %>% flatten_chr()))
     stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
   if (! c("format", "underlying", "unit", "participant", "position", "PX_LAST") %in% all(names(CHP_data)))
-    stop("The columns of the dataframe supplied in 'CHP_data' must include 'format', 'underlying', 'unit', ''participant', 'position' and 'PX_LAST'.")
+    stop("The columns of the dataframe supplied in 'CHP_data' must include 'format', 'underlying', 'unit', 'participant', 'position' and 'PX_LAST'.")
   if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
   if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
   if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
 
   price_data %<>%
-    filter(TS_position == 1L, field == "PX_LAST") %>%
-    select(name = active_contract_ticker, date, field, value)
+    filter(`TS position` == 1L, field == "PX_LAST") %>%
+    select(name = `active contract ticker`, date, field, value)
 
   CHP_data %<>%
     filter(format == "legacy", underlying == "futures only", unit == "# positions", participant == "commercial", position %in% c("long", "short")) %>%
-    select(name = active_contract_ticker, position, date, PX_LAST) %>%
+    select(name = `active contract ticker`, position, date, PX_LAST) %>%
     mutate(PX_LAST = abs(PX_LAST)) %>%
     spread(position, PX_LAST) %>%
-    mutate(`1 / CHP` = (long + short) / long) %>%
-    select(name, date, `1 / CHP`) %>%
+    mutate(`inverse CHP` = (long + short) / long) %>%
+    select(name, date, `inverse CHP`) %>%
     gather(field, value, -c(name, date))
 
   if(! all(flatten_chr(distinct(CHP_data, name)) %in% flatten_chr(distinct(price_data, name)))){
@@ -297,7 +327,7 @@ CHP_factor <- function(price_data,
            update_frequency = update_frequency,
            return_frequency = return_frequency,
            price_variable = "PX_LAST",
-           sort_variable = "1 / CHP",
+           sort_variable = "inverse CHP",
            sort_levels = TRUE,
            ranking_period = ranking_period,
            long_threshold = long_threshold,
@@ -312,25 +342,25 @@ CHP_factor <- function(price_data,
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`. `field` must contain `PX_LAST` and `OPEN_INT` variables.
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param ranking_period A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
-#' @param long_threshold A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
-#' @param short_threshold A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
-#' @param aggregate A scalar logical vector. If `TRUE` open interest is aggregated over the whole term structure supplied in `data`. Defaults to `FALSE`.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param data a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}. \code{field} must contain \code{PX_LAST} and \code{OPEN_INT} variables.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param aggregate a scalar logical vector. If \code{TRUE} open interest is aggregated over the whole term structure supplied in \code{data}. Defaults to \code{FALSE}.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{name: a scalar character vector: "OI factor".}
-#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'     \item{\code{name}: a scalar character vector: "OI factor".}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long}, \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @importFrom dplyr filter group_by select summarise
+#' @importFrom dplyr everything filter group_by select summarise
 #' @importFrom magrittr "%>%"
 #' @importFrom purrr flatten_chr is_scalar_character is_scalar_double is_scalar_double is_scalar_logical
 #'
@@ -353,10 +383,12 @@ OI_factor <- function(data,
   if (! is_scalar_logical(aggregate)) stop("Parameter 'aggregate' must be supplied as a scalar logical vector (TRUE or FALSE).")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
-  if (! all(c("active_contract_ticker", "date", "TS_position", "field", "value") %in% names(data)))
-    stop("The columns of the dataframe supplied in 'data' must include 'active_contract_ticker', 'date', `TS_position`, 'field' and 'value'.")
+  if(getRversion() >= "2.15.1")  utils::globalVariables(c("active contract ticker", "date", "field", "name", "period", "TS position", "value"))
+
+  if (! all(c("active contract ticker", "date", "TS position", "field", "value") %in% names(data)))
+    stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
   if (! all(c("PX_LAST", "OPEN_INT") %in% (distinct(data, field) %>% flatten_chr())))
-    stop("The dataframe supplied in 'data' doesn't contain the required variables 'PX_LAST' amd 'OPEN_INT' in the `field` column.")
+    stop("The dataframe supplied in 'data' doesn't contain the required variables 'PX_LAST' amd 'OPEN_INT' in the 'field' column.")
   if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
   if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
   if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
@@ -364,17 +396,17 @@ OI_factor <- function(data,
   OI <- data %>%
     filter(field == "OPEN_INT") %>%
     {
-      if (aggregate) group_by(., active_contract_ticker, date, field) %>%
+      if (aggregate) group_by(., `active contract ticker`, date, field) %>%
         summarise(value = sum(value)) %>%
-        select(name = active_contract_ticker, everything())
+        select(name = `active contract ticker`, everything())
       else
-        filter(., TS_position == 1L) %>%
-        select(name = active_contract_ticker, date, field, value)
+        filter(., `TS position` == 1L) %>%
+        select(name = `active contract ticker`, date, field, value)
     }
 
   price <- data %>%
-    filter(TS_position == 1L, field == "PX_LAST") %>%
-    select(name = active_contract_ticker, date, field, value)
+    filter(`TS position` == 1L, field == "PX_LAST") %>%
+    select(name = `active contract ticker`, date, field, value)
 
   data <- rbind(price, OI)
 
@@ -399,21 +431,21 @@ OI_factor <- function(data,
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`.
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param ranking_period A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
-#' @param long_threshold A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
-#' @param short_threshold A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param data a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{name: a scalar character vector: "momentum factor".}
-#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'     \item{\code{name}: a scalar character vector: "momentum factor".}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
 #' @importFrom dplyr filter select
@@ -437,8 +469,10 @@ momentum_factor <- function(data,
   if (! is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
-  if (! all(c("active_contract_ticker", "date", "TS_position", "field", "value") %in% names(data)))
-    stop("The columns of the dataframe supplied in 'data' must include 'active_contract_ticker', 'date', `TS_position`, 'field' and 'value'.")
+  if(getRversion() >= "2.15.1")  utils::globalVariables(c("active contract ticker", "date", "field", "name", "period", "TS position", "value"))
+
+  if (! all(c("active contract ticker", "date", "TS position", "field", "value") %in% names(data)))
+    stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
   if (! "PX_LAST" %in% (distinct(data, field) %>% flatten_chr()))
     stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
   if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
@@ -446,8 +480,8 @@ momentum_factor <- function(data,
   if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
 
   data %<>%
-    filter(field == "PX_LAST", TS_position == 1L) %>%
-    select(name = active_contract_ticker, date, field, value)
+    filter(field == "PX_LAST", `TS position` == 1L) %>%
+    select(name = `active contract ticker`, date, field, value)
 
   factorem(name = "momentum",
            data = data,
@@ -469,28 +503,29 @@ momentum_factor <- function(data,
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`.
-#' @param update_frequency A scalar character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param front A scalar integer vector. Specifies the term structure position to use as front contract in roll yield (sort variable) calculation. Defaults to 1.
-#' @param back A scalar integer vector. Specifies the term structure position to use as back contract in roll yield (sort variable) calculation. Defaults to 2.
-#' @param ranking_period A scalar integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
-#' @param long_threshold A scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
-#' @param short_threshold A scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param data a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param front a scalar integer vector. Specifies the term structure position to use as front contract in roll yield (sort variable) calculation. Defaults to 1.
+#' @param back a scalar integer vector. Specifies the term structure position to use as back contract in roll yield (sort variable) calculation. Defaults to 2.
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{name: a scalar character vector: "term structure factor".}
-#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'     \item{\code{name}: a scalar character vector: "term structure factor".}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
 #' @importFrom dplyr filter mutate rename select
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom purrr flatten_chr flatten_int is_scalar_character is_scalar_double is_scalar_integer is_scalar_logical
+#' @importFrom stats complete.cases
 #' @importFrom tidyr gather spread
 #'
 #' @export
@@ -514,9 +549,11 @@ TS_factor <- function(data,
   if (! is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
-  if (! all(c("active_contract_ticker", "date", "TS_position", "field", "value") %in% names(data)))
-    stop("The columns of the dataframe supplied in 'data' must include 'active_contract_ticker', 'date', 'TS_position', 'field' and 'value'.")
-  if (! all(c(front, back) %in% (distinct(data, TS_position) %>% flatten_int())))
+  if(getRversion() >= "2.15.1")  utils::globalVariables(c("active contract ticker", "date", "field", "name", "period", "TS position", "value"))
+
+  if (! all(c("active contract ticker", "date", "TS position", "field", "value") %in% names(data)))
+    stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
+  if (! all(c(front, back) %in% (distinct(data, `TS position`) %>% flatten_int())))
     stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters.")
   if (! "PX_LAST" %in% (distinct(data, field) %>% flatten_chr()))
     stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
@@ -527,10 +564,10 @@ TS_factor <- function(data,
 
 
   data %<>%
-    filter(field == "PX_LAST", TS_position %in% c(front, back)) %>%
-    select(name = active_contract_ticker, date, field, TS_position, value) %>%
+    filter(field == "PX_LAST", `TS position` %in% c(front, back)) %>%
+    select(name = `active contract ticker`, date, field, `TS position`, value) %>%
     spread(field, value) %>%
-    spread(TS_position, PX_LAST) %>%
+    spread(`TS position`, PX_LAST) %>%
     rename(front = paste0(!! front), back = paste0(!! back)) %>%
     filter(complete.cases(front, back)) %>%
     mutate(`roll yield` = log(front/back)) %>%
@@ -553,29 +590,27 @@ TS_factor <- function(data,
 
 
 
-
-
 #' Construct market factor
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`.
-#' @param return_frequency A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
-#' @param long A scalar logical vector. If `TRUE` long only, else short only. Default: `TRUE`.
-#' @param geometric A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#' @param data a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}.
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param long a scalar logical vector. If \code{TRUE} long only, else short only. Default: \code{TRUE}.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @return An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
 #'   \itemize{
-#'     \item{name: a scalar character vector: "market factor".}
-#'     \item{returns: a tibble with columns `date` and `factor`.}
-#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
-#'     \item{data: a tibble containing the original dataset used for factor construction.}
-#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'     \item{\code{name}: a scalar character vector: "market factor".}
+#'     \item{\code{returns}: a tibble with columns \code{date} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @importFrom dplyr flatten_dfc filter group_by lag mutate rename select summarise
+#' @importFrom dplyr filter group_by lag mutate rename select summarise
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr is_scalar_character is_scalar_logical map
+#' @importFrom purrr flatten_chr flatten_dfc is_scalar_character is_scalar_logical map
 #' @importFrom tidyr gather nest spread unnest
 #'
 #' @export
@@ -589,25 +624,27 @@ market_factor <- function(data,
   if (! is_scalar_logical(long)) stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
   if (! is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
-  if (! all(c("active_contract_ticker", "date", "field", "value") %in% names(data)))
-    stop("The columns of the dataframe supplied in 'data' must include 'active_contract_ticker', 'date', 'TS_position', 'field' and 'value'.")
+  if(getRversion() >= "2.15.1")  utils::globalVariables(c("active contract ticker", "date", "field", "name", "period", "TS position", "value"))
+
+  if (! all(c("active contract ticker", "date", "field", "value") %in% names(data)))
+    stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
   if (! "PX_LAST" %in% (distinct(data, field) %>% flatten_chr()))
     stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
   if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
     stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
 
   positions <- data %>%
-    filter(field == "PX_LAST", TS_position == 1L) %>%
+    filter(field == "PX_LAST", `TS position` == 1L) %>%
     group_by(date) %>%
     nest() %>%
-    mutate(positions = map(data, function(x) select(x, active_contract_ticker, value) %>%
+    mutate(positions = map(data, function(x) select(x, `active contract ticker`, value) %>%
         filter(complete.cases(.)) %>%
-        select(name = active_contract_ticker))) %>%
+        select(name = `active contract ticker`))) %>%
     unnest(positions) %>%
     mutate(position = if_else(long, "long", "short"))
 
   returns <- data %>%
-    filter(field == "PX_LAST", TS_position == 1L) %>%
+    filter(field == "PX_LAST", `TS position` == 1L) %>%
     group_by(date) %>%
     summarise(factor = mean(value, na.rm = TRUE)) %>%
     filter(!is.na(factor)) %>%

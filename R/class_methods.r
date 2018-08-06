@@ -1,7 +1,13 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "data", "leg", "n", "name", "params", "position", "positions", "proportion",
+                                                        "returns", "total", "value", "wealth index"))
 
 setOldClass(c("tbl_df", "tbl", "data.frame"))
 
-#' S4 class for asset pricing factor object
+# class definitions ####
+
+#' S4 class for asset pricing factor objects
+#'
+#' @importFrom methods is new
 #'
 #' @export
 .AssetPricingFactor <- setClass("AssetPricingFactor",
@@ -11,10 +17,91 @@ setOldClass(c("tbl_df", "tbl", "data.frame"))
                                              data = "tbl_df",
                                              params = "tbl_df"))
 
-#' Show method for S4 object of class `AssetPricingFactor`.
+
+# generics ####
+
+#' Generic method for accessing factor name
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A unit character vector containing the name of the factor.
 #'
 #' @export
-setMethod("show", "AssetPricingFactor", function(object) {
+setGeneric("name", function(factor) standardGeneric("name"))
+
+#' Generic method for accessing factor returns
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A tibble of factor returns.
+#'
+#' @export
+setGeneric("returns", function(factor) standardGeneric("returns"))
+
+#' Generic method for accessing positions
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A tibble of factor positions.
+#'
+#' @export
+setGeneric("positions", function(factor) standardGeneric("positions"))
+
+#' Generic method for accessing factor data construction
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A tibble containing the original dataset used for factor construction.
+#'
+#' @export
+setGeneric("dataset", function(factor) standardGeneric("dataset"))
+
+#' Generic method for accessing factor data construction
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A tibble containing the original parameters supplied for factor construction.
+#'
+#' @export
+setGeneric("parameters", function(factor) standardGeneric("parameters"))
+
+#' Generic method factor performance summary plot by leg
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A line plot showing the wealth index for the factor itself as well as that of both long and short legs separately.
+#'
+#' @export
+setGeneric("plot_performance", function(factor) standardGeneric("plot_performance"))
+
+#' Generic method factor positions summary plot by leg
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A bar plot showing the proportion of time individual names appear in the factor.
+#'
+#' @export
+setGeneric("plot_positions", function(factor) standardGeneric("plot_positions"))
+
+
+
+# methodss ####
+
+#' Show method for S4 object of class `AssetPricingFactor`.
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor} with slots:
+#'   \itemize{
+#'     \item{\code{name}: a scalar character vector specifying the name to use for the factor.}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
+#'   }
+#'
+#' @importFrom methods show
+#'
+#' @export
+setMethod("show", signature(object = "AssetPricingFactor"), function(object) {
   cat(is(object)[[1]], "\n",
       "  name: ", paste(object@name, "factor", " "), "\n",
       "  parameters\n",
@@ -28,18 +115,9 @@ setMethod("show", "AssetPricingFactor", function(object) {
 })
 
 
-
-
-
-
-
-
-
-setGeneric("name", function(factor) standardGeneric("name"))
-
 #' Accessor method for factor name
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A unit character vector containing the name of the factor.
 #'
@@ -47,11 +125,9 @@ setGeneric("name", function(factor) standardGeneric("name"))
 setMethod("name", "AssetPricingFactor", function(factor) factor@name)
 
 
-setGeneric("returns", function(factor) standardGeneric("returns"))
-
 #' Accessor method for factor returns
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble of factor returns.
 #'
@@ -59,11 +135,9 @@ setGeneric("returns", function(factor) standardGeneric("returns"))
 setMethod("returns", "AssetPricingFactor", function(factor) factor@returns)
 
 
-setGeneric("positions", function(factor) standardGeneric("positions"))
-
 #' Accessor method for factor positions
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble of factor positions.
 #'
@@ -71,22 +145,20 @@ setGeneric("positions", function(factor) standardGeneric("positions"))
 setMethod("positions", "AssetPricingFactor", function(factor) factor@positions)
 
 
-setGeneric("data", function(factor) standardGeneric("data"))
 
 #' Accessor method for factor data construction
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble containing the original dataset used for factor construction.
 #'
 #' @export
-setMethod("data", "AssetPricingFactor", function(factor) factor@data)
+setMethod("dataset", "AssetPricingFactor", function(factor) factor@data)
 
 
-setGeneric("parameters", function(factor) standardGeneric("parameters"))
 #' Accessor method for factor parameters
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble containing the original parameters supplied for factor construction.
 #'
@@ -94,21 +166,18 @@ setGeneric("parameters", function(factor) standardGeneric("parameters"))
 setMethod("parameters", "AssetPricingFactor", function(factor) factor@params)
 
 
-setGeneric("plot_performance", function(factor) standardGeneric("plot_performance"))
-
-
-
 #' Summary plot of factor performance by leg
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A line plot showing the wealth index for the factor itself as well as that of both long and short legs separately.
 #'
-#' @importFrom dplyr mutate_at mutate
+#' @importFrom dplyr funs if_else mutate_at mutate vars
 #' @importFrom ggplot2 aes facet_wrap geom_line ggplot labs theme
 #' @importFrom ggthemes theme_tufte
 #' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom tidyr gather
+#' @importFrom tidyselect matches
 #'
 #' @export
 setMethod("plot_performance", "AssetPricingFactor", function(factor) {
@@ -117,7 +186,7 @@ setMethod("plot_performance", "AssetPricingFactor", function(factor) {
   data %<>%
     mutate_at(vars(matches("long|short|factor")), funs(c(1L, sapply(2L:NROW(.), function(x) .[x] * .[x - 1L]))))%>%
     gather(leg, `wealth index`, -date) %>%
-    mutate(leg = ifelse(leg %in% c("long", "short"), paste(leg, "leg", sep = " "), paste(factor@name, leg, sep = " ")),
+    mutate(leg = if_else(leg %in% c("long", "short"), paste(leg, "leg", sep = " "), paste(factor@name, leg, sep = " ")),
            leg = factor(leg, levels = c(paste(factor@name, "factor", sep = " "), "long leg", "short leg")))
 
   ggplot(data, aes(x = date, y = `wealth index`, colour = leg)) +
@@ -131,17 +200,13 @@ setMethod("plot_performance", "AssetPricingFactor", function(factor) {
 })
 
 
-
-
-setGeneric("plot_positions", function(factor) standardGeneric("plot_positions"))
-
 #' Summary plot of factor positions by leg
 #'
-#' @param factor An S4 object of class 'AssetPricingFactor'.
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A bar plot showing the proportion of time individual names appear in the factor.
 #'
-#' @importFrom dplyr group_by mutate rename tally
+#' @importFrom dplyr group_by if_else mutate rename tally
 #' @importFrom ggplot2 aes element_blank facet_wrap geom_bar ggplot labs scale_x_discrete scale_y_continuous theme
 #' @importFrom ggthemes theme_tufte
 #' @importFrom magrittr "%>%" "%<>%"
@@ -155,18 +220,18 @@ setMethod("plot_positions", "AssetPricingFactor", function(factor) {
   data %<>%
     group_by(position) %>%
     nest() %>%
-    mutate(proportions = map(data, function(x) x %>%
+    mutate(proportion = map(data, function(x) x %>%
                                group_by(name) %>%
                                tally() %>%
                                mutate(n = n / nrow(x))
     )) %>%
-    unnest(proportions) %>%
+    unnest(proportion) %>%
     rbind(data %>%
             group_by(name) %>%
             tally() %>%
             mutate(position = "factor", n = n / nrow(factor@positions))) %>%
     rename(proportion = n) %>%
-    mutate(leg = ifelse(position %in% c("long", "short"), paste(position, "leg", sep = " "), paste(factor@name, position, sep = " ")),
+    mutate(leg = if_else(position %in% c("long", "short"), paste(position, "leg", sep = " "), paste(factor@name, position, sep = " ")),
            leg = factor(leg, levels = c(paste(factor@name, "factor", sep = " "), "long leg", "short leg")))
 
   ggplot(data, aes(name, proportion, fill = name)) +
@@ -183,7 +248,7 @@ setMethod("plot_positions", "AssetPricingFactor", function(factor) {
 
 #' Summary of factor returns by month and year
 #'
-#' @param object An S4 object of class 'AssetPricingFactor'.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #' @param leg A character vector. 'long', 'short' and 'factor' display the returns for the long, short and the factor itself respectively.
 #'
 #' @return A dataframe with months as colums and years as rows. Column total shows the cumulated return for the corresponding year.
@@ -196,14 +261,42 @@ setMethod("plot_positions", "AssetPricingFactor", function(factor) {
 #' @export
 setMethod("summary", "AssetPricingFactor", function(object, leg = "factor") {
   returns <- xts(x = object@returns %>%
-                   select(return = !! leg),
+                   select(returns = !! leg),
                  order.by = object@returns$date)
 
   table.CalendarReturns(returns, digits = 1, as.perc = TRUE, geometric = object@params$geometric) %>%
-    rename(total = return) %>%
+    rename(total = returns) %>%
     set_colnames(value = tolower(names(.)))
 
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

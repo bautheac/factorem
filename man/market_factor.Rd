@@ -8,22 +8,22 @@ market_factor(data, return_frequency = "day", long = TRUE,
   geometric = TRUE)
 }
 \arguments{
-\item{data}{A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `TS_position`, `field` and `value`.}
+\item{data}{a dataframe/tibble. Columns must include \code{active contract ticker}, \code{date}, \code{TS position}, \code{field} and \code{value}.}
 
-\item{return_frequency}{A scalar character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
-\item{long}{A scalar logical vector. If `TRUE` long only, else short only. Default: `TRUE`.}
+\item{long}{a scalar logical vector. If \code{TRUE} long only, else short only. Default: \code{TRUE}.}
 
-\item{geometric}{A scalar logical vector. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.}
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
-An S4 object of class \linkS4class{AssetPricingFactor} with slots:
+An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
   \itemize{
-    \item{name: a scalar character vector: "market factor".}
-    \item{returns: a tibble with columns `date` and `factor`.}
-    \item{positions: a tibble with columns `date`, `name` and `position`.}
-    \item{data: a tibble containing the original dataset used for factor construction.}
-    \item{params: a tibble containing the original parameters supplied for factor construction.}
+    \item{\code{name}: a scalar character vector: "market factor".}
+    \item{\code{returns}: a tibble with columns \code{date} and \code{factor}.}
+    \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+    \item{\code{data}: a tibble containing the original dataset used for factor construction.}
+    \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
   }
 }
 \description{
