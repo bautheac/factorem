@@ -10,6 +10,7 @@ setOldClass(c("tbl_df", "tbl", "data.frame"))
                                              positions = "tbl_df",
                                              data = "tbl_df",
                                              params = "tbl_df"))
+
 #' Show method for S4 object of class `AssetPricingFactor`.
 #'
 #' @export

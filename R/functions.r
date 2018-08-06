@@ -1,7 +1,7 @@
 #' Get time series of long and short factor positions
 #'
 #' @param data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.
-#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day".
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".
 #' @param sort_variable A unit length character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.
 #' @param sort_levels Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.
 #' @param ranking_period A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`
@@ -19,7 +19,7 @@
 #' @importFrom tidyr nest spread unnest
 
 factor_positions <- function(data,
-                             update_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                             update_frequency = "month",
                              sort_variable = "PX_LAST",
                              sort_levels = FALSE,
                              ranking_period = 0L,
@@ -68,8 +68,8 @@ factor_positions <- function(data,
 #' Get return time series for factor as well as for long and short legs independently.
 #'
 #' @param data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.
-#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day".
-#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".
+#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
 #' @param price_variable A unit length character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.
 #' @param geometric Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
 #'
@@ -84,10 +84,15 @@ factor_positions <- function(data,
 
 factor_returns <- function(data,
                            positions,
-                           update_frequency = c("year", "semester", "quarter", "month", "week", "day"),
-                           return_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                           update_frequency = "month",
+                           return_frequency = "day",
                            price_variable = "PX_LAST",
                            geometric = TRUE){
+
+  if (! update_frequency %in% c("year", "semester", "quarter", "month", "week"))
+    stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month' or 'week'.")
+  if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
 
   data %<>%
     filter(field == !! price_variable) %>%
@@ -142,9 +147,9 @@ factor_returns <- function(data,
 #' @param name A unit character vector specifying the name to use for the factor.
 #' @param ... Factor construction parameters:
 #'   \itemize{
-#'     \item{data: a dataframe/tibble. Columns must include name, date, field and value.}
-#'     \item{update_frequency: a unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day".}
-#'     \item{return_frequency: a unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".}
+#'     \item{data: a dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
+#'     \item{update_frequency: a unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+#'     \item{return_frequency: a unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 #'     \item{sort_variable: a unit length character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
 #'     \item{price_variable: a unit length character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
 #'     \item{sort_levels: logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.}
@@ -194,7 +199,7 @@ factorem <- function(name = NA, ...){
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param price_data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`. `field` must contain `PX_LAST` variable.
+#' @param price_data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `field` and `value`. `field` must contain `PX_LAST` variable.
 #' @param CHP_data A dataframe/tibble. Columns must include:
 #'   \itemize{
 #'     \item{format: must contain `legacy`.}
@@ -204,8 +209,8 @@ factorem <- function(name = NA, ...){
 #'     \item{position: must contain `long` & `short`.}
 #'     \item{PX_LAST: contains the corresponding values.}
 #'   }
-#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week".
-#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
 #' @param sort_levels Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.
 #' @param ranking_period A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
 #' @param long_threshold A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.
@@ -228,12 +233,18 @@ factorem <- function(name = NA, ...){
 #' @export
 CHP_factor <- function(price_data,
                        CHP_data,
-                       update_frequency = c("year", "semester", "quarter", "month", "week"),
-                       return_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                       update_frequency = "month",
+                       return_frequency = "day",
                        ranking_period = 0L,
                        long_threshold = 0.5,
                        short_threshold = 0.5,
                        geometric = TRUE){
+
+  if (! update_frequency %in% c("year", "semester", "quarter", "month", "week"))
+    stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month' or 'week'.")
+  if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+
 
   price_data %<>%
     filter(TS_position == 1L, field == "PX_LAST") %>%
@@ -259,9 +270,9 @@ CHP_factor <- function(price_data,
            data = data,
            update_frequency = update_frequency,
            return_frequency = return_frequency,
+           price_variable = "PX_LAST",
            sort_variable = "1 / CHP",
            sort_levels = TRUE,
-           price_variable = "PX_LAST",
            ranking_period = ranking_period,
            long_threshold = long_threshold,
            short_threshold = short_threshold,
@@ -275,46 +286,41 @@ CHP_factor <- function(price_data,
 #'
 #' @description Given a reference dataset and a set of parameters.
 #'
-#' @param price_data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`. `field` must contain `PX_LAST` variable.
-#' @param CHP_data A dataframe/tibble. Columns must include:
-#'   \itemize{
-#'     \item{format: must contain `legacy`.}
-#'     \item{underlying: must contain `futures only`.}
-#'     \item{unit: must contain `# positions`.}
-#'     \item{participant: must contain `commercial`.}
-#'     \item{position: must contain `long` & `short`.}
-#'     \item{PX_LAST: contains the corresponding values.}
-#'   }
-#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week".
-#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".
-#' @param sort_levels Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.
+#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `field` and `value`. `field` must contain `PX_LAST` and `OPEN_INT` variables.
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
 #' @param ranking_period A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
 #' @param long_threshold A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.
 #' @param short_threshold A unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param aggregate Logical. If `TRUE` open interest is aggregated over the whole term structure supplied in `data`. Defaults to `FALSE`.
 #' @param geometric Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
 #'
-#' @return an \linkS4class{AssetPricingFactor} object with slots:
+#' @return An \linkS4class{AssetPricingFactor} object with slots:
 #'   \itemize{
-#'     \item{name: a unit character vector: "CHP factor".}
+#'     \item{name: a unit character vector: "OI factor".}
 #'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
 #'     \item{positions: a tibble with columns `date`, `name` and `position`.}
 #'     \item{data: a tibble containing the original dataset used for factor construction.}
 #'     \item{params: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @importFrom dplyr filter flatten_dfc mutate select
-#' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom tidyr gather spread
+#' @importFrom dplyr filter group_by select summarise
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 OI_factor <- function(data,
-                      update_frequency = c("year", "semester", "quarter", "month", "week", "day"),
-                      return_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                      update_frequency = "month",
+                      return_frequency = "day",
                       ranking_period = 0L,
                       long_threshold = 0.5,
                       short_threshold = 0.5,
                       aggregate = FALSE,
                       geometric = TRUE){
+
+  if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+  if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
 
 
 
@@ -322,7 +328,7 @@ OI_factor <- function(data,
     filter(field == "OPEN_INT") %>%
     {
       if (aggregate) group_by(., active_contract_ticker, date, field) %>%
-        summarize(value = sum(value)) %>%
+        summarise(value = sum(value)) %>%
         select(name = active_contract_ticker, everything())
       else
         filter(., TS_position == 1L) %>%
@@ -339,11 +345,74 @@ OI_factor <- function(data,
            data = data,
            update_frequency = update_frequency,
            return_frequency = return_frequency,
+           price_variable = "PX_LAST",
            sort_variable = "OPEN_INT",
            sort_levels = FALSE,
-           price_variable = "PX_LAST",
            ranking_period = ranking_period,
            long_threshold = long_threshold,
            short_threshold = short_threshold,
            geometric = geometric)
 }
+
+
+
+
+
+#' Construct momentum factor
+#'
+#' @description Given a reference dataset and a set of parameters.
+#'
+#' @param data A dataframe/tibble. Columns must include `active_contract_ticker`, `date`, `field` and `value`. `field` must contain variables specified in `price_variable` and `sort_variable`.
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
+#' @param long_threshold A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold A unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#'
+#' @return An \linkS4class{AssetPricingFactor} object with slots:
+#'   \itemize{
+#'     \item{name: a unit character vector: "momentum factor".}
+#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
+#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
+#'     \item{data: a tibble containing the original dataset used for factor construction.}
+#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'   }
+#'
+#' @importFrom dplyr filter select
+#' @importFrom magrittr "%>%" "%<>%"
+#'
+#' @export
+momentum_factor <- function(data,
+                            update_frequency = "month",
+                            return_frequency = "day",
+                            ranking_period = 0L,
+                            long_threshold = 0.5,
+                            short_threshold = 0.5,
+                            geometric = TRUE){
+
+
+  if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+  if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
+    stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+
+  data %<>%
+    filter(field == "PX_LAST") %>%
+    select(name = active_contract_ticker, date, field, value)
+
+  factorem(name = "momentum",
+           data = data,
+           update_frequency = update_frequency,
+           return_frequency = return_frequency,
+           price_variable = "PX_LAST",
+           sort_variable = "PX_LAST",
+           sort_levels = FALSE,
+           ranking_period = ranking_period,
+           long_threshold = long_threshold,
+           short_threshold = short_threshold,
+           geometric = geometric)
+}
+
+
+

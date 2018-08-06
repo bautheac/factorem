@@ -4,14 +4,14 @@
 \alias{factor_positions}
 \title{Get time series of long and short factor positions}
 \usage{
-factor_positions(data, update_frequency = c("year", "semester", "quarter",
-  "month", "week", "day"), sort_variable = "PX_LAST", sort_levels = FALSE,
-  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5)
+factor_positions(data, update_frequency = "month",
+  sort_variable = "PX_LAST", sort_levels = FALSE, ranking_period = 0L,
+  long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{data}{A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
 
-\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day".}
+\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
 
 \item{sort_variable}{A unit length character vector. Specifies the name of the variable to use for sorting. Must be found in the `field` columns of `data`.}
 

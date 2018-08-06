@@ -4,17 +4,15 @@
 \alias{factor_returns}
 \title{Get return time series for factor as well as for long and short legs independently.}
 \usage{
-factor_returns(data, positions, update_frequency = c("year", "semester",
-  "quarter", "month", "week", "day"), return_frequency = c("year", "semester",
-  "quarter", "month", "week", "day"), price_variable = "PX_LAST",
-  geometric = TRUE)
+factor_returns(data, positions, update_frequency = "month",
+  return_frequency = "day", price_variable = "PX_LAST", geometric = TRUE)
 }
 \arguments{
 \item{data}{A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`.}
 
-\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day".}
+\item{update_frequency}{A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "month".}
 
-\item{return_frequency}{A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".}
+\item{return_frequency}{A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day". Defaults to "day".}
 
 \item{price_variable}{A unit length character vector. Specifies the name of the variable hosting asset prices. Must be found in the `field` columns of `data`.}
 

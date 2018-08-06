@@ -88,6 +88,21 @@ OI_factor <- OI_factor(data = `test price data`,
 
 plot_performance(OI_factor)
 plot_positions(OI_factor)
+?OI_factor
+
+
+momentum_factor <- momentum_factor(data = `test price data`,
+                                   update_frequency = "week",
+                                   return_frequency = "week",
+                                   sort_levels = FALSE,
+                                   ranking_period = 0L,
+                                   long_threshold = 0.5,
+                                   short_threshold = 0.5,
+                                   geometric = TRUE)
+
+
+
+
+
 
 devtools::use_build_ignore(c("development", "data-raw"))
-
