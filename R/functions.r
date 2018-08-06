@@ -230,14 +230,13 @@ CHP_factor <- function(price_data,
                        CHP_data,
                        update_frequency = c("year", "semester", "quarter", "month", "week"),
                        return_frequency = c("year", "semester", "quarter", "month", "week", "day"),
-                       sort_levels = FALSE,
                        ranking_period = 0L,
                        long_threshold = 0.5,
                        short_threshold = 0.5,
                        geometric = TRUE){
 
   price_data %<>%
-    filter(TS_position == 1L) %>%
+    filter(TS_position == 1L, field == "PX_LAST") %>%
     select(name = active_contract_ticker, date, field, value)
 
   CHP_data %<>%
@@ -261,7 +260,7 @@ CHP_factor <- function(price_data,
            update_frequency = update_frequency,
            return_frequency = return_frequency,
            sort_variable = "1 / CHP",
-           sort_levels = sort_levels,
+           sort_levels = TRUE,
            price_variable = "PX_LAST",
            ranking_period = ranking_period,
            long_threshold = long_threshold,
@@ -269,3 +268,82 @@ CHP_factor <- function(price_data,
            geometric = geometric)
 }
 
+
+
+
+#' Construct OI factor
+#'
+#' @description Given a reference dataset and a set of parameters.
+#'
+#' @param price_data A dataframe/tibble. Columns must include `name`, `date`, `field` and `value`. `field` must contain `PX_LAST` variable.
+#' @param CHP_data A dataframe/tibble. Columns must include:
+#'   \itemize{
+#'     \item{format: must contain `legacy`.}
+#'     \item{underlying: must contain `futures only`.}
+#'     \item{unit: must contain `# positions`.}
+#'     \item{participant: must contain `commercial`.}
+#'     \item{position: must contain `long` & `short`.}
+#'     \item{PX_LAST: contains the corresponding values.}
+#'   }
+#' @param update_frequency A unit length character vector. Specifies the rebalancing frequency. Must be one of "year", "semester", "quarter", "month" or "week".
+#' @param return_frequency A unit length character vector. Specifies the frequency of the returns output. Must be one of "year", "semester", "quarter", "month", "week" or "day".
+#' @param sort_levels Logical. If `TRUE`, sort is done on `sort_variable`'s levels, else on relative changes. Default: `FALSE`.
+#' @param ranking_period A unit length integer vector. Specifies number of periods in term of `update_frequency` looking backward for averaging `sort_variable`.
+#' @param long_threshold A unit length numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold A unit length numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric Logical. If `TRUE` geometric returns are returned, else arithmetic. Default: `TRUE`.
+#'
+#' @return an \linkS4class{AssetPricingFactor} object with slots:
+#'   \itemize{
+#'     \item{name: a unit character vector: "CHP factor".}
+#'     \item{returns: a tibble with columns `date`, `long` , `short` and `factor`.}
+#'     \item{positions: a tibble with columns `date`, `name` and `position`.}
+#'     \item{data: a tibble containing the original dataset used for factor construction.}
+#'     \item{params: a tibble containing the original parameters supplied for factor construction.}
+#'   }
+#'
+#' @importFrom dplyr filter flatten_dfc mutate select
+#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom tidyr gather spread
+#'
+#' @export
+OI_factor <- function(data,
+                      update_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                      return_frequency = c("year", "semester", "quarter", "month", "week", "day"),
+                      ranking_period = 0L,
+                      long_threshold = 0.5,
+                      short_threshold = 0.5,
+                      aggregate = FALSE,
+                      geometric = TRUE){
+
+
+
+  OI <- data %>%
+    filter(field == "OPEN_INT") %>%
+    {
+      if (aggregate) group_by(., active_contract_ticker, date, field) %>%
+        summarize(value = sum(value)) %>%
+        select(name = active_contract_ticker, everything())
+      else
+        filter(., TS_position == 1L) %>%
+        select(name = active_contract_ticker, date, field, value)
+    }
+
+  price <- data %>%
+    filter(TS_position == 1L, field == "PX_LAST") %>%
+    select(name = active_contract_ticker, date, field, value)
+
+  data <- rbind(price, OI)
+
+  factorem(name = "OI",
+           data = data,
+           update_frequency = update_frequency,
+           return_frequency = return_frequency,
+           sort_variable = "OPEN_INT",
+           sort_levels = FALSE,
+           price_variable = "PX_LAST",
+           ranking_period = ranking_period,
+           long_threshold = long_threshold,
+           short_threshold = short_threshold,
+           geometric = geometric)
+}
