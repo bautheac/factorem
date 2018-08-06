@@ -1,5 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
-^development$
-^data-raw$
+^development/**
+^data-raw/**
