@@ -12,12 +12,15 @@ Imports:
   magrittr,
   methods,
   PerformanceAnalytics,
+  pullit,
   purrr,
   RcppRoll,
+  rlang,
   scales,
   tibble,
   tidyr,
   tidyselect,
+  utils,
   xts
 License: GPL-3
 Encoding: UTF-8
