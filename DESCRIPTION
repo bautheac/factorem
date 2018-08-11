@@ -11,6 +11,7 @@ Imports:
   lubridate (>= 1.7.4),
   magrittr (>= 1.5),
   methods (>= 3.4.0),
+  PerformanceAnalytics (>= 1.5.2),
   pullit (>= 0.0.0.9000),
   purrr (>= 0.2.5),
   RcppRoll (>= 0.3.0),

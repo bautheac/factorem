@@ -143,7 +143,7 @@ factor_returns <- function(data,
     dplyr::group_by(period) %>%
     tidyr::nest() %>%
     dplyr::mutate(returns = purrr::map(data, function(x) {
-      tibble::tibble(date = x$date[nrow(x)], leg = c("long", "short", "factor"), return = apply(dplyr::select(x, long, short, factor), function(y) cumulative_return(y, geometric = geometric), MARGIN = 2L)) %>%
+      tibble::tibble(date = x$date[nrow(x)], leg = c("long", "short", "factor"), return = apply(dplyr::select(x, long, short, factor), function(y) PerformanceAnalytics::Return.cumulative(y, geometric = geometric), MARGIN = 2L)) %>%
         tidyr::spread(leg, return)
       })) %>%
     tidyr::unnest(returns, .drop = TRUE) %>%
