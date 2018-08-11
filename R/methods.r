@@ -161,7 +161,7 @@ setMethod("summary", "AssetPricingFactor", function(object, leg = "factor") {
                         dplyr::select(returns = !! leg),
                       order.by = object@returns$date)
 
-  PerformanceAnalytics::table.CalendarReturns(returns, digits = 1, as.perc = TRUE, geometric = object@params$geometric) %>%
+  calendar_returns(returns, digits = 1, as.perc = TRUE, geometric = object@params$geometric) %>%
     dplyr::rename(total = returns) %>%
     magrittr::set_colnames(value = tolower(names(.)))
 
@@ -645,7 +645,7 @@ setMethod("market_factor",
               dplyr::group_by(period) %>%
               tidyr::nest() %>%
               dplyr::mutate(returns = purrr::map(data, function(x) {
-                tibble::tibble(date = x$date[nrow(x)], leg = "factor", return = apply(dplyr::select(x, factor), function(y) PerformanceAnalytics::Return.cumulative(y, geometric = geometric), MARGIN = 2L)) %>%
+                tibble::tibble(date = x$date[nrow(x)], leg = "factor", return = apply(dplyr::select(x, factor), function(y) cumulative_return(y, geometric = geometric), MARGIN = 2L)) %>%
                   tidyr::spread(leg, return)
               })) %>%
               tidyr::unnest(returns, .drop = TRUE) %>%
@@ -728,7 +728,7 @@ setMethod("market_factor",
               dplyr::group_by(period) %>%
               tidyr::nest() %>%
               dplyr::mutate(returns = purrr::map(data, function(x) {
-                tibble::tibble(date = x$date[nrow(x)], leg = "factor", return = apply(dplyr::select(x, factor), function(y) PerformanceAnalytics::Return.cumulative(y, geometric = geometric), MARGIN = 2L)) %>%
+                tibble::tibble(date = x$date[nrow(x)], leg = "factor", return = apply(dplyr::select(x, factor), function(y) cumulative_return::Return.cumulative(y, geometric = geometric), MARGIN = 2L)) %>%
                   tidyr::spread(leg, return)
               })) %>%
               tidyr::unnest(returns, .drop = TRUE) %>%
