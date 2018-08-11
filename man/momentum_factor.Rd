@@ -11,12 +11,13 @@ momentum_factor(data, update_frequency, return_frequency, ranking_period,
   long_threshold, short_threshold, geometric)
 
 \S4method{momentum_factor}{FuturesTS}(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 0L, long_threshold = 0.5,
-  short_threshold = 0.5, geometric = TRUE)
+  return_frequency = "day", ranking_period = 0L,
+  long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE)
 
-\S4method{momentum_factor}{EquityMarket}(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 0L, long_threshold = 0.5,
-  short_threshold = 0.5, geometric = TRUE)
+\S4method{momentum_factor}{EquityMarket}(data,
+  update_frequency = "month", return_frequency = "day",
+  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5,
+  geometric = TRUE)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}} or \code{\linkS4class{EquityMarket}}. \code{\linkS4class{FuturesTS}} and

@@ -9,11 +9,11 @@
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
 setMethod("show", signature(object = "AssetPricingFactor"), function(object) {
-  cat(is(object)[[1]], "\n",
+  cat(methods::is(object)[[1]], "\n",
       "  name: ", paste(object@name, "factor", " "), "\n",
       "  parameters\n",
       paste0(rep("    ", ncol(object@params)),
@@ -33,7 +33,7 @@ setMethod("show", signature(object = "AssetPricingFactor"), function(object) {
 #' @return A unit character vector containing the name of the factor.
 #'
 #' @export
-setMethod("name", "AssetPricingFactor", function(factor) factor@name)
+setMethod("get_name", "AssetPricingFactor", function(factor) factor@name)
 
 
 #' Accessor method for factor returns
@@ -43,7 +43,7 @@ setMethod("name", "AssetPricingFactor", function(factor) factor@name)
 #' @return A tibble of factor returns.
 #'
 #' @export
-setMethod("returns", "AssetPricingFactor", function(factor) factor@returns)
+setMethod("get_returns", "AssetPricingFactor", function(factor) factor@returns)
 
 
 #' Accessor method for factor positions
@@ -53,9 +53,7 @@ setMethod("returns", "AssetPricingFactor", function(factor) factor@returns)
 #' @return A tibble of factor positions.
 #'
 #' @export
-setMethod("positions", "AssetPricingFactor", function(factor) factor@positions)
-
-
+setMethod("get_positions", "AssetPricingFactor", function(factor) factor@positions)
 
 #' Accessor method for factor data construction
 #'
@@ -64,7 +62,7 @@ setMethod("positions", "AssetPricingFactor", function(factor) factor@positions)
 #' @return A tibble containing the original dataset used for factor construction.
 #'
 #' @export
-setMethod("dataset", "AssetPricingFactor", function(factor) factor@data)
+setMethod("get_data_original", "AssetPricingFactor", function(factor) factor@data)
 
 
 #' Accessor method for factor parameters
@@ -74,7 +72,16 @@ setMethod("dataset", "AssetPricingFactor", function(factor) factor@data)
 #' @return A tibble containing the original parameters supplied for factor construction.
 #'
 #' @export
-setMethod("parameters", "AssetPricingFactor", function(factor) factor@params)
+setMethod("get_parameters", "AssetPricingFactor", function(factor) factor@params)
+
+#' Accessor method for call to factor constructor function
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A scalar character vector showing the original call to the factor constructor function.
+#'
+#' @export
+setMethod("get_call", "AssetPricingFactor", function(factor) factor@call)
 
 
 #' Summary plot of factor performance by leg
@@ -246,7 +253,7 @@ setMethod("CHP_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
           }
 )
 
@@ -312,7 +319,7 @@ setMethod("OI_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
 
           }
 )
@@ -371,7 +378,7 @@ setMethod("OI_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
           }
 )
 
@@ -437,7 +444,7 @@ setMethod("momentum_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
           }
 )
 
@@ -494,7 +501,7 @@ setMethod("momentum_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
           }
 )
 
@@ -571,7 +578,7 @@ setMethod("TS_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("TSFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params)
+            methods::new("TSFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
           }
 )
 
@@ -655,7 +662,7 @@ setMethod("market_factor",
             args <- as.list(match.call())[-1L]
 
             methods::new("MarketFactor", name = "futures nearby market", positions = positions, returns = returns, params = args[names(args) != "data"] %>%
-                           purrr::flatten_dfc())
+                           purrr::flatten_dfc(), call = deparse(match.call()))
           }
 )
 
@@ -738,6 +745,6 @@ setMethod("market_factor",
             args <- as.list(match.call())[-1L]
 
             methods::new("MarketFactor", name = "equity market", positions = positions, returns = returns, params = args[names(args) != "data"] %>%
-                           purrr::flatten_dfc())
+                           purrr::flatten_dfc(), call = deparse(match.call()))
           }
 )

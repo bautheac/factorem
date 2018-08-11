@@ -5,7 +5,8 @@
 \title{Get return time series for factor as well as for long and short legs independently.}
 \usage{
 factor_returns(data, positions, update_frequency = "month",
-  return_frequency = "day", price_variable = "PX_LAST", geometric = TRUE)
+  return_frequency = "day", price_variable = "PX_LAST",
+  geometric = TRUE)
 }
 \arguments{
 \item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}

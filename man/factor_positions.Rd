@@ -5,8 +5,8 @@
 \title{Get time series of long and short factor positions}
 \usage{
 factor_positions(data, update_frequency = "month",
-  sort_variable = "PX_LAST", sort_levels = FALSE, ranking_period = 0L,
-  long_threshold = 0.5, short_threshold = 0.5)
+  sort_variable = "PX_LAST", sort_levels = FALSE,
+  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}

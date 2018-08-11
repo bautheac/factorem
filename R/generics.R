@@ -7,7 +7,7 @@
 #' @return A unit character vector containing the name of the factor.
 #'
 #' @export
-setGeneric("name", function(factor) standardGeneric("name"))
+setGeneric("get_name", function(factor) standardGeneric("get_name"))
 
 #' Generic method for accessing factor returns
 #'
@@ -16,7 +16,7 @@ setGeneric("name", function(factor) standardGeneric("name"))
 #' @return A tibble of factor returns.
 #'
 #' @export
-setGeneric("returns", function(factor) standardGeneric("returns"))
+setGeneric("get_returns", function(factor) standardGeneric("get_returns"))
 
 #' Generic method for accessing positions
 #'
@@ -25,7 +25,7 @@ setGeneric("returns", function(factor) standardGeneric("returns"))
 #' @return A tibble of factor positions.
 #'
 #' @export
-setGeneric("positions", function(factor) standardGeneric("positions"))
+setGeneric("get_positions", function(factor) standardGeneric("get_positions"))
 
 #' Generic method for accessing factor data construction
 #'
@@ -34,7 +34,7 @@ setGeneric("positions", function(factor) standardGeneric("positions"))
 #' @return A tibble containing the original dataset used for factor construction.
 #'
 #' @export
-setGeneric("dataset", function(factor) standardGeneric("dataset"))
+setGeneric("get_data_original", function(factor) standardGeneric("get_data_original"))
 
 #' Generic method for accessing factor data construction
 #'
@@ -43,7 +43,17 @@ setGeneric("dataset", function(factor) standardGeneric("dataset"))
 #' @return A tibble containing the original parameters supplied for factor construction.
 #'
 #' @export
-setGeneric("parameters", function(factor) standardGeneric("parameters"))
+setGeneric("get_parameters", function(factor) standardGeneric("get_parameters"))
+
+#' Generic method for accessing original call to constructor function
+#'
+#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A scalar character vector showing the original call to the factor constructor function.
+#'
+#' @export
+setGeneric("get_call", function(factor) standardGeneric("get_call"))
+
 
 # plots ####
 

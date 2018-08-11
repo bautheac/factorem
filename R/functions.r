@@ -143,7 +143,7 @@ factor_returns <- function(data,
     dplyr::group_by(period) %>%
     tidyr::nest() %>%
     dplyr::mutate(returns = purrr::map(data, function(x) {
-      tibble::tibble(date = x$date[nrow(x)], leg = c("long", "short", "factor"), return = apply(dplyr::select(x, long, short, factor), function(y) PerformanceAnalytics::Return.cumulative(y, geometric = geometric), MARGIN = 2L)) %>%
+      tibble::tibble(date = x$date[nrow(x)], leg = c("long", "short", "factor"), return = apply(dplyr::select(x, long, short, factor), function(y) cumulative_return(y, geometric = geometric), MARGIN = 2L)) %>%
         tidyr::spread(leg, return)
       })) %>%
     tidyr::unnest(returns, .drop = TRUE) %>%
@@ -209,5 +209,5 @@ factorem <- function(name = "",
                  `long threshold` = long_threshold, `short threshold` = short_threshold) %>%
     purrr::flatten_dfc()
 
-  methods::new("AssetPricingFactor", name = name, positions = positions, returns = returns, data = data, params = params)
+  methods::new("AssetPricingFactor", name = name, positions = positions, returns = returns, data = data, params = params, call = deparse(match.call()))
 }
