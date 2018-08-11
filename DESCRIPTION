@@ -1,7 +1,7 @@
 Package: factorem
 Title: factor'em!
 Version: 0.0.0.9000
-Authors@R: person("Olivier", "BauthÃ©ac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
 Description: Construct asset pricing factors.
 Depends: R (>= 3.4.0)
 Imports:
@@ -27,3 +27,5 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
+URL: https://github.com/bautheac/factorem
+BugReports: https://github.com/bautheac/factorem/issues
