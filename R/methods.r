@@ -102,14 +102,23 @@ setMethod("plot_performance", "AssetPricingFactor", function(factor) {
     dplyr::mutate(leg = dplyr::if_else(leg %in% c("long", "short"), paste(leg, "leg", sep = " "), paste(factor@name, leg, sep = " ")),
            leg = factor(leg, levels = c(paste(factor@name, "factor", sep = " "), "long leg", "short leg")))
 
-  ggplot2::ggplot(data, ggplot2::aes(x = date, y = `wealth index`, colour = leg)) +
-    ggplot2::geom_line(size = 1L) +
-    ggplot2::geom_line(ggplot2::aes(y = 1L), colour = "black", show.legend = FALSE) +
-    ggthemes::theme_tufte() +
-    ggplot2::theme(legend.position = "none")+
-    ggplot2::labs(x = NULL, y = NULL) +
-    ggplot2::facet_wrap(~leg, ncol = 1L)
+  dygraphs::dygraph(data %>% dplyr::filter(leg == paste(factor@name, "factor", sep = " ")) %>% dplyr::select(date, `wealth index`),
+                   main = paste(factor@name, "factor", sep = " "),
+                   group = "factor")
+  dygraphs::dygraph(data %>% dplyr::filter(leg == "long leg") %>% dplyr::select(date, `wealth index`),
+                   main = "long leg",
+                   group = "factor")
+  dygraphs::dygraph(data %>% dplyr::filter(leg == "short leg") %>% dplyr::select(date, `wealth index`),
+                   main = "short leg",
+                   group = "factor")
 
+  # ggplot2::ggplot(data, ggplot2::aes(x = date, y = `wealth index`, colour = leg)) +
+  #   ggplot2::geom_line(size = 1L) +
+  #   ggplot2::geom_line(ggplot2::aes(y = 1L), colour = "black", show.legend = FALSE) +
+  #   ggthemes::theme_tufte() +
+  #   ggplot2::theme(legend.position = "none")+
+  #   ggplot2::labs(x = NULL, y = NULL) +
+  #   ggplot2::facet_wrap(~leg, ncol = 1L)
 })
 
 
