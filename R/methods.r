@@ -207,7 +207,7 @@ setMethod("summary", "AssetPricingFactor", function(object, leg = "factor") {
 #'
 #' @export
 setMethod("CHP_factor",
-          signature("FuturesTS", "FuturesCFTC"),
+          signature(price_data = "FuturesTS", CHP_data = "FuturesCFTC"),
           function(price_data,
                    CHP_data,
                    update_frequency = "month",
