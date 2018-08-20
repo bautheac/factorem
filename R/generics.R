@@ -104,24 +104,55 @@ setGeneric("plot_positions", function(factor) standardGeneric("plot_positions"))
 setGeneric("CHP_factor",
            function(price_data, CHP_data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("CHP_factor"))
 
-#' Construct futures open interest growth (OI) factor
+#' Construct futures open interest growth (OI) nearby factor
 #'
-#' @param data an S4 object of class \code{\linkS4class{FuturesTS}} or \code{\linkS4class{FuturesAggregate}}. \code{\linkS4class{FuturesTS}} and
-#'   \code{\linkS4class{FuturesAggregate}} objects are returned by the \code{\link[pullit]{bbg_futures_TS}} and \code{\link[pullit]{bbg_futures_aggregate}}
-#'   functions from the \code{pullit} package respectively.
+#' @param data an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the
+#'   \code{\link[pullit]{bbg_futures_TS}} function from the \code{pullit} package.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
-#' @description Following Hong & Yogo (nearby) as well as Basu & Bautheac (aggregate).
+#' @description Following Hong & Yogo.
 #'
 #' @return An S4 object of class \code{\linkS4class{OIFactor}} with slots:
 #'   \itemize{
-#'     \item{\code{name}: a scalar character vector showing the factor name.}
+#'     \item{\code{name}: a scalar character vector. 'nearby OI factor'.}
 #'     \item{\code{returns}: a tibble with columns \code{date}, \code{long}, \code{short} and \code{factor}.}
 #'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
 #'     \item{\code{data}: a tibble containing the original dataset supplied for factor construction.}
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
-setGeneric("OI_factor",
-           function(data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("OI_factor"))
+setGeneric("OI_nearby_factor",
+           function(data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("OI_nearby_factor"))
+
+#' Construct futures open interest growth (OI) aggregate factor
+#'
+#' @param price_data an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the
+#'   \code{\link[pullit]{bbg_futures_TS}} function from the \code{pullit} package.
+#' @param aggregate_data an S4 object of class code{\linkS4class{FuturesAggregate}}. \code{\linkS4class{FuturesAggregate}} objects are
+#'   returned by the \code{\link[pullit]{bbg_futures_aggregate}} function from the \code{pullit} package.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
+#'
+#' @description Basu & Bautheac.
+#'
+#' @return An S4 object of class \code{\linkS4class{OIFactor}} with slots:
+#'   \itemize{
+#'     \item{\code{name}: a scalar character vector. 'aggregate OI factor'.}
+#'     \item{\code{returns}: a tibble with columns \code{date}, \code{long}, \code{short} and \code{factor}.}
+#'     \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
+#'     \item{\code{data}: a tibble containing the original dataset supplied for factor construction.}
+#'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
+#'   }
+setGeneric("OI_aggregate_factor",
+           function(price_data, aggregate_data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("OI_aggregate_factor"))
 
 #' Construct momentum factor
 #'

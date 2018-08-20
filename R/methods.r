@@ -201,6 +201,7 @@ setMethod("summary", "AssetPricingFactor", function(object, leg = "factor") {
 #' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
 #' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
 #'
+#' @import bbgsymbols
 #' @importFrom magrittr "%>%" "%<>%"
 #'
 #' @importClassesFrom pullit FuturesTS FuturesCFTC
@@ -217,25 +218,29 @@ setMethod("CHP_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            data(list = c("tickers_cftc"), package = "bbgsymbols", envir = environment())
+
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L))
-              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            price_data %<>%
-              dplyr::filter(`TS position` == 1L, field == "PX_LAST") %>%
+            price_data@data %<>%
+              dplyr::mutate(position = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)")) %>%
+              dplyr::filter(position == 1L, field == "PX_LAST") %>%
               dplyr::select(name = `active contract ticker`, date, field, value)
 
-            CHP_data %<>%
+            CHP_data@data %<>%
+              dplyr::left_join(tickers_cftc, by = "ticker") %>%
               dplyr::filter(format == "legacy", underlying == "futures only", unit == "# positions", participant == "commercial",
                      position %in% c("long", "short")) %>%
               dplyr::select(name = `active contract ticker`, position, date, value) %>%
@@ -262,13 +267,19 @@ setMethod("CHP_factor",
                              short_threshold = short_threshold,
                              geometric = geometric)
 
-            methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = deparse(match.call()))
+            methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns, params = data@params, call = match.call())
           }
 )
 
 
+
+
 ## futures nearby open interest growth (OI) factor ####
 
+#' Construct futures open interest growth (OI) nearby factor
+#'
+#' @param data an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the
+#'   \code{\link[pullit]{bbg_futures_TS}} function from the \code{pullit} package.
 #' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
 #' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
 #' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
@@ -280,11 +291,9 @@ setMethod("CHP_factor",
 #'
 #' @importClassesFrom pullit FuturesTS
 #'
-#' @describeIn OI_factor nearby open interest growth factor.
-#'
 #' @export
-setMethod("OI_factor",
-          signature("FuturesTS"),
+setMethod("OI_nearby_factor",
+          signature(data = "FuturesTS"),
           function(data,
                    update_frequency = "month",
                    return_frequency = "day",
@@ -293,27 +302,28 @@ setMethod("OI_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L))
-              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
+
+            data <- dplyr::mutate(data@data, position = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"))
 
             OI <- data %>%
-              dplyr::filter(field == "OPEN_INT") %>%
-              dplyr::filter(., `TS position` == 1L) %>%
+              dplyr::filter(position == 1L, field == "OPEN_INT") %>%
               dplyr::select(name = `active contract ticker`, date, field, value)
 
             price <- data %>%
-              dplyr::filter(`TS position` == 1L, field == "PX_LAST") %>%
+              dplyr::filter(position == 1L, field == "PX_LAST") %>%
               dplyr::select(name = `active contract ticker`, date, field, value)
 
             data <- factorem(name = "nearby OI",
@@ -337,16 +347,27 @@ setMethod("OI_factor",
 
 ## futures aggregate open interest growth (OI) factor ####
 
+#' Construct futures open interest growth (OI) nearby factor
+#'
+#' @param price_data an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the
+#'   \code{\link[pullit]{bbg_futures_TS}} function from the \code{pullit} package.
+#' @param aggregate_data an S4 object of class code{\linkS4class{FuturesAggregate}}. \code{\linkS4class{FuturesAggregate}} objects are
+#'   returned by the \code{\link[pullit]{bbg_futures_aggregate}} function from the \code{pullit} package.
+#' @param update_frequency a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month" or "week". Defaults to "month".
+#' @param return_frequency a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".
+#' @param ranking_period a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+#' @param long_threshold a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.
+#' @param short_threshold a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.
+#' @param geometric a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.
+#'
 #' @importFrom magrittr "%>%"
-#'
-#' @importClassesFrom pullit FuturesAggregate
-#'
-#' @describeIn OI_factor aggregate open interest growth factor.
+#' @importClassesFrom pullit FuturesTS FuturesAggregate
 #'
 #' @export
-setMethod("OI_factor",
-          signature("FuturesAggregate"),
-          function(data,
+setMethod("OI_aggregate_factor",
+          signature(price_data = "FuturesTS", aggregate_data = "FuturesAggregate"),
+          function(price_data,
+                   aggregate_data,
                    update_frequency = "month",
                    return_frequency = "day",
                    ranking_period = 0L,
@@ -354,26 +375,26 @@ setMethod("OI_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L))
-              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            OI <- data %>%
-              dplyr::filter(field == "FUT_AGGTE_OPEN_INT")
-
-            price <- data %>%
-              dplyr::filter(field == "PX_LAST") %>%
+            OI <- dplyr::filter(aggregate_data@data, field == "FUT_AGGTE_OPEN_INT") %>%
               dplyr::select(name = `active contract ticker`, date, field, value)
+
+            price <- dplyr::filter(price_data@data, field == "PX_LAST") %>%
+              dplyr::select(name = `active contract ticker`, date, field, value)
+
 
             data <- factorem(name = "aggregate OI",
                              data = rbind(price, OI),
@@ -414,7 +435,7 @@ setMethod("OI_factor",
 #'
 #' @export
 setMethod("momentum_factor",
-          signature("FuturesTS"),
+          signature(data = "FuturesTS"),
           function(data,
                    update_frequency = "month",
                    return_frequency = "day",
@@ -423,22 +444,22 @@ setMethod("momentum_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L))
-              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            data %<>%
-              dplyr::filter(field == "PX_LAST", `TS position` == 1L) %>%
+            data <- dplyr::mutate(data@data, position = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)")) %>%
+              dplyr::filter(field == "PX_LAST", position == 1L) %>%
               dplyr::select(name = `active contract ticker`, date, field, value)
 
             data <- factorem(name = "futures momentum",
@@ -471,7 +492,7 @@ setMethod("momentum_factor",
 #'
 #' @export
 setMethod("momentum_factor",
-          signature("EquityMarket"),
+          signature(data = "EquityMarket"),
           function(data,
                    update_frequency = "month",
                    return_frequency = "day",
@@ -480,22 +501,21 @@ setMethod("momentum_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
             if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L))
-              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            data %<>%
-              dplyr::filter(field == "PX_LAST") %>%
+            data <- dplyr::filter(data@data, field == "PX_LAST") %>%
               dplyr::select(name = ticker, date, field, value)
 
             data <- factorem(name = "equity momentum",
@@ -539,7 +559,7 @@ setMethod("momentum_factor",
 #'
 #' @export
 setMethod("TS_factor",
-          signature("FuturesTS"),
+          signature(data = "FuturesTS"),
           function(data,
                    update_frequency = "month",
                    return_frequency = "day",
@@ -548,27 +568,27 @@ setMethod("TS_factor",
                    short_threshold = 0.5,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! all(c(front, back) %in% (dplyr::distinct(data, `TS position`) %>% purrr::flatten_int())))
-              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters.")
-            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back).")
-            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters")
+            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back)")
+            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            data %<>%
-              dplyr::filter(field == "PX_LAST", `TS position` %in% c(front, back)) %>%
-              dplyr::select(name = `active contract ticker`, date, field, `TS position`, value) %>%
+            data <- dplyr::mutate(data@data, position = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)")) %>%
+              dplyr::filter(field == "PX_LAST", position %in% c(front, back)) %>%
+              dplyr::select(name = `active contract ticker`, date, field, position, value) %>%
               tidyr::spread(field, value) %>%
-              tidyr::spread(`TS position`, PX_LAST) %>%
+              tidyr::spread(position, PX_LAST) %>%
               dplyr::rename(front = paste0(!! front), back = paste0(!! back)) %>%
               dplyr::filter(stats::complete.cases(front, back)) %>%
               dplyr::mutate(`roll yield` = log(front/back)) %>%
@@ -605,42 +625,43 @@ setMethod("TS_factor",
 #'
 #' @export
 setMethod("market_factor",
-          signature("FuturesTS"),
+          signature(data = "FuturesTS"),
           function(data,
                    return_frequency = "day",
                    long = TRUE,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! all(c(front, back) %in% (dplyr::distinct(data, `TS position`) %>% purrr::flatten_int())))
-              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters.")
-            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back).")
-            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters")
+            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back)")
+            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            if (! is.data.frame(data)) stop("Parameter 'data' must be supplied as a dataframe.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_logical(long)) stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! is.data.frame(data)) stop("Parameter 'data' must be supplied as a dataframe")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_logical(long)) stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE)")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! all(c("active contract ticker", "date", "field", "value") %in% names(data)))
-              stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
+              stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'")
             if (! "PX_LAST" %in% (dplyr::distinct(data, field) %>% purrr::flatten_chr()))
-              stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
+              stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
 
-            positions <- data %>%
-              dplyr::filter(field == "PX_LAST", `TS position` == 1L) %>%
+            data <- dplyr::mutate(data@data, `TS position` = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"))
+
+            positions <- dplyr::filter(data, field == "PX_LAST", `TS position` == 1L) %>%
               dplyr::group_by(date) %>%
               tidyr::nest() %>%
               dplyr::mutate(positions = purrr::map(data, function(x) dplyr::select(x, `active contract ticker`, value) %>%
@@ -649,8 +670,7 @@ setMethod("market_factor",
               tidyr::unnest(positions) %>%
               dplyr::mutate(position = dplyr::if_else(long, "long", "short"))
 
-            returns <- data %>%
-              dplyr::filter(field == "PX_LAST", `TS position` == 1L) %>%
+            returns <- dplyr::filter(data, field == "PX_LAST", `TS position` == 1L) %>%
               dplyr::group_by(date) %>%
               dplyr::summarise(factor = mean(value, na.rm = TRUE)) %>%
               dplyr::filter(!is.na(factor)) %>%
@@ -688,42 +708,41 @@ setMethod("market_factor",
 #'
 #' @export
 setMethod("market_factor",
-          signature("EquityMarket"),
+          signature(data = "EquityMarket"),
           function(data,
                    return_frequency = "day",
                    long = TRUE,
                    geometric = TRUE){
 
-            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector.")
-            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector.")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! rlang::is_scalar_character(update_frequency)) stop("Parameter 'update_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_integer(front)) stop("Parameter 'front' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(back)) stop("Parameter 'back' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_integer(ranking_period)) stop("Parameter 'ranking_period' must be supplied as a scalar integeter vector")
+            if (! rlang::is_scalar_double(long_threshold)) stop("Parameter 'long_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_double(short_threshold)) stop("Parameter 'short_threshold' must be supplied as a scalar numeric vector")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! all(c(front, back) %in% (dplyr::distinct(data, `TS position`) %>% purrr::flatten_int())))
-              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters.")
-            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
-            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back).")
-            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1.")
+              stop("The dataframe supplied in 'data' doesn't contain data for the term structure positions supplied in the `front` and `back` parameters")
+            if (! update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'update_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")) stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
+            if (front > back) stop("The front contract must come before the back contract on the term strucutre (front < back)")
+            if (! all(long_threshold >= 0L, long_threshold <= 1L, short_threshold >= 0L, short_threshold <= 1L)) stop("Parameters 'long_threshold' and 'short_threshold' must be between 0 and 1")
 
-            if (! is.data.frame(data)) stop("Parameter 'data' must be supplied as a dataframe.")
-            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector.")
-            if (! rlang::is_scalar_logical(long)) stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
-            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE).")
+            if (! is.data.frame(data)) stop("Parameter 'data' must be supplied as a dataframe")
+            if (! rlang::is_scalar_character(return_frequency)) stop("Parameter 'return_frequency' must be supplied as a scalar character vector")
+            if (! rlang::is_scalar_logical(long)) stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE)")
+            if (! rlang::is_scalar_logical(geometric)) stop("Parameter 'geometric' must be supplied as a scalar logical vector (TRUE or FALSE)")
 
             if (! all(c("active contract ticker", "date", "field", "value") %in% names(data)))
-              stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'.")
+              stop("The columns of the dataframe supplied in 'data' must include 'active contract ticker', 'date', 'TS position', 'field' and 'value'")
             if (! "PX_LAST" %in% (dplyr::distinct(data, field) %>% purrr::flatten_chr()))
               stop("The dataframe supplied in 'data' doesn't contain data for the require variable 'PX_LAST' in the field column.")
             if (! return_frequency %in% c("year", "semester", "quarter", "month", "week", "day"))
-              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+              stop("'return_frequency' must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'")
 
-            positions <- data %>%
-              dplyr::filter(field == "PX_LAST") %>%
+            positions <- dplyr::filter(data, field == "PX_LAST") %>%
               dplyr::group_by(date) %>%
               tidyr::nest() %>%
               dplyr::mutate(positions = purrr::map(data, function(x) dplyr::select(x, ticker, value) %>%
@@ -732,8 +751,7 @@ setMethod("market_factor",
               tidyr::unnest(positions) %>%
               dplyr::mutate(position = dplyr::if_else(long, "long", "short"))
 
-            returns <- data %>%
-              dplyr::filter(field == "PX_LAST") %>%
+            returns <- dplyr::filter(data, field == "PX_LAST") %>%
               dplyr::group_by(date) %>%
               dplyr::summarise(factor = mean(value, na.rm = TRUE)) %>%
               dplyr::filter(!is.na(factor)) %>%
