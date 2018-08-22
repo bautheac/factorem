@@ -26,7 +26,7 @@ Imports:
   utils (>= 3.4.0),
   xts (>= 0.11.0)
 Remotes: 
-  bautheac/bbgsymbols
+  bautheac/bbgsymbols,
   bautheac/pullit
 License: GPL-3
 Encoding: UTF-8
