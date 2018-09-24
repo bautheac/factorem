@@ -5,7 +5,8 @@ Authors@R: person("Olivier", "Bauth?ac", email = "o.bautheac@gmail.com", role = 
 Description: Construct asset pricing factors.
 Depends: R (>= 3.4.0)
 Imports:
-  bbgsymbols,
+  BBGsymbols,
+  data.table (>= 1.11.4),
   dplyr (>= 0.7.6),
   dygraphs (>= 1.1.1.6),
   ggplot2 (>= 3.0.0),
@@ -26,7 +27,7 @@ Imports:
   utils (>= 3.4.0),
   xts (>= 0.11.0)
 Remotes: 
-  bautheac/bbgsymbols,
+  bautheac/BBGsymbols,
   bautheac/pullit
 License: GPL-3
 Encoding: UTF-8

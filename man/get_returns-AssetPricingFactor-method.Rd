@@ -5,10 +5,10 @@
 \alias{get_returns,AssetPricingFactor-method}
 \title{Accessor method for factor returns}
 \usage{
-\S4method{get_returns}{AssetPricingFactor}(factor)
+\S4method{get_returns}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble of factor returns.

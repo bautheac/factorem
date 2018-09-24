@@ -4,10 +4,10 @@
 \alias{get_call}
 \title{Generic method for accessing original call to constructor function}
 \usage{
-get_call(factor)
+get_call(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A scalar character vector showing the original call to the factor constructor function.

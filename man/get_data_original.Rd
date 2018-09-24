@@ -4,10 +4,10 @@
 \alias{get_data_original}
 \title{Generic method for accessing factor data construction}
 \usage{
-get_data_original(factor)
+get_data_original(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble containing the original dataset used for factor construction.

@@ -2,78 +2,57 @@
 
 #' Generic method for accessing factor name
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A unit character vector containing the name of the factor.
 #'
 #' @export
-setGeneric("get_name", function(factor) standardGeneric("get_name"))
+setGeneric("get_name", function(object) standardGeneric("get_name"))
 
 #' Generic method for accessing factor returns
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble of factor returns.
 #'
 #' @export
-setGeneric("get_returns", function(factor) standardGeneric("get_returns"))
+setGeneric("get_returns", function(object) standardGeneric("get_returns"))
 
 #' Generic method for accessing positions
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble of factor positions.
 #'
 #' @export
-setGeneric("get_positions", function(factor) standardGeneric("get_positions"))
+setGeneric("get_positions", function(object) standardGeneric("get_positions"))
 
 #' Generic method for accessing factor data construction
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble containing the original dataset used for factor construction.
 #'
 #' @export
-setGeneric("get_data_original", function(factor) standardGeneric("get_data_original"))
+setGeneric("get_data_original", function(object) standardGeneric("get_data_original"))
 
 #' Generic method for accessing factor data construction
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A tibble containing the original parameters supplied for factor construction.
 #'
 #' @export
-setGeneric("get_parameters", function(factor) standardGeneric("get_parameters"))
+setGeneric("get_parameters", function(object) standardGeneric("get_parameters"))
 
 #' Generic method for accessing original call to constructor function
 #'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
 #' @return A scalar character vector showing the original call to the factor constructor function.
 #'
 #' @export
-setGeneric("get_call", function(factor) standardGeneric("get_call"))
-
-
-# plots ####
-
-#' Generic method factor performance summary plot by leg
-#'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
-#'
-#' @return A line plot showing the wealth index for the factor itself as well as that of both long and short legs separately.
-#'
-#' @export
-setGeneric("plot_performance", function(factor) standardGeneric("plot_performance"))
-
-#' Generic method factor positions summary plot by leg
-#'
-#' @param factor an S4 object of class \linkS4class{AssetPricingFactor}.
-#'
-#' @return A bar plot showing the proportion of time individual names appear in the factor.
-#'
-#' @export
-setGeneric("plot_positions", function(factor) standardGeneric("plot_positions"))
+setGeneric("get_call", function(object) standardGeneric("get_call"))
 
 
 # factor construction ####
@@ -102,7 +81,8 @@ setGeneric("plot_positions", function(factor) standardGeneric("plot_positions"))
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("CHP_factor",
-           function(price_data, CHP_data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("CHP_factor"))
+           function(price_data, CHP_data, update_frequency = "month", return_frequency = "day", ranking_period = 0L,
+                    long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE) standardGeneric("CHP_factor"))
 
 #' Construct futures open interest growth (OI) nearby factor
 #'
@@ -126,7 +106,8 @@ setGeneric("CHP_factor",
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("OI_nearby_factor",
-           function(data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("OI_nearby_factor"))
+           function(data, update_frequency = "month", return_frequency = "day", ranking_period = 0L,
+                    long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE) standardGeneric("OI_nearby_factor"))
 
 #' Construct futures open interest growth (OI) aggregate factor
 #'
@@ -152,7 +133,8 @@ setGeneric("OI_nearby_factor",
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("OI_aggregate_factor",
-           function(price_data, aggregate_data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("OI_aggregate_factor"))
+           function(price_data, aggregate_data, update_frequency = "month", return_frequency = "day", ranking_period = 0L,
+                    long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE) standardGeneric("OI_aggregate_factor"))
 
 #' Construct momentum factor
 #'
@@ -171,7 +153,8 @@ setGeneric("OI_aggregate_factor",
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("momentum_factor",
-           function(data, update_frequency, return_frequency, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("momentum_factor"))
+           function(data, update_frequency = "month", return_frequency = "day", ranking_period = 0L,
+                    long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE) standardGeneric("momentum_factor"))
 
 
 #' Construct term structure factor
@@ -190,7 +173,8 @@ setGeneric("momentum_factor",
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("TS_factor",
-           function(data, update_frequency, return_frequency, front, back, ranking_period, long_threshold, short_threshold, geometric) standardGeneric("TS_factor"))
+           function(data, update_frequency = "month", return_frequency = "day", front = 1L, back = 2L, ranking_period = 0L,
+                    long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE) standardGeneric("TS_factor"))
 
 #' Construct market factor
 #'
@@ -212,4 +196,4 @@ setGeneric("TS_factor",
 #'     \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
 #'   }
 setGeneric("market_factor",
-           function(data, return_frequency, long, geometric) standardGeneric("market_factor"))
+           function(data, return_frequency = "day", long = TRUE, geometric = TRUE) standardGeneric("market_factor"))

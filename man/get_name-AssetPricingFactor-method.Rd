@@ -5,10 +5,10 @@
 \alias{get_name,AssetPricingFactor-method}
 \title{Accessor method for factor name}
 \usage{
-\S4method{get_name}{AssetPricingFactor}(factor)
+\S4method{get_name}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A unit character vector containing the name of the factor.

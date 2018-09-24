@@ -5,10 +5,10 @@
 \alias{get_positions,AssetPricingFactor-method}
 \title{Accessor method for factor positions}
 \usage{
-\S4method{get_positions}{AssetPricingFactor}(factor)
+\S4method{get_positions}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble of factor positions.

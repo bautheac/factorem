@@ -5,10 +5,10 @@
 \alias{get_data_original,AssetPricingFactor-method}
 \title{Accessor method for factor data construction}
 \usage{
-\S4method{get_data_original}{AssetPricingFactor}(factor)
+\S4method{get_data_original}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble containing the original dataset used for factor construction.

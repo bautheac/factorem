@@ -4,10 +4,10 @@
 \alias{get_positions}
 \title{Generic method for accessing positions}
 \usage{
-get_positions(factor)
+get_positions(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble of factor positions.

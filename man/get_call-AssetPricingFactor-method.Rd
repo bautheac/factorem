@@ -5,10 +5,10 @@
 \alias{get_call,AssetPricingFactor-method}
 \title{Accessor method for call to factor constructor function}
 \usage{
-\S4method{get_call}{AssetPricingFactor}(factor)
+\S4method{get_call}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A scalar character vector showing the original call to the factor constructor function.

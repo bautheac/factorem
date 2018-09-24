@@ -36,7 +36,7 @@ factor_positions <- function(data,
     dplyr::filter(field == !! sort_variable) %>%
     dplyr::mutate(period = if(update_frequency == "year") paste0(lubridate::year(date))
            else if(update_frequency == "day") paste(lubridate::year(date), lubridate::yday(date), sep = ".")
-           else paste(lubridate::year(date), get(paste0(update_frequency))(date), sep = "."))
+           else paste(lubridate::year(date), do.call(what = update_frequency, args = list(date)), sep = "."))
 
   positions <- data %>%
     dplyr::select(name, period, field, value) %>%
@@ -68,7 +68,8 @@ factor_positions <- function(data,
         dplyr::mutate(position = "short")
       rbind(long, short)
     })) %>%
-    tidyr::unnest(positions, .drop = TRUE)
+    tidyr::unnest(positions, .drop = TRUE) %>%
+    data.table::as.data.table()
 }
 
 #' Get return time series for factor as well as for long and short legs independently.
@@ -109,7 +110,7 @@ factor_returns <- function(data,
     dplyr::filter(field == !! price_variable) %>%
     dplyr::mutate(period = if(update_frequency == "year") paste0(lubridate::year(date))
            else if(update_frequency == "day") paste(lubridate::year(date), lubridate::yday(date), sep = ".")
-           else paste(lubridate::year(date), get(paste0(update_frequency))(date), sep = ".")) %>%
+           else paste(lubridate::year(date), do.call(what = update_frequency, args = list(date)), sep = ".")) %>%
     dplyr::group_by(name) %>%
     dplyr::mutate(return = value/dplyr::lag(value, 1L) - 1L ) %>%
     dplyr::ungroup() %>%
@@ -147,7 +148,8 @@ factor_returns <- function(data,
         tidyr::spread(leg, return)
       })) %>%
     tidyr::unnest(returns, .drop = TRUE) %>%
-    dplyr::select(date, long, short, factor)
+    dplyr::select(date, long, short, factor) %>%
+    data.table::as.data.table()
 }
 
 
@@ -207,7 +209,8 @@ factorem <- function(name = "",
   params <- list(`update frequency` = update_frequency, `return frequency` = return_frequency, `price variable` = price_variable,
                  `sort variable` = sort_variable, `sort levels` = sort_levels, geometric = geometric, `ranking period` = ranking_period,
                  `long threshold` = long_threshold, `short threshold` = short_threshold) %>%
-    purrr::flatten_dfc()
+    purrr::flatten_dfc() %>%
+    tibble::as.tibble()
 
-  methods::new("AssetPricingFactor", name = name, positions = positions, returns = returns, data = data, params = params, call = deparse(match.call()))
+  methods::new("AssetPricingFactor", name = name, positions = positions, returns = returns, data = data.table::as.data.table(data), params = params, call = match.call())
 }

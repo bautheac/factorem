@@ -4,10 +4,10 @@
 \alias{get_parameters}
 \title{Generic method for accessing factor data construction}
 \usage{
-get_parameters(factor)
+get_parameters(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble containing the original parameters supplied for factor construction.

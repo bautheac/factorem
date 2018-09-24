@@ -4,9 +4,10 @@
 \alias{OI_aggregate_factor}
 \title{Construct futures open interest growth (OI) aggregate factor}
 \usage{
-OI_aggregate_factor(price_data, aggregate_data, update_frequency,
-  return_frequency, ranking_period, long_threshold, short_threshold,
-  geometric)
+OI_aggregate_factor(price_data, aggregate_data,
+  update_frequency = "month", return_frequency = "day",
+  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5,
+  geometric = TRUE)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the

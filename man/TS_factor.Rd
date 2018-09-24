@@ -6,12 +6,14 @@
 \alias{TS_factor,FuturesTS-method}
 \title{Construct term structure factor}
 \usage{
-TS_factor(data, update_frequency, return_frequency, front, back,
-  ranking_period, long_threshold, short_threshold, geometric)
+TS_factor(data, update_frequency = "month", return_frequency = "day",
+  front = 1L, back = 2L, ranking_period = 0L, long_threshold = 0.5,
+  short_threshold = 0.5, geometric = TRUE)
 
 \S4method{TS_factor}{FuturesTS}(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 0L,
-  long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE)
+  return_frequency = "day", front = 1L, back = 2L,
+  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5,
+  geometric = TRUE)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}. \code{\linkS4class{FuturesTS}} objects are returned by the \code{\link[pullit]{bbg_futures_TS}}

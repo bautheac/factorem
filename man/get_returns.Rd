@@ -4,10 +4,10 @@
 \alias{get_returns}
 \title{Generic method for accessing factor returns}
 \usage{
-get_returns(factor)
+get_returns(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble of factor returns.

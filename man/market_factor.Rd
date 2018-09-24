@@ -7,7 +7,8 @@
 \alias{market_factor,EquityMarket-method}
 \title{Construct market factor}
 \usage{
-market_factor(data, return_frequency, long, geometric)
+market_factor(data, return_frequency = "day", long = TRUE,
+  geometric = TRUE)
 
 \S4method{market_factor}{FuturesTS}(data, return_frequency = "day",
   long = TRUE, geometric = TRUE)

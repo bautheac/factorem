@@ -4,10 +4,10 @@
 \alias{get_name}
 \title{Generic method for accessing factor name}
 \usage{
-get_name(factor)
+get_name(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A unit character vector containing the name of the factor.

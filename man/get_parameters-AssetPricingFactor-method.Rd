@@ -5,10 +5,10 @@
 \alias{get_parameters,AssetPricingFactor-method}
 \title{Accessor method for factor parameters}
 \usage{
-\S4method{get_parameters}{AssetPricingFactor}(factor)
+\S4method{get_parameters}{AssetPricingFactor}(object)
 }
 \arguments{
-\item{factor}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
 A tibble containing the original parameters supplied for factor construction.
