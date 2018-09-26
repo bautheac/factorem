@@ -4,27 +4,34 @@
 \alias{factor_positions}
 \title{Get time series of long and short factor positions}
 \usage{
-factor_positions(data, update_frequency = "month",
-  sort_variable = "PX_LAST", sort_levels = FALSE,
-  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5)
+factor_positions(data, update_frequency, sort_variable, sort_levels,
+  ranking_period, long_threshold, short_threshold)
 }
 \arguments{
-\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}
+\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date},
+\code{field} and \code{value}.}
 
-\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency.
+Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'month'.}
 
-\item{sort_variable}{a scalar character vector. Specifies the name of the variable to use for sorting. Must be found in the \code{field} columns of \code{data}.}
+\item{sort_variable}{a scalar character vector. Specifies the name of the variable to use
+for sorting. Must be found in the \code{field} columns of \code{data}.}
 
-\item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on 'sort_variable's levels, else on relative changes. Default: \code{FALSE}.}
+\item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on
+\code{sort_variable}'s levels, else on relative changes. Default: \code{FALSE}.}
 
-\item{ranking_period}{a scalar integer vector. Specifies number of periods in term of \code{update_frequency} looking backward for averaging \code{sort_variable}.}
+\item{ranking_period}{a scalar integer vector. Specifies number of periods in term of
+\code{update_frequency} looking backward for averaging \code{sort_variable}.}
 
-\item{long_threshold}{a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{long_threshold}{a scalar numeric vector. Specifies the threshold for long
+positions. Default: 0.5.}
 
-\item{short_threshold}{a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{short_threshold}{a scalar numeric vector. Specifies the threshold for short
+positions. Default: 0.5.}
 }
 \value{
-A tibble with columns \code{date}, \code{name} and \code{position}.
+A \code{\link[data.table]{data.table}} with factor positions by rebalancing
+  date. Columns include \code{date}, \code{name} and \code{position}.
 }
 \description{
 Get time series of long and short factor positions

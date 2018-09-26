@@ -4,25 +4,35 @@
 \alias{factor_returns}
 \title{Get return time series for factor as well as for long and short legs independently.}
 \usage{
-factor_returns(data, positions, update_frequency = "month",
-  return_frequency = "day", price_variable = "PX_LAST",
-  geometric = TRUE)
+factor_returns(data, positions, update_frequency, return_frequency,
+  price_variable, geometric)
 }
 \arguments{
-\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}
+\item{data}{a dataframe/tibble. Columns must include \code{name},
+\code{date}, \code{field} and \code{value}.}
 
-\item{positions}{a dataframe/tibble. Returned by function \code{factor_positions}.}
+\item{positions}{a dataframe/tibble. Returned by function
+\code{factor_positions}.}
 
-\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'month'.}
+\item{update_frequency}{a scalar character vector. Specifies the
+rebalancing frequency. Must be one of 'year', 'semester',
+'quarter', 'month', 'week' or 'day'. Defaults to 'month'.}
 
-\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'. Defaults to 'day'.}
+\item{return_frequency}{a scalar character vector. Specifies the
+frequency of the returns output. Must be one of 'year', 'semester',
+'quarter', 'month', 'week' or 'day'. Defaults to 'day'.}
 
-\item{price_variable}{a scalar character vector. Specifies the name of the variable hosting asset prices. Must be found in the \code{field} columns of \code{data}.}
+\item{price_variable}{a scalar character vector. Specifies the name
+of the variable hosting asset prices. Must be found in the
+\code{field} columns of \code{data}.}
 
-\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric
+returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
-A tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.
+A \code{\link[data.table]{data.table}} with factor returns by
+  date and factor leg. Columns include \code{date}, \code{name} and
+  \code{position}.
 }
 \description{
 Get return time series for factor as well as for long and short legs independently.

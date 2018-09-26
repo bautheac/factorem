@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{factorem}
 \alias{factorem}
-\title{Construct asset pricing factor}
+\title{Construct an asset pricing factor}
 \usage{
 factorem(name = "", data, update_frequency = "month",
   return_frequency = "day", price_variable = "PX_LAST",
@@ -12,42 +12,42 @@ factorem(name = "", data, update_frequency = "month",
 \arguments{
 \item{name}{a scalar character vector specifying the name to use for the factor.}
 
-\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date}, \code{field} and \code{value}.}
+\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date},
+\code{field} and \code{value}.}
 
-\item{update_frequency}{a scalar character vector. Specifies the rebalancing frequency.
-Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "month".}
+\item{update_frequency}{a scalar character vector. Specifies the rebalancing
+frequency. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or
+'day'. Defaults to 'month'.}
 
-\item{return_frequency}{a scalar character vector. Specifies the frequency of the returns output.
-Must be one of 'year', "semester", "quarter", "month", "week" or "day". Defaults to "day".}
+\item{return_frequency}{a scalar character vector. Specifies the frequency of
+the returns output. Must be one of 'year', 'semester', 'quarter', 'month',
+'week' or 'day'. Defaults to 'day'.}
 
-\item{price_variable}{a scalar character vector. Specifies the name of the variable hosting asset prices.
-Must be found in the \code{field} columns of \code{data}.}
+\item{price_variable}{a scalar character vector. Specifies the name of the variable
+hosting asset prices. Must be found in the \code{field} columns of \code{data}.}
 
-\item{sort_variable}{a scalar character vector. Specifies the name of the variable to use for sorting.
-Must be found in the \code{field} columns of \code{data}.}
+\item{sort_variable}{a scalar character vector. Specifies the name of the variable
+to use for sorting. Must be found in the \code{field} columns of \code{data}.}
 
-\item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on \code{sort_variable}'s levels, else on relative changes.
-Default: \code{FALSE}.}
+\item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on
+\code{sort_variable}'s levels, else on relative changes. Default: \code{FALSE}.}
 
-\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
+\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are
+returned, else arithmetic. Default: \code{TRUE}.}
 
-\item{ranking_period}{a scalar integer vector. Specifies number of periods in term of \code{update_frequency}
-looking backward for averaging \code{sort_variable}.}
+\item{ranking_period}{a scalar integer vector. Specifies number of periods in term
+of \code{update_frequency} looking backward for averaging \code{sort_variable}.}
 
-\item{long_threshold}{a scalar numeric vector. Specifies the threshold for short positions. Default: 0.5.}
+\item{long_threshold}{a scalar numeric vector. Specifies the threshold for short
+positions. Default: 0.5.}
 
-\item{short_threshold}{a scalar numeric vector. Specifies the threshold for long positions. Default: 0.5.}
+\item{short_threshold}{a scalar numeric vector. Specifies the threshold for long
+positions. Default: 0.5.}
 }
 \value{
-An S4 object of class \code{\linkS4class{AssetPricingFactor}} with slots:
-  \itemize{
-    \item{\code{name}: a scalar character vector specifying the name to use for the factor.}
-    \item{\code{returns}: a tibble with columns \code{date}, \code{long} , \code{short} and \code{factor}.}
-    \item{\code{positions}: a tibble with columns \code{date}, \code{name} and \code{position}.}
-    \item{\code{data}: a tibble containing the original dataset used for factor construction.}
-    \item{\code{params}: a tibble containing the original parameters supplied for factor construction.}
-  }
+An S4 object of class \code{\linkS4class{AssetPricingFactor}}.
 }
 \description{
-Given a reference dataset and a set of parameters.
+Given a reference dataset and a set of parameters, construct the desired asset
+  pricing factor and returns its return and position time series by leg.
 }
