@@ -10,7 +10,9 @@ setOldClass(c("tbl_df", "tbl", "data.frame"))
 #' S4 class for asset pricing factor objects
 #' @export
 setClass("AssetPricingFactor",
-         representation(name = "character", returns = "data.table", positions = "data.table", data = "data.table", parameters = "tbl_df", call = "call"))
+         representation(name = "character", returns = "data.table",
+                        positions = "data.table", data = "data.table",
+                        parameters = "tbl_df", call = "call"))
 
 #' S4 class for commercial hedging pressure (CHP) factor objects
 #' @export

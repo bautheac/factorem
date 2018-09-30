@@ -351,3 +351,28 @@ setMethod("market_factor",
           }
 )
 
+
+
+
+
+
+
+# summary ####
+
+#' @rdname summary-methods
+#'
+#'
+#' @aliases summary,AssetPricingFactor
+#'
+#'
+#' @export
+setMethod("summary", "AssetPricingFactor", function(object, leg = "factor") {
+
+  PerformanceAnalytics::table.CalendarReturns(xts::xts(dplyr::select(object@returns, returns = !! leg), order.by = object@returns$date),
+                                              digits = 1L, as.perc = TRUE, geometric = object@params$geometric) %>%
+    dplyr::rename(total = returns) %>% magrittr::set_names(tolower(names(.)))
+
+})
+
+
+

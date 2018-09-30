@@ -13,7 +13,7 @@ Imports:
   ggthemes (>= 4.0.0),
   lubridate (>= 1.7.4),
   magrittr (>= 1.5),
-  methods (>= 3.4.0),
+  methods,
   PerformanceAnalytics (>= 1.5.2),
   pullit,
   purrr (>= 0.2.5),
@@ -24,7 +24,7 @@ Imports:
   tibble (>= 1.4.2),
   tidyr (>= 0.8.1),
   tidyselect (>= 0.2.4),
-  utils (>= 3.4.0),
+  utils,
   xts (>= 0.11.0)
 Remotes: 
   bautheac/BBGsymbols,
