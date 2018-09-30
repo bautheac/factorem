@@ -359,3 +359,38 @@ setGeneric("TS_factor",
 #' @export
 setGeneric("market_factor",
            function(data, return_frequency, long, geometric) standardGeneric("market_factor"))
+
+
+
+# summary ####
+
+## performance summary ####
+#' Factor performance summary
+#'
+#'
+#' @description Factor performance summary method. Returns factor returns
+#'   by month and year.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @param leg a character vector. 'long', 'short' and 'factor' display
+#'   the returns for the long, short and the factor itself respectively.
+#'   Defaults to 'factor'.
+#'
+#'
+#' @return A \code{\link[base]{data.frame}} with months as colums and years as rows.
+#'   Column total shows the cumulated return for the corresponding year.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname summary-methods
+#'
+#'
+#' @export
+setGeneric("summary", function(object, leg = "factor") standardGeneric("summary"))
+
+
+
+
