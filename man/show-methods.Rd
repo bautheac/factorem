@@ -8,6 +8,9 @@
 \usage{
 \S4method{show}{AssetPricingFactor}(object)
 }
+\arguments{
+\item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+}
 \description{
 Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
 }

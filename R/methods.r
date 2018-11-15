@@ -1,6 +1,8 @@
 # show ####
 #' Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
 #'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
 #' @rdname show-methods
 #'
 #' @aliases show,AssetPricingFactor
