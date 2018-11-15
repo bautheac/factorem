@@ -1,3 +1,168 @@
+# accessors ####
+
+## name ####
+#' Accesses the \code{name} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{name} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} package.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#'
+#' @return A scalar \code{\link[base]{character}} vector containing the name of the factor.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_name-methods
+#'
+#'
+#' @export
+setGeneric("get_name", function(object) standardGeneric("get_name"))
+
+# data ####
+#' Accesses the \code{data} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{data} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#'
+#' @return A \link[data.table]{data.table} showing for each Bloomberg ticker and
+#'   Bloomberg field the data contained in the \code{object} provided.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_data-methods
+#'
+#'
+#' @importClassesFrom data.table data.table
+#'
+#'
+#' @export
+setGeneric("get_data", function(object) standardGeneric("get_data"))
+
+## returns ####
+#' Accesses the \code{returns} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{returns} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} package.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A \code{\link[data.table]{data.table}} of factor returns historical returns.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_returns-methods
+#'
+#'
+#' @importFrom data.table data.table
+#'
+#'
+#' @export
+setGeneric("get_returns", function(object) standardGeneric("get_returns"))
+
+## positions ####
+#' Accesses the \code{positions} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{positions} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} package.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#'
+#' @return A \code{\link[data.table]{data.table}} of factor positions.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_positions-methods
+#'
+#'
+#' @importFrom data.table data.table
+#'
+#'
+#' @export
+setGeneric("get_positions", function(object) standardGeneric("get_positions"))
+
+## parameters ####
+#' Accesses the \code{parameters} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{parameters} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} package.
+#'
+#'
+#' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
+#'
+#' @return A \code{\link[tibble]{tibble}} containing the original parameters supplied for factor
+#'   construction.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_parameters-methods
+#'
+#'
+#' @importFrom tibble tibble
+#'
+#'
+#' @export
+setGeneric("get_parameters", function(object) standardGeneric("get_parameters"))
+
+## call ####
+#' Accesses the \code{call} slot of S4 objects of class \linkS4class{AssetPricingFactor}
+#'   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}).
+#'
+#'
+#' @description Access method for the \code{call} slot of S4 objects of class
+#'   \linkS4class{AssetPricingFactor} from the
+#'   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}) package.
+#'
+#'
+#' @param object an S4 object of classes
+#'   \itemize{
+#'     \item{\linkS4class{DataInfo} or \linkS4class{DataHistorical} and
+#'       respective childs.}
+#'     \item{\linkS4class{AssetPricingFactor}.}
+#'   }
+#'
+#'
+#' @return The original call to the constructor function.
+#'
+#'
+#' @docType methods
+#'
+#' @rdname get_call-methods
+#'
+#'
+#' @export
+setGeneric("get_call", function(object) standardGeneric("get_call"))
+
+
+
 
 # factor construction ####
 
@@ -53,6 +218,7 @@
 #'
 #' @importClassesFrom pullit FuturesCFTC FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #' @import BBGsymbols
 #'
@@ -113,6 +279,7 @@ setGeneric("CHP_factor",
 #'
 #' @importClassesFrom pullit FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
 #'
@@ -177,6 +344,7 @@ setGeneric("OI_nearby_factor",
 #'
 #' @importClassesFrom pullit FuturesAggregate FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
 #'
@@ -238,6 +406,7 @@ setGeneric("OI_aggregate_factor",
 #'
 #' @importClassesFrom pullit EquityMarket FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
 #'
@@ -306,6 +475,7 @@ setGeneric("momentum_factor",
 #'
 #' @importClassesFrom pullit FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
 #'
@@ -353,6 +523,7 @@ setGeneric("TS_factor",
 #'
 #' @importClassesFrom pullit EquityMarket FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
 #'

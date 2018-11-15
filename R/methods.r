@@ -1,3 +1,98 @@
+# show ####
+#' Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
+#'
+#' @rdname show-methods
+#'
+#' @aliases show,AssetPricingFactor
+#'
+#'
+#' @importFrom methods show
+#'
+#'
+#' @export
+setMethod("show", signature(object = "AssetPricingFactor"), function(object) {
+  cat(methods::is(object)[[1]], "\n",
+      "  name: ", paste(object@name, "factor", " "), "\n",
+      "  parameters\n",
+      paste0(rep("    ", ncol(object@params)),
+             gsub(pattern = "_", replacement = " ", names(object@params)),
+             sapply(names(object@params), function(x) if (nchar(x) <= 10L) ":\t\t " else ":\t "),
+             object@params[1L, ],
+             rep("\n", ncol(object@params))),
+      sep = ""
+  )
+})
+
+
+# accessors ####
+
+## name ####
+#' @rdname get_name-methods
+#'
+#' @aliases get_name,AssetPricingFactor
+#'
+#'
+#'
+#' @export
+setMethod("get_name", "AssetPricingFactor", function(object) object@name)
+
+## data ####
+#' @rdname get_data-methods
+#'
+#' @aliases get_data,AssetPricingFactor
+#'
+#'
+#' @importFrom data.table data.table
+#'
+#'
+#' @export
+setMethod("get_data", "AssetPricingFactor", function(object) object@data)
+
+## returns ####
+#' @rdname get_returns-methods
+#'
+#' @aliases get_returns,AssetPricingFactor
+#'
+#'
+#' @importFrom data.table data.table
+#'
+#'
+#' @export
+setMethod("get_returns", "AssetPricingFactor", function(object) object@returns)
+
+## positions ####
+#' @rdname get_positions-methods
+#'
+#' @aliases get_positions,AssetPricingFactor
+#'
+#'
+#' @importFrom data.table data.table
+#'
+#'
+#' @export
+setMethod("get_positions", "AssetPricingFactor", function(object) object@positions)
+
+## parameters ####
+#' @rdname get_parameters-methods
+#'
+#' @aliases get_parameters,AssetPricingFactor
+#'
+#'
+#' @importFrom tibble tibble
+#'
+#'
+#' @export
+setMethod("get_parameters", "AssetPricingFactor", function(object) object@parameters)
+
+## call ####
+#' @rdname get_call-methods
+#'
+#' @aliases get_call,AssetPricingFactor
+#'
+#'
+#' @export
+setMethod("get_call", "AssetPricingFactor", function(object) object@call)
+
 
 # factors ####
 

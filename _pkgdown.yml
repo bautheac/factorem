@@ -1,0 +1,55 @@
+title: factorem
+
+url: https://bautheac.github.io/factorem
+
+articles:
+  - title: factor'em!
+    desc: >
+        Get started:
+    contents:
+      - factorem
+
+reference:
+  - title: workhorse
+    desc: >
+        Full scale factor constructor:
+    contents:
+      - factorem
+  - title: wrappers
+    desc: >
+        Factor construction helpers:
+    contents:
+      - market_factor
+      - momentum_factor
+      - CHP_factor
+      - OI_nearby_factor
+      - OI_aggregate_factor
+      - TS_factor
+  - title: accessors
+    desc: >
+      Access returned data:
+    contents:
+      - get_name
+      - get_positions
+      - get_returns
+      - get_data
+      - get_parameters
+      - get_call
+  - title: others
+    desc: >
+      Other bespoke methods:
+    contents:
+      - summary
+
+navbar:
+  title: ~
+  type: default
+  left:
+    - text: home
+      href: index.html
+    - text: functions
+      href: reference/index.html
+    - text: get started
+      href: articles/factorem.html
+
+
