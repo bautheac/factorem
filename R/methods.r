@@ -110,7 +110,7 @@ setMethod("CHP_factor",
                    ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
                    geometric = TRUE){
 
-            utils::data(list = c("tickers_CFTC"), package = "BBGsymbols", envir = environment())
+            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
