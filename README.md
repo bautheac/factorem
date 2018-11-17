@@ -1,13 +1,13 @@
 factor’em\!
 ================
 
+<style> body {text-align: justify} </style>
+
 [![Travis-CI Build
 Status](https://travis-ci.org/bautheac/factorem.svg?branch=master)](https://travis-ci.org/bautheac/factorem)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/factorem/pullit?branch=master&svg=true)](https://ci.appveyor.com/project/factorem/pullit)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-
-<style> body {text-align: justify} </style>
 
 ## factor’em\!
 
