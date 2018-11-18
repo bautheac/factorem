@@ -38,7 +38,7 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
            else if(update_frequency == "day") paste(lubridate::year(date), lubridate::yday(date), sep = ".")
            else paste(lubridate::year(date), do.call(what = update_frequency, args = list(date)), sep = "."))
 
-  positions <- dplyr::select(data, name, period, field, value) %>%
+  positions <- dplyr::select(data, name = ticker, period, field, value) %>%
     dplyr::group_by(name, period) %>%
     dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
     dplyr::ungroup() %>%
@@ -109,6 +109,7 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
     dplyr::mutate(period = if(update_frequency == "year") paste0(lubridate::year(date))
            else if(update_frequency == "day") paste(lubridate::year(date), lubridate::yday(date), sep = ".")
            else paste(lubridate::year(date), do.call(what = update_frequency, args = list(date)), sep = ".")) %>%
+    dplyr::select(name = ticker, date, period, value) %>%
     dplyr::group_by(name) %>% dplyr::mutate(return = value/dplyr::lag(value, 1L) - 1L ) %>%
     dplyr::ungroup() %>% dplyr::select(name, date, period, return)
 
@@ -209,11 +210,13 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
                long_threshold = long_threshold, short_threshold = short_threshold)
 
   positions <- factor_positions(data = data, update_frequency = update_frequency,
-                                sort_variable = sort_variable, ranking_period = ranking_period,
+                                sort_variable = sort_variable, sort_levels = sort_levels,
+                                ranking_period = ranking_period,
                                 long_threshold = long_threshold, short_threshold = short_threshold)
 
   returns <- factor_returns(data = data, positions = positions, price_variable = price_variable,
-                            update_frequency = update_frequency, return_frequency =return_frequency)
+                            update_frequency = update_frequency, return_frequency = return_frequency,
+                            geometric = geometric)
 
   params <- list(`update frequency` = update_frequency, `return frequency` = return_frequency,
                  `price variable` = price_variable, `sort variable` = sort_variable,
