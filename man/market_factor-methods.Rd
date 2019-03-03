@@ -8,13 +8,13 @@
 \alias{market_factor,EquityMarket-method}
 \title{Market factor}
 \usage{
-market_factor(data, return_frequency, long, geometric)
+market_factor(data, return_frequency, long)
 
 \S4method{market_factor}{FuturesTS}(data, return_frequency = "month",
-  long = TRUE, geometric = TRUE)
+  long = TRUE)
 
 \S4method{market_factor}{EquityMarket}(data, return_frequency = "month",
-  long = TRUE, geometric = TRUE)
+  long = T)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}} or
@@ -31,9 +31,6 @@ Specifies the frequency of the returns output. Must be one of 'year',
 
 \item{long}{a scalar logical vector. If \code{TRUE} long only, else
 short only. Default: \code{TRUE}.}
-
-\item{geometric}{a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
 An S4 object of class \code{\linkS4class{AssetPricingFactor}}.

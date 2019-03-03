@@ -11,12 +11,12 @@ knitr::opts_chunk$set(collapse = TRUE, eval = FALSE, comment = "#>")
 #                      "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
 #  end <- Sys.Date(); start <- end - years(2L)
 #  
-#  equity_data_market <- BBG_equity_market(tickers_equity, start, end, verbose = FALSE)
+#  equity_data_market <- pull_equity_market(source = "Bloomberg", tickers_equity, start, end, verbose = FALSE)
 #  
 #  get_data(equity_data_market)
 
 ## ----`pullit equity storethat`, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE----
-library(pullit); library(lubridate)
+library(pullit); library(lubridate); storethat <- "../data-raw/storethat.sqlite"
 
 tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US Equity", 
                     "SERV US Equity", "AE US Equity", "CLGX US Equity", "GDI US Equity", 
@@ -25,7 +25,8 @@ tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US
                     "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
 end <- Sys.Date(); start <- end - years(2L)
 
-equity_data_market <- storethat_equity_market(tickers = tickers_equity, start = start, end = end, verbose = FALSE)
+equity_data_market <- pull_equity_market(source = "storethat", tickers = tickers_equity, 
+                                         start = start, end = end, file = storethat, verbose = FALSE)
 
 get_data(equity_data_market)
 
@@ -49,8 +50,8 @@ factor <- factorem(name = "factorem", data = pullit::get_data(equity_data_market
 #                       "LBA Comdty", "LCA Comdty", "LHA Comdty", "NGA Comdty", "O A Comdty",
 #                       "PAA Comdty", "S A Comdty", "SIA Comdty", "W A Comdty", "XBA Comdty")
 #  
-#  futures_data_TS <- BBG_futures_market(type = "term structure", tickers_futures,
-#                                        start, end, verbose = FALSE)
+#  futures_data_TS <- pull_futures_market(source = "storethat", type = "term structure", tickers_futures,
+#                                         start, end, file = storethat, verbose = FALSE)
 #  
 #  get_data(futures_data_TS)
 
@@ -62,7 +63,7 @@ factor <- factorem(name = "factorem", data = pullit::get_data(equity_data_market
 #  futures_momentum <- momentum_factor(data = futures_data_TS, ranking_period = ranking_period)
 
 ## ----`futures CHP`, message = FALSE, warning = FALSE---------------------
-#  futures_data_CFTC <- BBG_futures_CFTC(tickers_futures, start, end, verbose = FALSE)
+#  futures_data_CFTC <- pull_futures_CFTC(source = "Bloomberg", tickers_futures, start, end, verbose = FALSE)
 #  
 #  ranking_period = 1L
 #  futures_CHP <- CHP_factor(price_data = futures_data_TS, CHP_data = futures_data_CFTC,
@@ -73,8 +74,8 @@ factor <- factorem(name = "factorem", data = pullit::get_data(equity_data_market
 #  futures_OI_nearby <- OI_nearby_factor(data = futures_data_TS, ranking_period = ranking_period)
 
 ## ----`futures OI aggregate`, message = FALSE, warning = FALSE------------
-#  futures_data_agg <- BBG_futures_market(type = "aggregate", tickers_futures,
-#                                         start, end, verbose = FALSE)
+#  futures_data_agg <- pull_futures_market(source = "Bloomberg", type = "aggregate", tickers_futures,
+#                                          start, end, verbose = FALSE)
 #  
 #  ranking_period = 1L
 #  futures_OI_aggregate <- OI_aggregate_factor(price_data = futures_data_market,
@@ -106,11 +107,11 @@ get_call(factor)
 ## ----`factor summary`, eval = TRUE---------------------------------------
 summary(factor)
 
-## ----`plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = TRUE----
+## ----`plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = TRUE, message = FALSE, warning = FALSE----
 library(plotit)
 
-plot_performance(factor)
+plot(factor, type = "performance")
 
 ## ----`plot positions`, fig.width = 7.5, fig.height = 6.5, fig.fullwidth = TRUE, eval = TRUE----
-plot_positions(factor)
+plot(factor, type = "positions")
 

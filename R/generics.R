@@ -196,7 +196,7 @@ setGeneric("get_call", function(object) standardGeneric("get_call"))
 #'
 #' @param ranking_period a scalar \code{\link[base]{integer}} vector.
 #'   Specifies number of periods in term of \code{update_frequency}
-#'   looking backward for average CHP calculation. Defaults to 0 where
+#'   looking backward for average CHP calculation. Defaults to 1 where
 #'   sort is done on last observation only.
 #'
 #' @param long_threshold a scalar \code{\link[base]{numeric}} vector.
@@ -204,10 +204,6 @@ setGeneric("get_call", function(object) standardGeneric("get_call"))
 #'
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for long positions. Default: 0.5.
-#'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
 #'
 #' @return An S4 object of class \code{\linkS4class{CHPFactor}}.
 #'
@@ -226,7 +222,7 @@ setGeneric("get_call", function(object) standardGeneric("get_call"))
 #' @export
 setGeneric("CHP_factor",
            function(price_data, CHP_data, update_frequency, return_frequency, ranking_period,
-                    long_threshold, short_threshold, geometric) standardGeneric("CHP_factor"))
+                    long_threshold, short_threshold) standardGeneric("CHP_factor"))
 
 
 
@@ -255,17 +251,13 @@ setGeneric("CHP_factor",
 #' @param ranking_period a scalar \code{\link[base]{integer}} vector.
 #'   Specifies number of periods in term of \code{update_frequency}
 #'   looking backward for nearby open interest average growth calculation.
-#'   Defaults to 0 where sort is done on last observation only.
+#'   Defaults to 1 where sort is done on last observation only.
 #'
 #' @param long_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for short positions. Default: 0.5.
 #'
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for long positions. Default: 0.5.
-#'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
 #'
 #' @description Following Hong & Yogo.
 #'
@@ -286,7 +278,7 @@ setGeneric("CHP_factor",
 #' @export
 setGeneric("OI_nearby_factor",
            function(data, update_frequency, return_frequency, ranking_period, long_threshold,
-                    short_threshold, geometric) standardGeneric("OI_nearby_factor"))
+                    short_threshold) standardGeneric("OI_nearby_factor"))
 
 
 ## OI aggregate ####
@@ -320,17 +312,13 @@ setGeneric("OI_nearby_factor",
 #' @param ranking_period a scalar \code{\link[base]{integer}} vector.
 #'   Specifies number of periods in term of \code{update_frequency}
 #'   looking backward for aggregate open interest average growth calculation.
-#'   Defaults to 0 where sort is done on last observation only.
+#'   Defaults to 1 where sort is done on last observation only.
 #'
 #' @param long_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for short positions. Default: 0.5.
 #'
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for long positions. Default: 0.5.
-#'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
 #'
 #' @description Basu & Bautheac.
 #'
@@ -351,7 +339,7 @@ setGeneric("OI_nearby_factor",
 #' @export
 setGeneric("OI_aggregate_factor",
            function(price_data, aggregate_data, update_frequency, return_frequency, ranking_period,
-                    long_threshold, short_threshold, geometric) standardGeneric("OI_aggregate_factor"))
+                    long_threshold, short_threshold) standardGeneric("OI_aggregate_factor"))
 
 
 ## momentum ####
@@ -381,18 +369,14 @@ setGeneric("OI_aggregate_factor",
 #'
 #' @param ranking_period a scalar \code{\link[base]{integer}} vector. Specifies
 #'   number of periods in term of \code{update_frequency} looking backward for
-#'   average price return calculation. Defaults to 0 where sort is done on last
-#'   observation only.
+#'   average price return calculation. Defaults to 1 where sort is done on last
+#'   observed return.
 #'
 #' @param long_threshold a scalar \code{\link[base]{numeric}} vector. Specifies
 #'   the threshold for short positions. Default: 0.5.
 #'
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector. Specifies
 #'   the threshold for long positions. Default: 0.5.
-#'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
 #'
 #' @description Sorts on past returns.
 #'
@@ -413,7 +397,7 @@ setGeneric("OI_aggregate_factor",
 #' @export
 setGeneric("momentum_factor",
            function(data, update_frequency, return_frequency, ranking_period,
-                    long_threshold, short_threshold, geometric) standardGeneric("momentum_factor"))
+                    long_threshold, short_threshold) standardGeneric("momentum_factor"))
 
 
 
@@ -450,7 +434,7 @@ setGeneric("momentum_factor",
 #'
 #' @param ranking_period a scalar \code{\link[base]{integer}} vector. Specifies
 #'   number of periods in term of \code{update_frequency} looking backward for
-#'   average roll yield calculation. Defaults to 0 where sort is done on last
+#'   average roll yield calculation. Defaults to 1 where sort is done on last
 #'   observation only.
 #'
 #' @param long_threshold a scalar \code{\link[base]{numeric}} vector. Specifies
@@ -458,10 +442,6 @@ setGeneric("momentum_factor",
 #'
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector. Specifies
 #'   the threshold for long positions. Default: 0.5.
-#'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
 #'
 #' @description Sorts on relative price difference between specified front and back.
 #'
@@ -482,7 +462,7 @@ setGeneric("momentum_factor",
 #' @export
 setGeneric("TS_factor",
            function(data, update_frequency, return_frequency, front, back, ranking_period,
-                    long_threshold, short_threshold, geometric) standardGeneric("TS_factor"))
+                    long_threshold, short_threshold) standardGeneric("TS_factor"))
 
 
 ## market ####
@@ -510,10 +490,6 @@ setGeneric("TS_factor",
 #' @param long a scalar logical vector. If \code{TRUE} long only, else
 #'   short only. Default: \code{TRUE}.
 #'
-#' @param geometric a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-#'   geometric returns are returned, else arithmetic. Default: \code{TRUE}.
-#'
-#'
 #' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}}.
 #'
 #'
@@ -529,7 +505,7 @@ setGeneric("TS_factor",
 #'
 #' @export
 setGeneric("market_factor",
-           function(data, return_frequency, long, geometric) standardGeneric("market_factor"))
+           function(data, return_frequency, long) standardGeneric("market_factor"))
 
 
 

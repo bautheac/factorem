@@ -54,14 +54,14 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
 
   if(all(! is.null(front), ! is.null(back)))
     if(! all(rlang::is_scalar_integer(front), rlang::is_scalar_integer(back),
-             c(front, back) %in% positions, front > back))
+             as.integer(c(front, back)) %in% positions, front < back))
       stop("The parameters 'front' & 'back' must be supplied as scalar integer vectors; one of ",
-           paste(positions, collapse = ", "), ", where front > back.")
+           paste(positions, collapse = ", "), "; where front < back.")
 
   if(! is.null(long))
     if(! rlang::is_scalar_logical(long))
       stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
 }
 
-
+return_cumulative <- function(x) prod(x + 1L) - 1L
 

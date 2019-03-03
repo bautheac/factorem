@@ -6,8 +6,8 @@
 \usage{
 factorem(name = "", data, update_frequency = "month",
   return_frequency = "day", price_variable = "PX_LAST",
-  sort_variable = "PX_LAST", sort_levels = FALSE, geometric = TRUE,
-  ranking_period = 0L, long_threshold = 0.5, short_threshold = 0.5)
+  sort_variable = "PX_LAST", sort_levels = T, ranking_period = 1L,
+  long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{name}{a scalar character vector specifying the name to use for the factor.}
@@ -30,13 +30,11 @@ hosting asset prices. Must be found in the \code{field} columns of \code{data}.}
 to use for sorting. Must be found in the \code{field} columns of \code{data}.}
 
 \item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on
-\code{sort_variable}'s levels, else on relative changes. Default: \code{FALSE}.}
-
-\item{geometric}{a scalar logical vector. If \code{TRUE} geometric returns are
-returned, else arithmetic. Default: \code{TRUE}.}
+\code{sort_variable}'s levels, else on relative changes. Default: \code{TRUE}.}
 
 \item{ranking_period}{a scalar integer vector. Specifies number of periods in term
-of \code{update_frequency} looking backward for averaging \code{sort_variable}.}
+of \code{update_frequency} looking backward for averaging \code{sort_variable}.
+Default: 1 (sort on last observation).}
 
 \item{long_threshold}{a scalar numeric vector. Specifies the threshold for short
 positions. Default: 0.5.}

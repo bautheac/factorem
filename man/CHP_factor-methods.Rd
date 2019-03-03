@@ -8,12 +8,11 @@
 \title{Commercial hedging pressure (CHP) factor}
 \usage{
 CHP_factor(price_data, CHP_data, update_frequency, return_frequency,
-  ranking_period, long_threshold, short_threshold, geometric)
+  ranking_period, long_threshold, short_threshold)
 
 \S4method{CHP_factor}{FuturesTS,FuturesCFTC}(price_data, CHP_data,
   update_frequency = "month", return_frequency = "day",
-  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  geometric = TRUE)
+  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -36,7 +35,7 @@ Specifies the frequency of the returns output. Must be one of 'year',
 
 \item{ranking_period}{a scalar \code{\link[base]{integer}} vector.
 Specifies number of periods in term of \code{update_frequency}
-looking backward for average CHP calculation. Defaults to 0 where
+looking backward for average CHP calculation. Defaults to 1 where
 sort is done on last observation only.}
 
 \item{long_threshold}{a scalar \code{\link[base]{numeric}} vector.
@@ -44,9 +43,6 @@ Specifies the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
-
-\item{geometric}{a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
 An S4 object of class \code{\linkS4class{CHPFactor}}.

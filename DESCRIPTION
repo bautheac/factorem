@@ -14,7 +14,6 @@ Imports:
     lubridate (>= 1.7.4),
     magrittr (>= 1.5),
     methods,
-    PerformanceAnalytics (>= 1.5.2),
     pullit,
     purrr (>= 0.2.5),
     RcppRoll (>= 0.3.0),
@@ -29,6 +28,7 @@ Imports:
     xts (>= 0.11.0)
 Remotes: 
     bautheac/BBGsymbols,
+    bautheac/plotit,
     bautheac/pullit
 License: GPL-3
 Encoding: UTF-8
@@ -39,5 +39,7 @@ URL: https://bautheac.github.io/factorem
 BugReports: https://github.com/bautheac/factorem/issues
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    plotit,
+    testthat
 VignetteBuilder: knitr

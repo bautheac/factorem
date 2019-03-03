@@ -8,11 +8,11 @@
 \title{Open interest growth (OI) nearby factor}
 \usage{
 OI_nearby_factor(data, update_frequency, return_frequency, ranking_period,
-  long_threshold, short_threshold, geometric)
+  long_threshold, short_threshold)
 
 \S4method{OI_nearby_factor}{FuturesTS}(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 0L,
-  long_threshold = 0.5, short_threshold = 0.5, geometric = TRUE)
+  return_frequency = "day", ranking_period = 1L,
+  long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -31,16 +31,13 @@ Specifies the frequency of the returns output. Must be one of 'year',
 \item{ranking_period}{a scalar \code{\link[base]{integer}} vector.
 Specifies number of periods in term of \code{update_frequency}
 looking backward for nearby open interest average growth calculation.
-Defaults to 0 where sort is done on last observation only.}
+Defaults to 1 where sort is done on last observation only.}
 
 \item{long_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
-
-\item{geometric}{a scalar \code{\link[base]{logical}} vector. If \code{TRUE}
-geometric returns are returned, else arithmetic. Default: \code{TRUE}.}
 }
 \value{
 An S4 object of class \code{\linkS4class{OIFactor}}.

@@ -33,14 +33,14 @@ tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US
                     "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
 end <- Sys.Date(); start <- end - years(2L)
 
-equity_data_market <- BBG_equity_market(tickers_equity, start, end, verbose = FALSE)
+equity_data_market <- pull_equity_market(source = "Bloomberg", tickers_equity, start, end, verbose = FALSE)
 
 get_data(equity_data_market)
 ```
 
 
-```{r `pullit equity storethat`, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
-library(pullit); library(lubridate)
+```{r `pullit equity storethat`, echo = FALSE, message = FALSE, warning = FALSE, eval = F}
+library(pullit); library(lubridate); storethat <- "../data-raw/storethat.sqlite"
 
 tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US Equity", 
                     "SERV US Equity", "AE US Equity", "CLGX US Equity", "GDI US Equity", 
@@ -49,13 +49,14 @@ tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US
                     "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
 end <- Sys.Date(); start <- end - years(2L)
 
-equity_data_market <- storethat_equity_market(tickers = tickers_equity, start = start, end = end, verbose = FALSE)
+equity_data_market <- pull_equity_market(source = "storethat", tickers = tickers_equity, 
+                                         start = start, end = end, file = storethat, verbose = FALSE)
 
 get_data(equity_data_market)
 ```
 
 From there, constuct a bespoke asset pricing factor using the factorem function. I.e., an equity momentum factor:
-```{r `factorem factor`, message = FALSE, warning = FALSE, eval = TRUE}
+```{r `factorem factor`, message = FALSE, warning = FALSE, eval = F}
 library(factorem)
 
 ranking_period = 1L
@@ -95,8 +96,8 @@ tickers_futures <- c("C A Comdty", "CCA Comdty", "CLA Comdty", "CTA Comdty", "FC
                      "LBA Comdty", "LCA Comdty", "LHA Comdty", "NGA Comdty", "O A Comdty", 
                      "PAA Comdty", "S A Comdty", "SIA Comdty", "W A Comdty", "XBA Comdty")
 
-futures_data_TS <- BBG_futures_market(type = "term structure", tickers_futures, 
-                                      start, end, verbose = FALSE)
+futures_data_TS <- pull_futures_market(source = "storethat", type = "term structure", tickers_futures, 
+                                       start, end, file = storethat, verbose = FALSE)
 
 get_data(futures_data_TS)
 ```
@@ -120,7 +121,7 @@ futures_momentum <- momentum_factor(data = futures_data_TS, ranking_period = ran
 #### commercial hedging pressure (CHP)
 The futures commercial hedging pressure factor is based on the well-known hedging pressure-based theory [@anderson_hedger_1983; @chang_returns_1985; @cootner_returns_1960; @dusak_futures_1973; @hicks_value_1939; @hirshleifer_risk_1988; @hirshleifer_determinants_1989; @hirshleifer_hedging_1990; @kolb_is_1992; @keynes_treatise_1930] which postulates that futures prices for a given commodity are inversely related to the extent that commercial hedgers are short or long and the mimicking portfolio here aims at capturing the impact of hedging pressure as a systemic factor [@basu_capturing_2013].  
 ```{r `futures CHP`, message = FALSE, warning = FALSE}
-futures_data_CFTC <- BBG_futures_CFTC(tickers_futures, start, end, verbose = FALSE)
+futures_data_CFTC <- pull_futures_CFTC(source = "Bloomberg", tickers_futures, start, end, verbose = FALSE)
 
 ranking_period = 1L
 futures_CHP <- CHP_factor(price_data = futures_data_TS, CHP_data = futures_data_CFTC, 
@@ -140,8 +141,8 @@ futures_OI_nearby <- OI_nearby_factor(data = futures_data_TS, ranking_period = r
 ##### aggregate
 In contrast, the aggregate open interest factor [@basu_financiallization_2018] is concerned with liquidity over the whole futures term strucutre and sorts on open interest aggregated (summed up) over the futures term structure:
 ```{r `futures OI aggregate`, message = FALSE, warning = FALSE}
-futures_data_agg <- BBG_futures_market(type = "aggregate", tickers_futures, 
-                                       start, end, verbose = FALSE)
+futures_data_agg <- pull_futures_market(source = "Bloomberg", type = "aggregate", tickers_futures, 
+                                        start, end, verbose = FALSE)
 
 ranking_period = 1L
 futures_OI_aggregate <- OI_aggregate_factor(price_data = futures_data_market, 
@@ -161,27 +162,27 @@ futures_TS <- TS_factor(data = futures_data_market, ranking_period = ranking_per
 
 Accessor methods allow access to the content of the factor output:
 ### name
-```{r `factor name`, eval = TRUE}
+```{r `factor name`, eval = F}
 get_name(factor)
 ```
 ### positions
-```{r `factor positions`, eval = TRUE}
+```{r `factor positions`, eval = F}
 get_positions(factor)
 ```
 ### returns
-```{r `factor returns`, eval = TRUE}
+```{r `factor returns`, eval = F}
 get_returns(factor)
 ```
 ### data initially supplied
-```{r `factor data`, eval = TRUE}
+```{r `factor data`, eval = F}
 get_data(factor)
 ```
 ### parameters
-```{r `factor params`, eval = TRUE}
+```{r `factor params`, eval = F}
 get_parameters(factor)
 ```
 ### function call
-```{r `factor call`, eval = TRUE}
+```{r `factor call`, eval = F}
 get_call(factor)
 ```
 
@@ -189,7 +190,7 @@ get_call(factor)
 ## summary
 A summary method returns a performance summary of the corresponding facotr:
 ### function call
-```{r `factor summary`, eval = TRUE}
+```{r `factor summary`, eval = F}
 summary(factor)
 ```
 
@@ -198,15 +199,15 @@ summary(factor)
 The [plotit](https://bautheac.github.io/plotit/) package, also part of the finRes suite, provides plot methods for the factor objects returned by the functions above:
 
 ### performance overview
-```{r `plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = TRUE}
+```{r `plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = F, message = FALSE, warning = FALSE}
 library(plotit)
 
-plot_performance(factor)
+plot(factor, type = "performance")
 ```
 
 ### positions overview
-```{r `plot positions`, fig.width = 7.5, fig.height = 6.5, fig.fullwidth = TRUE, eval = TRUE}
-plot_positions(factor)
+```{r `plot positions`, fig.width = 7.5, fig.height = 6.5, fig.fullwidth = TRUE, eval = F}
+plot(factor, type = "positions")
 ```
   
   
