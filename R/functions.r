@@ -32,33 +32,34 @@
 factor_positions <- function(data, update_frequency, sort_variable, sort_levels, ranking_period,
                              long_threshold, short_threshold){
 
-  data %<>% dplyr::filter(field == !! sort_variable) %>% dplyr::mutate(year = lubridate::year(date))
+  data <- dplyr::filter(data, field == !! sort_variable) %>% dplyr::mutate(year = lubridate::year(date))
   data <- if (update_frequency == "day") { dplyr::mutate(data, unit = lubridate::yday(date)) }
   else { dplyr::mutate(data, unit = do.call(what = !! update_frequency, args = list(date))) }
 
-  positions <- dplyr::select(data, name = ticker, year, unit, value) %>%
+  positions <- dplyr::select(data, name = ticker, date, year, unit, value) %>%
     dplyr::group_by(name, year, unit) %>%  dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
     dplyr::ungroup()
   positions <- if (sort_levels){
     dplyr::group_by(positions, name) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
-      dplyr::select(name, year, unit, average) %>% dplyr::ungroup()
+      dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   } else {
     dplyr::group_by(positions, name) %>% dplyr::mutate(value = (value/dplyr::lag(value, 1L)) - 1L) %>%
       dplyr::slice(2L:n()) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
-      dplyr::select(name, year, unit, average) %>% dplyr::ungroup()
+      dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   }
 
   dplyr::group_by(positions, year, unit) %>% dplyr::do({
-    data <- dplyr::select(., name, average) %>% dplyr::filter(complete.cases(.)) %>%
+    data <- dplyr::select(., date, name, average) %>% dplyr::filter(complete.cases(.)) %>%
       dplyr::arrange(dplyr::desc(average))
     long <- dplyr::slice(data, 1L:(ceiling(nrow(data) * (1L - long_threshold)))) %>%
-      dplyr::select(name) %>% dplyr::mutate(position = "long")
+      dplyr::select(date, name) %>% dplyr::mutate(position = "long")
     short <- dplyr::slice(data, (floor(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)) %>%
-      dplyr::arrange(average) %>% dplyr::select(name) %>% dplyr::mutate(position = "short")
+      dplyr::arrange(average) %>% dplyr::select(date, name) %>% dplyr::mutate(position = "short")
     rbind(long, short)
-  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>% data.table::as.data.table()
+  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>% dplyr::select(date, year, unit, name, position) %>%
+    data.table::as.data.table()
 }
 
 
@@ -183,7 +184,7 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
                                 ranking_period = ranking_period, long_threshold = long_threshold,
                                 short_threshold = short_threshold)
 
-  returns <- factor_returns(data = data, positions = positions, price_variable = price_variable,
+  returns <- factor_returns(data = data, positions = positions[, !"date", with = F], price_variable = price_variable,
                             update_frequency = update_frequency, return_frequency = return_frequency)
 
   params <- list(`update frequency` = update_frequency, `return frequency` = return_frequency,
@@ -192,6 +193,6 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
                  `long threshold` = long_threshold, `short threshold` = short_threshold) %>%
     tibble::as_tibble()
 
-  methods::new("AssetPricingFactor", name = name, positions = positions, returns = returns,
+  methods::new("AssetPricingFactor", name = name, positions = positions[, !c("year", "unit"), with = F], returns = returns,
                data = data.table::as.data.table(data), parameters = params, call = match.call())
 }

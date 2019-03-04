@@ -116,6 +116,10 @@ setMethod("CHP_factor",
                          short_threshold = short_threshold)
 
             tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
+            dates <- dplyr::distinct(CHP_data@data, date) %>%
+              dplyr::mutate(adjusted = RQuantLib::advance(dates = as.Date(date), calendar = "UnitedStates/NYSE", n = 3L, timeUnit = 0L))
+            CHP_data@data <- dplyr::left_join(CHP_data@data, dates, by = "date") %>%
+              dplyr::select(`active contract ticker`, ticker, field, date = adjusted, value) %>% data.table::as.data.table()
 
             price_data <- dplyr::filter(price_data@data, field == "PX_LAST") %>% dplyr::left_join(tickers, by = "ticker") %>%
               dplyr::filter(position == 1L) %>% dplyr::select(ticker = `active contract ticker`, field, date, value)
