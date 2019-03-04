@@ -353,7 +353,8 @@ setMethod("market_factor",
 
             temp <- dplyr::group_by(temp, ticker) %>% dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:n()) %>%
               dplyr::ungroup() %>% dplyr::group_by(date) %>% dplyr::summarise(factor = mean(value, na.rm = T)) %>%
-              dplyr::ungroup() %>% dplyr::mutate(factor = ifelse(long, factor, factor * -1L), year = lubridate::year(date))
+              dplyr::ungroup() %>% dplyr::mutate(year = lubridate::year(date))
+            temp$factor <- if (long) temp$factor else temp$factor * -1L
             returns <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
             returns <- dplyr::group_by(returns, year, unit) %>% dplyr::summarise(factor = return_cumulative(factor)) %>%
@@ -361,14 +362,13 @@ setMethod("market_factor",
 
             temp <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
-            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n())
+            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n()) %>%
+              dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
-
-            args <- as.list(match.call())[-1L]
 
             methods::new("MarketFactor", name = "futures nearby market", returns = data.table::as.data.table(returns),
                          positions = data.table::as.data.table(positions), data = data.table::as.data.table(data@data),
-                         parameters = tibble::as_tibble(args[names(args) != "data"]), call = match.call())
+                         parameters = tibble::tibble(return_frequency = return_frequency, long = long), call = match.call())
           }
 )
 
@@ -394,7 +394,8 @@ setMethod("market_factor",
             temp <- dplyr::filter(data, field == "PX_LAST") %>% dplyr::select(-field) %>% dplyr::group_by(ticker) %>%
               dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:n()) %>%
               dplyr::ungroup() %>% dplyr::group_by(date) %>% dplyr::summarise(factor = mean(value, na.rm = T)) %>%
-              dplyr::ungroup() %>% dplyr::mutate(factor = ifelse(long, factor, factor * -1L), year = lubridate::year(date))
+              dplyr::ungroup() %>% dplyr::mutate(year = lubridate::year(date))
+            temp$factor <- if (long) temp$factor else temp$factor * -1L
             returns <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
             returns <- dplyr::group_by(returns, year, unit) %>% dplyr::summarise(factor = return_cumulative(factor)) %>%
@@ -402,14 +403,13 @@ setMethod("market_factor",
 
             temp <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
-            data <- dplyr::select(data, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n())
+            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n()) %>%
+              dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
-
-            args <- as.list(match.call())[-1L]
 
             methods::new("MarketFactor", name = "equity market", returns = data.table::as.data.table(returns),
                          positions = data.table::as.data.table(positions), data = data.table::as.data.table(data@data),
-                         parameters = tibble::as_tibble(args[names(args) != "data"]), call = deparse(match.call()))
+                         parameters = tibble::tibble(return_frequency = return_frequency, long = long), call = deparse(match.call()))
           }
 )
 
