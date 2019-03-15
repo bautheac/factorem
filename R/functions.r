@@ -196,3 +196,45 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
   methods::new("AssetPricingFactor", name = name, positions = positions[, !c("year", "unit"), with = F], returns = returns,
                data = data.table::as.data.table(data), parameters = params, call = match.call())
 }
+
+
+#' Fama-McBeth cross-sectional regression
+#'
+#'
+#' @description Given two dataframes of assets returns and factor returns respectively,
+#'   performs a Fama-McBeth two-pass cross-sectional regresion.
+#'
+#'
+#' @param assets_returns a dataframe with dates in the first column and assets returns
+#'   in subsequent columns.
+#'
+#' @param factor_returns a dataframe with dates in the first column and factor returns
+#'   in the second.
+#'
+#' @return An S4 object of class \code{\linkS4class{FamaMcBeth}}.
+#'
+#'
+#' @export
+famamcbeth <- function(assets_returns, factor_returns){
+
+  check_params(factor_returns = factor_returns, assets_dates = assets_returns$date,
+               factor_dates = factor_returns$date)
+
+  tickers <- names(assets_returns)[names(assets_returns) != "date" ]
+  data <- dplyr::full_join(assets_returns, factor_returns, by = "date") %>% data.table::as.data.table()
+
+  betas <- lapply(tickers, function(x){ formula <- as.formula(paste0("`", x, "` ~ factor"))
+  lm(formula, data = data) }) %>% setNames(tickers)
+  betas <- data.table::data.table(ticker = tickers, beta = betas)
+  means <- data.table::data.table(ticker = tickers, mean = apply(data[, tickers], mean, MARGIN = 2L, na.rm = T))
+
+  coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) broom::tidy(y) %>%
+                                                            dplyr::filter(term == "factor") %>%
+                                                            dplyr::select(estimate) %>% purrr::flatten_dbl())) %>%
+    tidyr::unnest(beta)
+
+  data <- dplyr::full_join(means, coefficients, by = "ticker")
+  formula <- as.formula("mean ~ beta"); lambda <- lm(formula, data = data)
+
+  methods::new("FamaMcBeth", betas = betas, means = means, lambda = lambda, data = data, call = match.call())
+}

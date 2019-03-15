@@ -33,3 +33,10 @@ setClass("TSFactor", contains = "AssetPricingFactor")
 #' S4 class for term structure factor objects
 #' @export
 setClass("MarketFactor", contains = "AssetPricingFactor")
+
+
+#' S4 class for Fama-McBeth objects
+#' @export
+setClass("FamaMcBeth",
+         representation(betas = "data.table", means = "data.table", data = "data.table",
+                        lambda = "lm", call = "call"))

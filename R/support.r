@@ -3,7 +3,8 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
                          price_variable = NULL, price_variables = NULL, update_frequency = NULL,
                          return_frequency = NULL,  ranking_period = NULL, long_threshold = NULL,
                          short_threshold = NULL, sort_levels = NULL, geometric = NULL,
-                         front = NULL, back = NULL, positions = NULL, long = NULL){
+                         front = NULL, back = NULL, positions = NULL, long = NULL,
+                         factor_returns = NULL, assets_dates = NULL, factor_dates = NULL){
   if(! is.null(name))
     if(! rlang::is_scalar_character(name))
       stop("Parameter 'name' must be supplied as a scalar character vector.")
@@ -26,7 +27,7 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
     if(! all(rlang::is_scalar_character(update_frequency),
              update_frequency %in% c("year", "semester", "quarter", "month", "week", "day")))
       stop("Parameter 'update_frequency' must be supplied as a scalar character vector;
-            one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+           one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
 
   if(! is.null(return_frequency))
     if(! all(rlang::is_scalar_character(return_frequency),
@@ -61,6 +62,15 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
   if(! is.null(long))
     if(! rlang::is_scalar_logical(long))
       stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
+
+  if(! is.null(factor_returns))
+    if(ncol(factor_returns) > 2L | ! all.equal(c("date", "factor"), names(factor_returns)))
+      stop("Parameter 'factor_returns' must be supplied as a dataframe including 2 columns: 'date' and
+           'factor' containing dates and corresponding factor returns respectively.")
+
+  if(! c(is.null(assets_dates) & is.null(factor_dates)))
+    if(NROW(intersect(assets_dates, factor_dates)) / max(NROW(assets_dates), NROW(factor_dates)) < 0.5)
+      stop("Assets & factor returns dates unmatch.")
 }
 
 return_cumulative <- function(x) prod(x + 1L) - 1L
