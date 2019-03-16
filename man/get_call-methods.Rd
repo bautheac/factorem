@@ -5,26 +5,28 @@
 \alias{get_call}
 \alias{get_call,AssetPricingFactor-method}
 \alias{get_call,AssetPricingFactor}
-\title{Accesses the \code{call} slot of S4 objects of class \linkS4class{AssetPricingFactor}
-  (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}).}
+\alias{get_call,FamaMcBeth-method}
+\alias{get_call,FamaMcBeth}
+\title{Accesses the \code{call} slot of S4
+  \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} objects.}
 \usage{
 get_call(object)
 
 \S4method{get_call}{AssetPricingFactor}(object)
+
+\S4method{get_call}{FamaMcBeth}(object)
 }
 \arguments{
 \item{object}{an S4 object of classes
 \itemize{
-  \item{\linkS4class{DataInfo} or \linkS4class{DataHistorical} and
-    respective childs.}
   \item{\linkS4class{AssetPricingFactor}.}
+  \item{\linkS4class{FamaMcBeth}.}
 }}
 }
 \value{
 The original call to the constructor function.
 }
 \description{
-Access method for the \code{call} slot of S4 objects of class
-  \linkS4class{AssetPricingFactor} from the
+Access method for the \code{call} slot of various S4 objects from the
   (\href{https://github.com/bautheac/factorem/}{\pkg{factorem}}) package.
 }

@@ -4,13 +4,21 @@
 \name{show,AssetPricingFactor-method}
 \alias{show,AssetPricingFactor-method}
 \alias{show,AssetPricingFactor}
+\alias{show,FamaMcBeth-method}
+\alias{show,FamaMcBeth}
 \title{Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.}
 \usage{
 \S4method{show}{AssetPricingFactor}(object)
+
+\S4method{show}{FamaMcBeth}(object)
 }
 \arguments{
 \item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
+
+\item{object}{an S4 object of class \linkS4class{FamaMcBeth}.}
 }
 \description{
+Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
+
 Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
 }

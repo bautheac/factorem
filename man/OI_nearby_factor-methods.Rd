@@ -7,12 +7,13 @@
 \alias{OI_nearby_factor,AssetPricingFactor}
 \title{Open interest growth (OI) nearby factor}
 \usage{
-OI_nearby_factor(data, update_frequency, return_frequency, ranking_period,
-  long_threshold, short_threshold)
+OI_nearby_factor(data, update_frequency = "month",
+  return_frequency = "day", ranking_period = 1L,
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
 
 \S4method{OI_nearby_factor}{FuturesTS}(data, update_frequency = "month",
   return_frequency = "day", ranking_period = 1L,
-  long_threshold = 0.5, short_threshold = 0.5)
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -38,6 +39,10 @@ Specifies the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
+
+\item{weighted}{a scalar \code{\link[base]{logical}} vector.
+If 'TRUE' adjusts portoflio weights with respect to sorting variable
+values, else equal weights are used. Defaults to 'FALSE'.}
 }
 \value{
 An S4 object of class \code{\linkS4class{OIFactor}}.

@@ -6,8 +6,8 @@
 \usage{
 factorem(name = "", data, update_frequency = "month",
   return_frequency = "day", price_variable = "PX_LAST",
-  sort_variable = "PX_LAST", sort_levels = T, ranking_period = 1L,
-  long_threshold = 0.5, short_threshold = 0.5)
+  sort_variable = "PX_LAST", sort_levels = T, weighted = T,
+  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5)
 }
 \arguments{
 \item{name}{a scalar character vector specifying the name to use for the factor.}

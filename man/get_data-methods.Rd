@@ -5,12 +5,16 @@
 \alias{get_data}
 \alias{get_data,AssetPricingFactor-method}
 \alias{get_data,AssetPricingFactor}
+\alias{get_data,FamaMcBeth-method}
+\alias{get_data,FamaMcBeth}
 \title{Accesses the \code{data} slot of S4 objects of class \linkS4class{AssetPricingFactor}
   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
 \usage{
 get_data(object)
 
 \S4method{get_data}{AssetPricingFactor}(object)
+
+\S4method{get_data}{FamaMcBeth}(object)
 }
 \arguments{
 \item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
@@ -22,5 +26,5 @@ A \link[data.table]{data.table} showing for each Bloomberg ticker and
 \description{
 Access method for the \code{data} slot of S4 objects of class
   \linkS4class{AssetPricingFactor} from the
-  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
+  \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} package.
 }

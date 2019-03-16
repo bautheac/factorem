@@ -16,8 +16,8 @@ get_parameters(object)
 \item{object}{an S4 object of class \linkS4class{AssetPricingFactor}.}
 }
 \value{
-A \code{\link[tibble]{tibble}} containing the original parameters supplied for factor
-  construction.
+A \code{\link[data.table]{data.table}} containing the original parameters
+  supplied for factor construction.
 }
 \description{
 Access method for the \code{parameters} slot of S4 objects of class

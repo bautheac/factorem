@@ -7,12 +7,14 @@
 \alias{TS_factor,AssetPricingFactor}
 \title{Term structure factor}
 \usage{
-TS_factor(data, update_frequency, return_frequency, front, back,
-  ranking_period, long_threshold, short_threshold)
+TS_factor(data, update_frequency = "month", return_frequency = "day",
+  front = 1L, back = 2L, ranking_period = 1L, long_threshold = 0.5,
+  short_threshold = 0.5, weighted = F)
 
 \S4method{TS_factor}{FuturesTS}(data, update_frequency = "month",
   return_frequency = "day", front = 1L, back = 2L,
-  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5)
+  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5,
+  weighted = F)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -46,6 +48,10 @@ the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector. Specifies
 the threshold for long positions. Default: 0.5.}
+
+\item{weighted}{a scalar \code{\link[base]{logical}} vector.
+If 'TRUE' adjusts portoflio weights with respect to sorting variable
+values, else equal weights are used. Defaults to 'FALSE'.}
 }
 \value{
 An S4 object of class \code{\linkS4class{AssetPricingFactor}}.

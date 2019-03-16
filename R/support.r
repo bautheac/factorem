@@ -4,7 +4,9 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
                          return_frequency = NULL,  ranking_period = NULL, long_threshold = NULL,
                          short_threshold = NULL, sort_levels = NULL, geometric = NULL,
                          front = NULL, back = NULL, positions = NULL, long = NULL,
-                         factor_returns = NULL, assets_dates = NULL, factor_dates = NULL){
+                         factor_returns = NULL, assets_dates = NULL, factor_dates = NULL,
+                         weighted = NULL, format = NULL, underlying = NULL, unit = NULL,
+                         participant = NULL){
   if(! is.null(name))
     if(! rlang::is_scalar_character(name))
       stop("Parameter 'name' must be supplied as a scalar character vector.")
@@ -71,6 +73,47 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
   if(! c(is.null(assets_dates) & is.null(factor_dates)))
     if(NROW(intersect(assets_dates, factor_dates)) / max(NROW(assets_dates), NROW(factor_dates)) < 0.5)
       stop("Assets & factor returns dates unmatch.")
+
+  if(! is.null(weighted))
+    if(! rlang::is_scalar_logical(long))
+      stop("Parameter 'weighted' must be supplied as a scalar logical vector (TRUE or FALSE).")
+
+  if(! is.null(format)){
+    utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+    formats <- dplyr::filter(tickers_cftc, format != "index investment") %>%
+      dplyr::distinct(format) %>% purrr::flatten_chr()
+    if(! all(rlang::is_scalar_character(format), format %in% formats))
+      stop(paste0("Parameter 'format' must be supplied as a scalar character vector; one of: '",
+                  paste(formats, collapse = "', '"), "'."))
+  }
+
+  if(! is.null(underlying)){
+    utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+    underlyings <- dplyr::filter(tickers_cftc, format != "index investment") %>%
+      dplyr::distinct(underlying) %>% purrr::flatten_chr()
+    if(! all(rlang::is_scalar_character(underlying), underlying %in% underlyings))
+      stop(paste0("Parameter 'underlying' must be supplied as a scalar character vector; one of: '",
+                  paste(underlyings, collapse = "', '"), "'."))
+  }
+
+  if(! is.null(unit)){
+    utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+    units <- dplyr::filter(tickers_cftc, format != "index investment") %>%
+      dplyr::distinct(unit) %>% purrr::flatten_chr()
+    if(! all(rlang::is_scalar_character(unit), unit %in% units))
+      stop(paste0("Parameter 'unit' must be supplied as a scalar character vector; one of: '",
+                  paste(units, collapse = "', '"), "'."))
+  }
+
+  if(! is.null(participant)){
+    utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+    participants <- dplyr::filter(tickers_cftc, format != "index investment") %>%
+      dplyr::distinct(participant) %>% purrr::flatten_chr()
+    if(! all(rlang::is_scalar_character(participant), participant %in% participants))
+      stop(paste0("Parameter 'participant' must be supplied as a scalar character vector; one of: '",
+                  paste(participants, collapse = "', '"), "'."))
+  }
+
 }
 
 return_cumulative <- function(x) prod(x + 1L) - 1L

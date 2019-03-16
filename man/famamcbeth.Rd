@@ -18,5 +18,5 @@ An S4 object of class \code{\linkS4class{FamaMcBeth}}.
 }
 \description{
 Given two dataframes of assets returns and factor returns respectively,
-  performs a Fama-McBeth two-pass cross-sectional regresion.
+  performs a Fama-McBeth two-pass cross-sectional regression.
 }

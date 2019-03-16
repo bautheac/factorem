@@ -16,60 +16,119 @@ setMethod("show", signature(object = "AssetPricingFactor"), function(object) {
   cat(methods::is(object)[[1]], "\n",
       "  name: ", paste(object@name, "factor", " "), "\n",
       "  parameters\n",
-      paste0(rep("    ", ncol(object@parameters)),
-             gsub(pattern = "_", replacement = " ", names(object@parameters)),
-             sapply(names(object@parameters), function(x) if (nchar(x) <= 10L) ":\t\t " else ":\t "),
-             object@parameters[1L, ],
-             rep("\n", ncol(object@parameters))),
+      paste0(rep("    ", nrow(object@parameters)),
+             gsub(pattern = "_", replacement = " ", object@parameters$parameter),
+             sapply(object@parameters$parameter, function(x) if (nchar(x) <= 10L) ":\t\t " else ":\t "),
+             object@parameters$value,
+             rep("\n", nrow(object@parameters))),
       sep = ""
   )
 })
 
 
-# accessors ####
-
-## name ####
-#' @rdname get_name-methods
+# show ####
+#' Show method for \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} S4 objects.
 #'
-#' @aliases get_name,AssetPricingFactor
+#' @param object an S4 object of class \linkS4class{FamaMcBeth}.
 #'
+#' @rdname show-methods
+#'
+#' @aliases show,FamaMcBeth
+#'
+#'
+#' @importFrom methods show
 #'
 #'
 #' @export
-setMethod("get_name", "AssetPricingFactor", function(object) object@name)
+setMethod("show", signature(object = "FamaMcBeth"), function(object) {
+  cat("S4 object of class",
+      methods::is(object)[[1L]],
+      "\n\nSlots inlude\n",
+      "  betas: access with get_betas()\n",
+      "  means: access with get_means()\n",
+      "  lamdba: access with get_lamdba()\n",
+      "  data: access with get_data()\n",
+      "  call: access with get_call()")
+})
+
+
+
+# accessors ####
+
+## betas ####
+#' @rdname get_betas-methods
+#'
+#' @aliases get_betas,FamaMcBeth
+#'
+#' @export
+setMethod("get_betas", "FamaMcBeth", function(object) object@betas)
+
+## call ####
+#' @rdname get_call-methods
+#'
+#' @aliases get_call,AssetPricingFactor
+#'
+#' @export
+setMethod("get_call", "AssetPricingFactor", function(object) object@call)
+
+## call ####
+#' @rdname get_call-methods
+#'
+#' @aliases get_call,FamaMcBeth
+#'
+#' @export
+setMethod("get_call", "FamaMcBeth", function(object) object@call)
 
 ## data ####
 #' @rdname get_data-methods
 #'
 #' @aliases get_data,AssetPricingFactor
 #'
-#'
 #' @importFrom data.table data.table
-#'
 #'
 #' @export
 setMethod("get_data", "AssetPricingFactor", function(object) object@data)
 
-## returns ####
-#' @rdname get_returns-methods
+## data ####
+#' @rdname get_data-methods
 #'
-#' @aliases get_returns,AssetPricingFactor
-#'
+#' @aliases get_data,FamaMcBeth
 #'
 #' @importFrom data.table data.table
 #'
+#' @export
+setMethod("get_data", "FamaMcBeth", function(object) object@data)
+
+## lambda ####
+#' @rdname get_lambda-methods
+#'
+#' @aliases get_lambda,FamaMcBeth
 #'
 #' @export
-setMethod("get_returns", "AssetPricingFactor", function(object) object@returns)
+setMethod("get_lambda", "FamaMcBeth", function(object) object@lambda)
+
+## means ####
+#' @rdname get_means-methods
+#'
+#' @aliases get_means,FamaMcBeth
+#'
+#' @export
+setMethod("get_means", "FamaMcBeth", function(object) object@means)
+
+## name ####
+#' @rdname get_name-methods
+#'
+#' @aliases get_name,AssetPricingFactor
+#'
+#' @export
+setMethod("get_name", "AssetPricingFactor", function(object) object@name)
 
 ## positions ####
 #' @rdname get_positions-methods
 #'
 #' @aliases get_positions,AssetPricingFactor
 #'
-#'
 #' @importFrom data.table data.table
-#'
 #'
 #' @export
 setMethod("get_positions", "AssetPricingFactor", function(object) object@positions)
@@ -79,21 +138,22 @@ setMethod("get_positions", "AssetPricingFactor", function(object) object@positio
 #'
 #' @aliases get_parameters,AssetPricingFactor
 #'
-#'
-#' @importFrom tibble tibble
-#'
+#' @importFrom data.table data.table
 #'
 #' @export
 setMethod("get_parameters", "AssetPricingFactor", function(object) object@parameters)
 
-## call ####
-#' @rdname get_call-methods
+## returns ####
+#' @rdname get_returns-methods
 #'
-#' @aliases get_call,AssetPricingFactor
+#' @aliases get_returns,AssetPricingFactor
 #'
+#' @importFrom data.table data.table
 #'
 #' @export
-setMethod("get_call", "AssetPricingFactor", function(object) object@call)
+setMethod("get_returns", "AssetPricingFactor", function(object) object@returns)
+
+
 
 
 # factors ####
@@ -106,8 +166,8 @@ setMethod("get_call", "AssetPricingFactor", function(object) object@call)
 #' @export
 setMethod("CHP_factor",
           signature(price_data = "FuturesTS", CHP_data = "FuturesCFTC"),
-          function(price_data, CHP_data, update_frequency = "month", return_frequency = "day",
-                   ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5){
+          function(price_data, CHP_data, update_frequency, return_frequency,
+                   ranking_period, long_threshold, short_threshold, weighted){
 
             utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
 
@@ -140,10 +200,9 @@ setMethod("CHP_factor",
 
             data <- data.table::rbindlist(list(price_data, CHP_data), use.names = T)
 
-            data <- factorem(name = "CHP", data = data, update_frequency = update_frequency,
-                             return_frequency = return_frequency, price_variable = "PX_LAST",
-                             sort_variable = "inverse CHP", sort_levels = T, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+            data <- factorem(name = "CHP", data = data, update_frequency = update_frequency, return_frequency = return_frequency,
+                             price_variable = "PX_LAST", sort_variable = "inverse CHP", sort_levels = T, ranking_period = ranking_period,
+                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
 
             methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -151,6 +210,61 @@ setMethod("CHP_factor",
 )
 
 
+## pressure ####
+
+#' @rdname pressure_factor-methods
+#' @aliases pressure_factor,AssetPricingFactor
+#'
+#' @export
+setMethod("pressure_factor",
+          signature(price_data = "FuturesTS", position_data = "FuturesCFTC"),
+          function(price_data, position_data, format, underlying, unit, participant,
+                   update_frequency, return_frequency, ranking_period, long_threshold,
+                   short_threshold, weighted){
+
+            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+
+            check_params(format = format, underlying = underlying, unit = unit, participant = participant,
+                         update_frequency = update_frequency, return_frequency = return_frequency,
+                         ranking_period = ranking_period, long_threshold = long_threshold,
+                         short_threshold = short_threshold)
+
+            tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
+            dates <- dplyr::distinct(position_data@data, date) %>%
+              dplyr::mutate(adjusted = RQuantLib::advance(dates = as.Date(date), calendar = "UnitedStates/NYSE", n = 3L, timeUnit = 0L))
+            position_data@data <- dplyr::left_join(position_data@data, dates, by = "date") %>%
+              dplyr::select(`active contract ticker`, ticker, field, date = adjusted, value) %>% data.table::as.data.table()
+
+            price_data <- dplyr::filter(price_data@data, field == "PX_LAST") %>% dplyr::left_join(tickers, by = "ticker") %>%
+              dplyr::filter(position == 1L) %>% dplyr::select(ticker = `active contract ticker`, field, date, value)
+
+            position_data <- dplyr::left_join(position_data@data, dplyr::select(tickers_cftc, format, underlying, unit, participant, position, ticker),
+                                              by = "ticker") %>%
+              dplyr::filter(format == !! format, underlying == !! underlying, unit == !! unit, participant == !! participant, position %in% c("long", "short")) %>%
+              dplyr::select(ticker = `active contract ticker`, position, date, value) %>%
+              dplyr::mutate(value = abs(value)) %>%
+              tidyr::spread(position, value) %>% dplyr::mutate(`inverse CHP` = (long + short) / long) %>%
+              dplyr::select(ticker, date, `inverse CHP`) %>% tidyr::gather(field, value, -c(ticker, date))
+
+            if(! all(unique(position_data$ticker) %in% unique(price_data$ticker))){
+              names <- unique(position_data$ticker)[!which((unique(position_data$ticker) %in% unique(price_data$ticker)))]
+              stop(paste0("No price data for ", paste(names, collapse = ", "), "."))
+            }
+
+            data <- data.table::rbindlist(list(price_data, position_data), use.names = T)
+
+            factor <- factorem(name = "pressure", data = data, update_frequency = update_frequency, return_frequency = return_frequency,
+                               price_variable = "PX_LAST", sort_variable = "inverse CHP", sort_levels = T, ranking_period = ranking_period,
+                               long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
+
+            parameters <- data.table::data.table(parameter = c("format", "underlying", "unit", "participant"),
+                                                 value = list(format, underlying, unit, participant))
+            parameters <- data.table::rbindlist(list(factor@parameters[parameter == "name"], parameters, factor@parameters[parameter != "name"]))
+
+            methods::new("PressureFactor", name = factor@name, positions = factor@positions, returns = factor@returns,
+                         data = factor@data, parameters = parameters, call = match.call())
+          }
+)
 
 
 ## futures nearby open interest growth (OI) factor ####
@@ -161,8 +275,8 @@ setMethod("CHP_factor",
 #' @export
 setMethod("OI_nearby_factor",
           signature(data = "FuturesTS"),
-          function(data, update_frequency = "month", return_frequency = "day", ranking_period = 1L,
-                   long_threshold = 0.5, short_threshold = 0.5){
+          function(data, update_frequency, return_frequency, ranking_period,
+                   long_threshold, short_threshold, weighted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
@@ -181,7 +295,7 @@ setMethod("OI_nearby_factor",
             data <- factorem(name = "nearby OI", data = data, update_frequency = update_frequency,
                              return_frequency = return_frequency, price_variable = "PX_LAST",
                              sort_variable = "OPEN_INT", sort_levels = F, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
 
             methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -198,8 +312,8 @@ setMethod("OI_nearby_factor",
 #' @export
 setMethod("OI_aggregate_factor",
           signature(price_data = "FuturesTS", aggregate_data = "FuturesAggregate"),
-          function(price_data, aggregate_data, update_frequency = "month", return_frequency = "day",
-                   ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5){
+          function(price_data, aggregate_data, update_frequency, return_frequency,
+                   ranking_period, long_threshold, short_threshold, weighted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
@@ -216,7 +330,7 @@ setMethod("OI_aggregate_factor",
             data <- factorem(name = "aggregate OI", data = data, update_frequency = update_frequency,
                              return_frequency = return_frequency, price_variable = "PX_LAST",
                              sort_variable = "FUT_AGGTE_OPEN_INT", sort_levels = F, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
 
             methods::new("OIFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -234,8 +348,8 @@ setMethod("OI_aggregate_factor",
 #' @export
 setMethod("momentum_factor",
           signature(data = "FuturesTS"),
-          function(data, update_frequency = "week", return_frequency = "day", ranking_period = 4L,
-                   long_threshold = 0.5, short_threshold = 0.5){
+          function(data, update_frequency, return_frequency, ranking_period,
+                   long_threshold, short_threshold, weighted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
@@ -247,9 +361,9 @@ setMethod("momentum_factor",
               dplyr::select(ticker = `active contract ticker`, field, date, value)
 
             data <- factorem(name = "futures momentum", data = price, update_frequency = update_frequency,
-                             return_frequency = return_frequency, price_variable = "PX_LAST",
-                             sort_variable = "PX_LAST", sort_levels = F, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+                             return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "PX_LAST",
+                             sort_levels = F, ranking_period = ranking_period, long_threshold = long_threshold,
+                             short_threshold = short_threshold, weighted = weighted)
 
             methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -268,8 +382,8 @@ setMethod("momentum_factor",
 #' @export
 setMethod("momentum_factor",
           signature(data = "EquityMarket"),
-          function(data, update_frequency = "month", return_frequency = "day", ranking_period = 1L,
-                   long_threshold = 0.5, short_threshold = 0.5){
+          function(data, update_frequency, return_frequency, ranking_period,
+                   long_threshold, short_threshold, weighted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
@@ -280,7 +394,7 @@ setMethod("momentum_factor",
             data <- factorem(name = "equity momentum", data = price, update_frequency = update_frequency,
                              return_frequency = return_frequency, price_variable = "PX_LAST",
                              sort_variable = "PX_LAST", sort_levels = F, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
 
             methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -301,8 +415,8 @@ setMethod("momentum_factor",
 #' @export
 setMethod("TS_factor",
           signature(data = "FuturesTS"),
-          function(data, update_frequency = "month", return_frequency = "day", front = 1L, back = 2L,
-                   ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5){
+          function(data, update_frequency, return_frequency, front, back,
+                   ranking_period, long_threshold, short_threshold, weighted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
@@ -324,7 +438,7 @@ setMethod("TS_factor",
             data <- factorem(name = "futures term structure", data = data, update_frequency = update_frequency,
                              return_frequency = return_frequency, price_variable = "PX_LAST",
                              sort_variable = "carry", sort_levels = T, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold)
+                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
 
             methods::new("TSFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())
@@ -343,7 +457,7 @@ setMethod("TS_factor",
 #' @export
 setMethod("market_factor",
           signature(data = "FuturesTS"),
-          function(data, return_frequency = "month", long = TRUE){
+          function(data, return_frequency, long){
 
             check_params(return_frequency = return_frequency, long = long)
 
@@ -370,9 +484,11 @@ setMethod("market_factor",
               dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
 
+            parameters <- data.table::data.table(parameter = c("return frequency", "long"), value = list(return_frequency, long))
+
             methods::new("MarketFactor", name = "futures nearby market", returns = data.table::as.data.table(returns),
                          positions = data.table::as.data.table(positions), data = data.table::as.data.table(data@data),
-                         parameters = tibble::tibble(return_frequency = return_frequency, long = long), call = match.call())
+                         parameters = parameters, call = match.call())
           }
 )
 
@@ -411,9 +527,11 @@ setMethod("market_factor",
               dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
 
+            parameters <- data.table::data.table(parameter = c("return frequency", "long"), value = list(return_frequency, long))
+
             methods::new("MarketFactor", name = "equity market", returns = data.table::as.data.table(returns),
                          positions = data.table::as.data.table(positions), data = data.table::as.data.table(data@data),
-                         parameters = tibble::tibble(return_frequency = return_frequency, long = long), call = deparse(match.call()))
+                         parameters = parameters, call = deparse(match.call()))
           }
 )
 

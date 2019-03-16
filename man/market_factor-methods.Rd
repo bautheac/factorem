@@ -8,10 +8,10 @@
 \alias{market_factor,EquityMarket-method}
 \title{Market factor}
 \usage{
-market_factor(data, return_frequency, long)
+market_factor(data, return_frequency = "month", long = T)
 
 \S4method{market_factor}{FuturesTS}(data, return_frequency = "month",
-  long = TRUE)
+  long = T)
 
 \S4method{market_factor}{EquityMarket}(data, return_frequency = "month",
   long = T)

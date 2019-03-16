@@ -7,12 +7,15 @@
 \alias{OI_aggregate_factor,AssetPricingFactor}
 \title{Construct futures open interest growth (OI) aggregate factor}
 \usage{
-OI_aggregate_factor(price_data, aggregate_data, update_frequency,
-  return_frequency, ranking_period, long_threshold, short_threshold)
+OI_aggregate_factor(price_data, aggregate_data,
+  update_frequency = "month", return_frequency = "day",
+  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5,
+  weighted = F)
 
 \S4method{OI_aggregate_factor}{FuturesTS,FuturesAggregate}(price_data,
   aggregate_data, update_frequency = "month", return_frequency = "day",
-  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5)
+  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5,
+  weighted = F)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -43,6 +46,10 @@ Specifies the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
+
+\item{weighted}{a scalar \code{\link[base]{logical}} vector.
+If 'TRUE' adjusts portoflio weights with respect to sorting variable
+values, else equal weights are used. Defaults to 'FALSE'.}
 }
 \value{
 An S4 object of class \code{\linkS4class{OIFactor}}.

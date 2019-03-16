@@ -30,7 +30,7 @@
 #' @importFrom lubridate week month quarter semester year
 #' @importFrom magrittr "%<>%"
 factor_positions <- function(data, update_frequency, sort_variable, sort_levels, ranking_period,
-                             long_threshold, short_threshold){
+                             long_threshold, short_threshold, weighted){
 
   data <- dplyr::filter(data, field == !! sort_variable) %>% dplyr::mutate(year = lubridate::year(date))
   data <- if (update_frequency == "day") { dplyr::mutate(data, unit = lubridate::yday(date)) }
@@ -51,15 +51,38 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
   }
 
   dplyr::group_by(positions, year, unit) %>% dplyr::do({
+
     data <- dplyr::select(., date, name, average) %>% dplyr::filter(complete.cases(.)) %>%
       dplyr::arrange(dplyr::desc(average))
-    long <- dplyr::slice(data, 1L:(ceiling(nrow(data) * (1L - long_threshold)))) %>%
-      dplyr::select(date, name) %>% dplyr::mutate(position = "long")
-    short <- dplyr::slice(data, (floor(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)) %>%
-      dplyr::arrange(average) %>% dplyr::select(date, name) %>% dplyr::mutate(position = "short")
+
+    long <- dplyr::slice(data, 1L:(floor(nrow(data) * (1L - long_threshold)))) %>%
+      dplyr::select(date, name, weight = average) %>% dplyr::mutate(position = "long")
+    long <- if (weighted){
+      averages <- scales::rescale(long$weight); i <- floor(NROW(averages) / 2L)
+      weights <- sapply(1L:i, function(x){
+        y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
+        c((1L/NROW(averages)) * y, (1L/NROW(averages)) / y)
+      }) %>% as.vector()
+      weights <- if (NROW(averages) %% 2L != 0L) c(weights, 1L/NROW(averages)) else weights
+      dplyr::mutate(long, weight = sort(weights, decreasing = T) / sum(weights))
+    } else {dplyr::select(long, date, name, position)}
+
+    short <- dplyr::slice(data, (ceiling(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)) %>%
+      dplyr::arrange(average) %>% dplyr::select(date, name, weight = average) %>%
+      dplyr::mutate(position = "short")
+    short <- if (weighted){
+      averages <- scales::rescale(short$weight); i <- floor(NROW(averages) / 2L)
+      weights <- sapply(1L:i, function(x){
+        y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
+        c((1L/NROW(averages)) * y, (1L/NROW(averages)) / y)
+      }) %>% as.vector()
+      weights <- if (NROW(averages) %% 2L != 0L) c(weights, 1L/NROW(averages)) else weights
+      dplyr::mutate(short, weight = sort(weights, decreasing = F) / sum(weights))
+    } else {dplyr::select(short, date, name, position)}
+
     rbind(long, short)
-  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>% dplyr::select(date, year, unit, name, position) %>%
-    data.table::as.data.table()
+  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>%
+    dplyr::select(date, year, unit, dplyr::everything()) %>% data.table::as.data.table()
 }
 
 
@@ -91,7 +114,7 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
 #'
 #' @importFrom lubridate month quarter semester week
 #' @importFrom magrittr "%<>%"
-factor_returns <- function(data, positions, update_frequency, return_frequency, price_variable){
+factor_returns <- function(data, positions, update_frequency, return_frequency, price_variable, weighted){
 
   price <- dplyr::filter(data, field == !! price_variable) %>% dplyr::mutate(year = lubridate::year(date))
   data <- if (update_frequency == "day") { dplyr::mutate(price, unit = lubridate::yday(date)) }
@@ -105,8 +128,9 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
 
   returns <- dplyr::left_join(data, positions, by = c("name", "year", "unit")) %>%
     dplyr::filter(! is.na(position)) %>% dplyr::group_by(position, date) %>%
-    dplyr::summarise(mean = mean(return, na.rm = T)) %>% dplyr::ungroup() %>%
-    tidyr::spread(position, mean) %>% dplyr::mutate(short = short * -1L, year = lubridate::year(date)) %>%
+    dplyr::summarise(mean = if(weighted) return %*% weight else mean(return, na.rm = T)) %>%
+    dplyr::ungroup() %>% tidyr::spread(position, mean) %>%
+    dplyr::mutate(short = short * -1L, year = lubridate::year(date)) %>%
     dplyr::mutate(factor = apply(.[, c("long", "short")], mean, MARGIN = 1L, na.rm = T))
   returns <- if (return_frequency == "day") { dplyr::mutate(returns, unit = lubridate::yday(date)) }
   else { dplyr::mutate(returns, unit = do.call(what = !! return_frequency, args = list(date))) }
@@ -169,7 +193,8 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
 #'
 #' @export
 factorem <- function(name = "", data, update_frequency = "month", return_frequency = "day",
-                     price_variable = "PX_LAST", sort_variable = "PX_LAST", sort_levels = T,
+                     price_variable = "PX_LAST", sort_variable = "PX_LAST",
+                     sort_levels = T, weighted = T,
                      ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5){
 
   check_params(name = name, data = data, update_frequency = update_frequency,
@@ -182,19 +207,22 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
   positions <- factor_positions(data = data, update_frequency = update_frequency,
                                 sort_variable = sort_variable, sort_levels = sort_levels,
                                 ranking_period = ranking_period, long_threshold = long_threshold,
-                                short_threshold = short_threshold)
+                                short_threshold = short_threshold, weighted = weighted)
 
-  returns <- factor_returns(data = data, positions = positions[, !"date", with = F], price_variable = price_variable,
-                            update_frequency = update_frequency, return_frequency = return_frequency)
+  returns <- factor_returns(data = data, positions = positions[, !"date", with = F],
+                            price_variable = price_variable, update_frequency = update_frequency,
+                            return_frequency = return_frequency, weighted = weighted)
 
-  params <- list(`update frequency` = update_frequency, `return frequency` = return_frequency,
-                 `price variable` = price_variable, `sort variable` = sort_variable,
-                 `sort levels` = sort_levels, `ranking period` = ranking_period,
-                 `long threshold` = long_threshold, `short threshold` = short_threshold) %>%
-    tibble::as_tibble()
 
-  methods::new("AssetPricingFactor", name = name, positions = positions[, !c("year", "unit"), with = F], returns = returns,
-               data = data.table::as.data.table(data), parameters = params, call = match.call())
+  params <- data.table::data.table(parameter = c("name", "update frequency", "return frequency", "price variable",
+                                            "sort variable", "sort levels", "weighted", "ranking_period",
+                                            "long_threshold", "short_threshold"),
+                                   value = list(name, update_frequency, return_frequency, price_variable,
+                                                sort_variable, sort_levels, weighted, ranking_period,
+                                                long_threshold, short_threshold))
+
+  methods::new("AssetPricingFactor", name = name, positions = positions[, !c("year", "unit"), with = F],
+               returns = returns, data = data.table::as.data.table(data), parameters = params, call = match.call())
 }
 
 
@@ -202,7 +230,7 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
 #'
 #'
 #' @description Given two dataframes of assets returns and factor returns respectively,
-#'   performs a Fama-McBeth two-pass cross-sectional regresion.
+#'   performs a Fama-McBeth two-pass cross-sectional regression.
 #'
 #'
 #' @param assets_returns a dataframe with dates in the first column and assets returns
@@ -221,19 +249,20 @@ famamcbeth <- function(assets_returns, factor_returns){
                factor_dates = factor_returns$date)
 
   tickers <- names(assets_returns)[names(assets_returns) != "date" ]
-  data <- dplyr::full_join(assets_returns, factor_returns, by = "date") %>% data.table::as.data.table()
+  data <- dplyr::full_join(assets_returns, factor_returns, by = "date")
 
   betas <- lapply(tickers, function(x){ formula <- as.formula(paste0("`", x, "` ~ factor"))
   lm(formula, data = data) }) %>% setNames(tickers)
   betas <- data.table::data.table(ticker = tickers, beta = betas)
-  means <- data.table::data.table(ticker = tickers, mean = apply(data[, tickers], mean, MARGIN = 2L, na.rm = T))
+  means <- data.table::data.table(ticker = tickers, mean = apply(dplyr::select(data, tickers),
+                                                                 mean, MARGIN = 2L, na.rm = T))
 
   coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) broom::tidy(y) %>%
                                                             dplyr::filter(term == "factor") %>%
                                                             dplyr::select(estimate) %>% purrr::flatten_dbl())) %>%
     tidyr::unnest(beta)
 
-  data <- dplyr::full_join(means, coefficients, by = "ticker")
+  data <- dplyr::full_join(means, coefficients, by = "ticker") %>% data.table::as.data.table()
   formula <- as.formula("mean ~ beta"); lambda <- lm(formula, data = data)
 
   methods::new("FamaMcBeth", betas = betas, means = means, lambda = lambda, data = data, call = match.call())

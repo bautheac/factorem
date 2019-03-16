@@ -7,12 +7,14 @@
 \alias{CHP_factor,AssetPricingFactor}
 \title{Commercial hedging pressure (CHP) factor}
 \usage{
-CHP_factor(price_data, CHP_data, update_frequency, return_frequency,
-  ranking_period, long_threshold, short_threshold)
+CHP_factor(price_data, CHP_data, update_frequency = "month",
+  return_frequency = "day", ranking_period = 6L,
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
 
 \S4method{CHP_factor}{FuturesTS,FuturesCFTC}(price_data, CHP_data,
   update_frequency = "month", return_frequency = "day",
-  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5)
+  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
+  weighted = F)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -43,6 +45,10 @@ Specifies the threshold for short positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
+
+\item{weighted}{a scalar \code{\link[base]{logical}} vector.
+If 'TRUE' adjusts portoflio weights with respect to pressure, else
+equal weights are used. Defaults to 'FALSE'.}
 }
 \value{
 An S4 object of class \code{\linkS4class{CHPFactor}}.

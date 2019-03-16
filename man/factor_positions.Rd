@@ -5,7 +5,7 @@
 \title{Get time series of long and short factor positions}
 \usage{
 factor_positions(data, update_frequency, sort_variable, sort_levels,
-  ranking_period, long_threshold, short_threshold)
+  ranking_period, long_threshold, short_threshold, weighted)
 }
 \arguments{
 \item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date},
