@@ -57,9 +57,20 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
     data <- dplyr::select(., date, name, average) %>% dplyr::filter(complete.cases(.)) %>%
       dplyr::arrange(dplyr::desc(average))
 
-    long <- dplyr::slice(data, 1L:(floor(nrow(data) * (1L - long_threshold)))) %>%
-      dplyr::select(date, name, weight = average) %>% dplyr::mutate(position = "long")
-    long <- if (weighted){
+    long <- factor_longs(data = data, long_threshold = !! long_threshold, weighted = !! weighted)
+    short <- factor_shorts(data = data, short_threshold = !! short_threshold, weighted = !! weighted)
+    rbind(long, short)
+
+  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>%
+    dplyr::select(date, year, unit, dplyr::everything()) %>% data.table::as.data.table()
+}
+
+
+factor_longs <- function(data, long_threshold, weighted){
+  long <-  dplyr::slice(data, 1L:(floor(nrow(data) * (1L - long_threshold)))) %>%
+    dplyr::select(date, name, weight = average) %>% dplyr::mutate(position = "long")
+  if (weighted){
+    if (nrow(long) == 1L){ dplyr::mutate(long, weight = 1L) } else {
       averages <- scales::rescale(long$weight); i <- floor(NROW(averages) / 2L)
       weights <- sapply(1L:i, function(x){
         y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
@@ -67,12 +78,16 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
       }) %>% as.vector()
       weights <- if (NROW(averages) %% 2L != 0L) c(weights, 1L/NROW(averages)) else weights
       dplyr::mutate(long, weight = sort(weights, decreasing = T) / sum(weights))
-    } else {dplyr::select(long, date, name, position)}
+    }
+  } else { dplyr::select(long, date, name, position) }
+}
 
-    short <- dplyr::slice(data, (ceiling(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)) %>%
-      dplyr::arrange(average) %>% dplyr::select(date, name, weight = average) %>%
-      dplyr::mutate(position = "short")
-    short <- if (weighted){
+factor_shorts <- function(data, short_threshold, weighted){
+  short <- dplyr::slice(data, (ceiling(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)) %>%
+    dplyr::arrange(average) %>% dplyr::select(date, name, weight = average) %>%
+    dplyr::mutate(position = "short")
+  if (weighted){
+    if (nrow(short) == 1L){ dplyr::mutate(short, weight = 1L) } else {
       averages <- scales::rescale(short$weight); i <- floor(NROW(averages) / 2L)
       weights <- sapply(1L:i, function(x){
         y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
@@ -80,12 +95,10 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
       }) %>% as.vector()
       weights <- if (NROW(averages) %% 2L != 0L) c(weights, 1L/NROW(averages)) else weights
       dplyr::mutate(short, weight = sort(weights, decreasing = F) / sum(weights))
-    } else {dplyr::select(short, date, name, position)}
-
-    rbind(long, short)
-  }) %>% dplyr::ungroup() %>% dplyr::arrange(year, unit) %>%
-    dplyr::select(date, year, unit, dplyr::everything()) %>% data.table::as.data.table()
+    }
+  } else { dplyr::select(short, date, name, position) }
 }
+
 
 
 #' Get return time series for factor as well as for long and short legs independently.
