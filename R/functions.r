@@ -157,7 +157,7 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
 #'
 #' @param name a scalar character vector specifying the name to use for the factor.
 #'
-#' @param data a dataframe/tibble. Columns must include \code{name}, \code{date},
+#' @param data a dataframe/tibble. Columns must include \code{ticker}, \code{date},
 #'   \code{field} and \code{value}.
 #'
 #' @param update_frequency a scalar character vector. Specifies the rebalancing

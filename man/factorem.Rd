@@ -12,7 +12,7 @@ factorem(name = "", data, update_frequency = "month",
 \arguments{
 \item{name}{a scalar character vector specifying the name to use for the factor.}
 
-\item{data}{a dataframe/tibble. Columns must include \code{name}, \code{date},
+\item{data}{a dataframe/tibble. Columns must include \code{ticker}, \code{date},
 \code{field} and \code{value}.}
 
 \item{update_frequency}{a scalar character vector. Specifies the rebalancing

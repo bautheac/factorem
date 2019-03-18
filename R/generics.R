@@ -315,9 +315,13 @@ setGeneric("CHP_factor",
 #' @param short_threshold a scalar \code{\link[base]{numeric}} vector.
 #'   Specifies the threshold for long positions. Default: 0.5.
 #'
+#' @param sort_levels a scalar \code{\link[base]{logical}} vector.
+#'   If \code{TRUE} sorts on pressure levels, else
+#'   on relative changes in pressure. Defaults to \code{TRUE}.
+#'
 #' @param weighted a scalar \code{\link[base]{logical}} vector.
-#'   If 'TRUE' adjusts portoflio weights with respect to pressure, else
-#'   equal weights are used. Defaults to 'FALSE'.
+#'   If \code{TRUE} adjusts portoflio weights with respect to pressure, else
+#'   equal weights are used. Defaults to \code{FALSE}.
 #'
 #' @return An S4 object of class \code{\linkS4class{PressureFactor}}.
 #'
@@ -338,7 +342,8 @@ setGeneric("pressure_factor",
            function(price_data, position_data, format = "disaggregated", underlying = "futures only",
                     unit = "contracts", participant = "producer/merchant/processor/user",
                     update_frequency = "month", return_frequency = "day", ranking_period = 6L,
-                    long_threshold = 0.5, short_threshold = 0.5, weighted = F) standardGeneric("pressure_factor"))
+                    long_threshold = 0.5, short_threshold = 0.5,
+                    sort_levels = T, weighted = F) standardGeneric("pressure_factor"))
 
 
 

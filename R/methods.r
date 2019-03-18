@@ -220,7 +220,7 @@ setMethod("pressure_factor",
           signature(price_data = "FuturesTS", position_data = "FuturesCFTC"),
           function(price_data, position_data, format, underlying, unit, participant,
                    update_frequency, return_frequency, ranking_period, long_threshold,
-                   short_threshold, weighted){
+                   short_threshold, sort_levels, weighted){
 
             utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
 

@@ -12,14 +12,14 @@ pressure_factor(price_data, position_data, format = "disaggregated",
   participant = "producer/merchant/processor/user",
   update_frequency = "month", return_frequency = "day",
   ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  weighted = F)
+  sort_levels = T, weighted = F)
 
 \S4method{pressure_factor}{FuturesTS,FuturesCFTC}(price_data,
   position_data, format = "disaggregated", underlying = "futures only",
   unit = "contracts", participant = "producer/merchant/processor/user",
   update_frequency = "month", return_frequency = "day",
   ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  weighted = F)
+  sort_levels = T, weighted = F)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -73,9 +73,13 @@ Specifies the threshold for short positions. Default: 0.5.}
 \item{short_threshold}{a scalar \code{\link[base]{numeric}} vector.
 Specifies the threshold for long positions. Default: 0.5.}
 
+\item{sort_levels}{a scalar \code{\link[base]{logical}} vector.
+If \code{TRUE} sorts on pressure levels, else
+on relative changes in pressure. Defaults to \code{TRUE}.}
+
 \item{weighted}{a scalar \code{\link[base]{logical}} vector.
-If 'TRUE' adjusts portoflio weights with respect to pressure, else
-equal weights are used. Defaults to 'FALSE'.}
+If \code{TRUE} adjusts portoflio weights with respect to pressure, else
+equal weights are used. Defaults to \code{FALSE}.}
 }
 \value{
 An S4 object of class \code{\linkS4class{PressureFactor}}.
