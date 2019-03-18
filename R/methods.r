@@ -238,13 +238,14 @@ setMethod("pressure_factor",
             price_data <- dplyr::filter(price_data@data, field == "PX_LAST") %>% dplyr::left_join(tickers, by = "ticker") %>%
               dplyr::filter(position == 1L) %>% dplyr::select(ticker = `active contract ticker`, field, date, value)
 
-            position_data <- dplyr::left_join(position_data@data, dplyr::select(tickers_cftc, format, underlying, unit, participant, position, ticker),
-                                              by = "ticker") %>%
-              dplyr::filter(format == !! format, underlying == !! underlying, unit == !! unit, participant == !! participant, position %in% c("long", "short")) %>%
+            position_data <- dplyr::left_join(position_data@data, dplyr::select(tickers_cftc, format, underlying, unit,
+                                                                                participant, position, ticker), by = "ticker") %>%
+              dplyr::filter(format == !! format, underlying == !! underlying, unit == !! unit, participant == !! participant,
+                            position %in% c("long", "short")) %>%
               dplyr::select(ticker = `active contract ticker`, position, date, value) %>%
               dplyr::mutate(value = abs(value)) %>%
-              tidyr::spread(position, value) %>% dplyr::mutate(`inverse CHP` = (long + short) / long) %>%
-              dplyr::select(ticker, date, `inverse CHP`) %>% tidyr::gather(field, value, -c(ticker, date))
+              tidyr::spread(position, value) %>% dplyr::mutate(pressure = long / (long + short)) %>%
+              dplyr::select(ticker, date, pressure) %>% tidyr::gather(field, value, -c(ticker, date))
 
             if(! all(unique(position_data$ticker) %in% unique(price_data$ticker))){
               names <- unique(position_data$ticker)[!which((unique(position_data$ticker) %in% unique(price_data$ticker)))]
@@ -253,13 +254,15 @@ setMethod("pressure_factor",
 
             data <- data.table::rbindlist(list(price_data, position_data), use.names = T)
 
-            factor <- factorem(name = "pressure", data = data, update_frequency = update_frequency, return_frequency = return_frequency,
-                               price_variable = "PX_LAST", sort_variable = "inverse CHP", sort_levels = T, ranking_period = ranking_period,
-                               long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
+            factor <- factorem(name = "pressure", data = data, update_frequency = update_frequency,
+                               return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "pressure",
+                               sort_levels = sort_levels, ranking_period = ranking_period, long_threshold = long_threshold,
+                               short_threshold = short_threshold, weighted = weighted)
 
             parameters <- data.table::data.table(parameter = c("format", "underlying", "unit", "participant"),
                                                  value = list(format, underlying, unit, participant))
-            parameters <- data.table::rbindlist(list(factor@parameters[parameter == "name"], parameters, factor@parameters[parameter != "name"]))
+            parameters <- data.table::rbindlist(list(factor@parameters[parameter == "name"],
+                                                     parameters, factor@parameters[parameter != "name"]))
 
             methods::new("PressureFactor", name = factor@name, positions = factor@positions, returns = factor@returns,
                          data = factor@data, parameters = parameters, call = match.call())
