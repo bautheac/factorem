@@ -42,11 +42,13 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
   positions <- if (sort_levels){
     dplyr::group_by(positions, name) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
+      dplyr::slice(ranking_period:n()) %>%
       dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   } else {
     dplyr::group_by(positions, name) %>% dplyr::mutate(value = (value/dplyr::lag(value, 1L)) - 1L) %>%
       dplyr::slice(2L:n()) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
+      dplyr::slice(ranking_period:n()) %>%
       dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   }
 
