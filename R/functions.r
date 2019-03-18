@@ -177,6 +177,10 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
 #' @param sort_levels a scalar logical vector. If \code{TRUE}, sort is done on
 #'   \code{sort_variable}'s levels, else on relative changes. Default: \code{TRUE}.
 #'
+#' @param weighted a scalar \code{\link[base]{logical}} vector.
+#'   If \code{TRUE} adjusts portoflio weights with respect to sorting variable, else
+#'   equal weights are used. Defaults to \code{FALSE}.
+#'
 #' @param ranking_period a scalar integer vector. Specifies number of periods in term
 #'   of \code{update_frequency} looking backward for averaging \code{sort_variable}.
 #'   Default: 1 (sort on last observation).

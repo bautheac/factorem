@@ -32,6 +32,10 @@ to use for sorting. Must be found in the \code{field} columns of \code{data}.}
 \item{sort_levels}{a scalar logical vector. If \code{TRUE}, sort is done on
 \code{sort_variable}'s levels, else on relative changes. Default: \code{TRUE}.}
 
+\item{weighted}{a scalar \code{\link[base]{logical}} vector.
+If \code{TRUE} adjusts portoflio weights with respect to sorting variable, else
+equal weights are used. Defaults to \code{FALSE}.}
+
 \item{ranking_period}{a scalar integer vector. Specifies number of periods in term
 of \code{update_frequency} looking backward for averaging \code{sort_variable}.
 Default: 1 (sort on last observation).}
