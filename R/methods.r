@@ -176,7 +176,7 @@ setMethod("CHP_factor",
             utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
             start <- min(unique(c(price_data@data$date, position_data@data$date)))
             end <- max(unique(c(price_data@data$date, position_data@data$date)))
-            holydays <- timeDate::holidayNYSE(lubridate::year(start):lubridate::year(end) +1)
+            holydays <- timeDate::holidayNYSE(lubridate::year(as.Date(start)):(lubridate::year(as.Date(end)) +1))
             calendar <- bizdays::create.calendar(name = "NYSE", holidays = holydays, weekdays = c("saturday", "sunday"))
 
             tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
