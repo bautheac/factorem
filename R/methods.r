@@ -169,15 +169,19 @@ setMethod("CHP_factor",
           function(price_data, CHP_data, update_frequency, return_frequency,
                    ranking_period, long_threshold, short_threshold, weighted){
 
-            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
-
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
                          short_threshold = short_threshold)
 
+            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+            start <- intersect(min(unique(price_data$date)), min(unique(position_data$date)))
+            end <- intersect(max(unique(price_data$date)), max(unique(position_data$date)))
+            holydays <- timeDate::holidayNYSE(lubridate::year(start):lubridate::year(end) +1)
+            calendar <- bizdays::create.calendar(name = "NYSE", holidays = holydays, weekdays = c("saturday", "sunday"))
+
             tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
             dates <- dplyr::distinct(CHP_data@data, date) %>%
-              dplyr::mutate(adjusted = RQuantLib::advance(dates = as.Date(date), calendar = "UnitedStates/NYSE", n = 3L, timeUnit = 0L))
+              dplyr::mutate(adjusted = bizdays::add.bizdays(dates = as.Date(date), n = 3L, cal = calendar))
             CHP_data@data <- dplyr::left_join(CHP_data@data, dates, by = "date") %>%
               dplyr::select(`active contract ticker`, ticker, field, date = adjusted, value) %>% data.table::as.data.table()
 
@@ -222,16 +226,21 @@ setMethod("pressure_factor",
                    update_frequency, return_frequency, ranking_period, long_threshold,
                    short_threshold, sort_levels, weighted){
 
-            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
-
             check_params(format = format, underlying = underlying, unit = unit, participant = participant,
                          update_frequency = update_frequency, return_frequency = return_frequency,
                          ranking_period = ranking_period, long_threshold = long_threshold,
                          short_threshold = short_threshold)
 
+            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
+            start <- intersect(min(unique(price_data$date)), min(unique(position_data$date)))
+            end <- intersect(max(unique(price_data$date)), max(unique(position_data$date)))
+            holydays <- timeDate::holidayNYSE(lubridate::year(start):lubridate::year(end) +1)
+            calendar <- bizdays::create.calendar(name = "NYSE", holidays = holydays, weekdays = c("saturday", "sunday"))
+
             tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
             dates <- dplyr::distinct(position_data@data, date) %>%
-              dplyr::mutate(adjusted = RQuantLib::advance(dates = as.Date(date), calendar = "UnitedStates/NYSE", n = 3L, timeUnit = 0L))
+              dplyr::mutate(adjusted = bizdays::add.bizdays(dates = as.Date(date), n = 3L, cal = calendar))
+
             position_data@data <- dplyr::left_join(position_data@data, dates, by = "date") %>%
               dplyr::select(`active contract ticker`, ticker, field, date = adjusted, value) %>% data.table::as.data.table()
 

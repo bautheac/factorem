@@ -2,10 +2,11 @@ Package: factorem
 Title: factor'em!
 Version: 0.0.1.0
 Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
-Description: Construct bespoke asset pricing factors.
+Description: Asset pricing research in R.
 Depends: R (>= 3.4.0)
 Imports:
     BBGsymbols,
+    bizdays (>= 1.0.6),
     data.table (>= 1.11.4),
     dplyr (>= 0.7.6),
     dygraphs (>= 1.1.1.6),
