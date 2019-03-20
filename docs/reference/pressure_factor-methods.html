@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Construct futures open interest growth (OI) aggregate factor — OI_aggregate_factor • factorem</title>
+<title>Market participant pressure factor — pressure_factor • factorem</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,13 +30,12 @@
 
 
 
-<meta property="og:title" content="Construct futures open interest growth (OI) aggregate factor — OI_aggregate_factor" />
+<meta property="og:title" content="Market participant pressure factor — pressure_factor" />
 
-<meta property="og:description" content="Provided with futures contract front price and aggregate open
-  interest data from Bloomberg retrieved with
-  pullit, construct
-  aggregate open interest growth (OI) factor.
-Basu &amp;amp; Bautheac." />
+<meta property="og:description" content="Provided with futures contract front price and term
+  structure aggregated position data from Bloomberg retrieved with
+  pullit,
+  constructs market participant pressure factors." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -98,31 +97,34 @@ Basu &amp;amp; Bautheac." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Construct futures open interest growth (OI) aggregate factor</h1>
+    <h1>Market participant pressure factor</h1>
     
-    <div class="hidden name"><code>OI_aggregate_factor-methods.Rd</code></div>
+    <div class="hidden name"><code>pressure_factor-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Provided with futures contract front price and aggregate open
-  interest data from Bloomberg retrieved with
-  <a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a>, construct
-  aggregate open interest growth (OI) factor.</p>
-<p>Basu &amp; Bautheac.</p>
+    <p>Provided with futures contract front price and term
+  structure aggregated position data from Bloomberg retrieved with
+  <a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a>,
+  constructs market participant pressure factors.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>OI_aggregate_factor</span>(<span class='no'>price_data</span>, <span class='no'>aggregate_data</span>,
+    <pre class="usage"><span class='fu'>pressure_factor</span>(<span class='no'>price_data</span>, <span class='no'>position_data</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"disaggregated"</span>,
+  <span class='kw'>underlying</span> <span class='kw'>=</span> <span class='st'>"futures only"</span>, <span class='kw'>unit</span> <span class='kw'>=</span> <span class='st'>"contracts"</span>,
+  <span class='kw'>participant</span> <span class='kw'>=</span> <span class='st'>"producer/merchant/processor/user"</span>,
   <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>,
-  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
-  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)
+  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>6L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>sort_levels</span> <span class='kw'>=</span> <span class='no'>T</span>, <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)
 
-<span class='co'># S4 method for FuturesTS,FuturesAggregate</span>
-<span class='fu'>OI_aggregate_factor</span>(<span class='no'>price_data</span>,
-  <span class='no'>aggregate_data</span>, <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>,
-  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
-  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
+<span class='co'># S4 method for FuturesTS,FuturesCFTC</span>
+<span class='fu'>pressure_factor</span>(<span class='no'>price_data</span>,
+  <span class='no'>position_data</span>, <span class='kw'>format</span> <span class='kw'>=</span> <span class='st'>"disaggregated"</span>, <span class='kw'>underlying</span> <span class='kw'>=</span> <span class='st'>"futures only"</span>,
+  <span class='kw'>unit</span> <span class='kw'>=</span> <span class='st'>"contracts"</span>, <span class='kw'>participant</span> <span class='kw'>=</span> <span class='st'>"producer/merchant/processor/user"</span>,
+  <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>,
+  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>6L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>sort_levels</span> <span class='kw'>=</span> <span class='no'>T</span>, <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,15 +133,45 @@ Basu &amp;amp; Bautheac." />
       <th>price_data</th>
       <td><p>an S4 object of class <code>FuturesTS</code>.
 <code>FuturesTS</code> objects are returned by the
-<code><a href='https://bautheac.github.io/pullit/reference/BBG_futures_TS.html'>BBG_futures_TS</a></code> function from the
+<code><a href='https://bautheac.github.io/pullit/reference/BBG_futures_TS.html'>BBG_futures_TS</a></code> function in the
 <a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a> package.</p></td>
     </tr>
     <tr>
-      <th>aggregate_data</th>
-      <td><p>an S4 object of class <code>FuturesAggregate</code>.
-<code>FuturesAggregate</code> objects are returned by the
-<code><a href='https://bautheac.github.io/pullit/reference/BBG_futures_aggregate.html'>BBG_futures_aggregate</a></code> function from the
-<code>pullit</code> package.</p></td>
+      <th>position_data</th>
+      <td><p>an S4 object of class <code>FuturesCFTC</code>.
+<code>FuturesCFTC</code> objects are returned by the
+<code><a href='https://bautheac.github.io/pullit/reference/BBG_futures_CFTC.html'>BBG_futures_CFTC</a></code> function in the
+<a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a> package.</p></td>
+    </tr>
+    <tr>
+      <th>format</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></code> vector.
+Specifies the CFTC report format to use for calculating participant
+pressure: 'disaggregated', 'legacy', 'supplemental' or
+'traders in financial futures'. Defaults to 'disaggregated'.</p></td>
+    </tr>
+    <tr>
+      <th>underlying</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></code> vector.
+Specifies the underlying instrument type to use for calculating participant
+pressure: 'futures only' or 'futures &amp; options'. Defaults to 'futures only'.</p></td>
+    </tr>
+    <tr>
+      <th>unit</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></code> vector.
+Specifies the unit to use for calculating participant
+pressure: 'contracts' or 'traders'. Defaults to 'contracts'.</p></td>
+    </tr>
+    <tr>
+      <th>participant</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></code> vector.
+Specifies the participant to use for calculating market pressure.
+Format specific: 'producer/merchant/processor/user', 'managed money',
+'swap dealers' or 'other reportables' (disaggregated); 'commercial',
+'non-commercial', 'non-reportable' or 'total' (legacy);
+'commercial - non-CIT', 'non-commercial - non-CIT', or 'index traders'
+(supplemental); 'asset manager/institutional', 'dealer/intermediary',
+'leveraged funds', 'other reportables' (traders in financial futures).</p></td>
     </tr>
     <tr>
       <th>update_frequency</th>
@@ -157,8 +189,8 @@ Specifies the frequency of the returns output. Must be one of 'year',
       <th>ranking_period</th>
       <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/integer'>integer</a></code> vector.
 Specifies number of periods in term of <code>update_frequency</code>
-looking backward for aggregate open interest average growth calculation.
-Defaults to 1 where sort is done on last observation only.</p></td>
+looking backward for average CHP calculation. Defaults to 1 where
+sort is done on last observation only.</p></td>
     </tr>
     <tr>
       <th>long_threshold</th>
@@ -171,16 +203,22 @@ Specifies the threshold for short positions. Default: 0.5.</p></td>
 Specifies the threshold for long positions. Default: 0.5.</p></td>
     </tr>
     <tr>
+      <th>sort_levels</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></code> vector.
+If <code>TRUE</code> sorts on pressure levels, else
+on relative changes in pressure. Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
       <th>weighted</th>
       <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></code> vector.
-If 'TRUE' adjusts portoflio weights with respect to sorting variable
-values, else equal weights are used. Defaults to 'FALSE'.</p></td>
+If <code>TRUE</code> adjusts portoflio weights with respect to pressure, else
+equal weights are used. Defaults to <code>FALSE</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An S4 object of class <code><a href='OIFactor-class.html'>OIFactor</a></code>.</p>
+    <p>An S4 object of class <code><a href='PressureFactor-class.html'>PressureFactor</a></code>.</p>
     
 
   </div>

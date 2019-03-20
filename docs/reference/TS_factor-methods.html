@@ -113,13 +113,15 @@ Sorts on relative price difference between specified front and back." />
     
     </div>
 
-    <pre class="usage"><span class='fu'>TS_factor</span>(<span class='no'>data</span>, <span class='no'>update_frequency</span>, <span class='no'>return_frequency</span>, <span class='no'>front</span>, <span class='no'>back</span>,
-  <span class='no'>ranking_period</span>, <span class='no'>long_threshold</span>, <span class='no'>short_threshold</span>)
+    <pre class="usage"><span class='fu'>TS_factor</span>(<span class='no'>data</span>, <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>, <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>,
+  <span class='kw'>front</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>back</span> <span class='kw'>=</span> <span class='fl'>2L</span>, <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)
 
 <span class='co'># S4 method for FuturesTS</span>
 <span class='fu'>TS_factor</span>(<span class='no'>data</span>, <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
   <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>, <span class='kw'>front</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>back</span> <span class='kw'>=</span> <span class='fl'>2L</span>,
-  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>)</pre>
+  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>F</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,6 +173,12 @@ the threshold for short positions. Default: 0.5.</p></td>
       <th>short_threshold</th>
       <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>numeric</a></code> vector. Specifies
 the threshold for long positions. Default: 0.5.</p></td>
+    </tr>
+    <tr>
+      <th>weighted</th>
+      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></code> vector.
+If 'TRUE' adjusts portoflio weights with respect to sorting variable
+values, else equal weights are used. Defaults to 'FALSE'.</p></td>
     </tr>
     </table>
     

@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Construct an asset pricing factor — factorem • factorem</title>
+<title>Accesses the <code>lambda</code> slot of S4 objects of class <a href='FamaMcBeth-class.html'>FamaMcBeth</a>
+  (<a href='https://bautheac.github.io/factorem/'><span class="pkg">factorem</span></a>). — get_lambda • factorem</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +31,12 @@
 
 
 
-<meta property="og:title" content="Construct an asset pricing factor — factorem" />
+<meta property="og:title" content="Accesses the <code>lambda</code> slot of S4 objects of class <a href='FamaMcBeth-class.html'>FamaMcBeth</a>
+  (<a href='https://bautheac.github.io/factorem/'><span class="pkg">factorem</span></a>). — get_lambda" />
 
-<meta property="og:description" content="Given a reference dataset and a set of parameters, construct the desired asset
-  pricing factor and returns its return and position time series by leg." />
+<meta property="og:description" content="Access method for the lambda slot of S4 objects of class
+  FamaMcBeth from the
+  factorem package." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -95,89 +98,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Construct an asset pricing factor</h1>
+    <h1>Accesses the <code>lambda</code> slot of S4 objects of class <a href='FamaMcBeth-class.html'>FamaMcBeth</a>
+  (<a href='https://bautheac.github.io/factorem/'><span class="pkg">factorem</span></a>).</h1>
     
-    <div class="hidden name"><code>factorem.Rd</code></div>
+    <div class="hidden name"><code>get_lambda-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Given a reference dataset and a set of parameters, construct the desired asset
-  pricing factor and returns its return and position time series by leg.</p>
+    <p>Access method for the <code>lambda</code> slot of S4 objects of class
+  <a href='FamaMcBeth-class.html'>FamaMcBeth</a> from the
+  <a href='https://github.com/bautheac/factorem/'><span class="pkg">factorem</span></a> package.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>factorem</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='no'>data</span>, <span class='kw'>update_frequency</span> <span class='kw'>=</span> <span class='st'>"month"</span>,
-  <span class='kw'>return_frequency</span> <span class='kw'>=</span> <span class='st'>"day"</span>, <span class='kw'>price_variable</span> <span class='kw'>=</span> <span class='st'>"PX_LAST"</span>,
-  <span class='kw'>sort_variable</span> <span class='kw'>=</span> <span class='st'>"PX_LAST"</span>, <span class='kw'>sort_levels</span> <span class='kw'>=</span> <span class='no'>T</span>, <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='no'>T</span>,
-  <span class='kw'>ranking_period</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>long_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>short_threshold</span> <span class='kw'>=</span> <span class='fl'>0.5</span>)</pre>
+    <pre class="usage"><span class='fu'>get_lambda</span>(<span class='no'>object</span>)
+
+<span class='co'># S4 method for FamaMcBeth</span>
+<span class='fu'>get_lambda</span>(<span class='no'>object</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>a scalar character vector specifying the name to use for the factor.</p></td>
-    </tr>
-    <tr>
-      <th>data</th>
-      <td><p>a dataframe/tibble. Columns must include <code>ticker</code>, <code>date</code>,
-<code>field</code> and <code>value</code>.</p></td>
-    </tr>
-    <tr>
-      <th>update_frequency</th>
-      <td><p>a scalar character vector. Specifies the rebalancing
-frequency. Must be one of 'year', 'semester', 'quarter', 'month', 'week' or
-'day'. Defaults to 'month'.</p></td>
-    </tr>
-    <tr>
-      <th>return_frequency</th>
-      <td><p>a scalar character vector. Specifies the frequency of
-the returns output. Must be one of 'year', 'semester', 'quarter', 'month',
-'week' or 'day'. Defaults to 'day'.</p></td>
-    </tr>
-    <tr>
-      <th>price_variable</th>
-      <td><p>a scalar character vector. Specifies the name of the variable
-hosting asset prices. Must be found in the <code>field</code> columns of <code>data</code>.</p></td>
-    </tr>
-    <tr>
-      <th>sort_variable</th>
-      <td><p>a scalar character vector. Specifies the name of the variable
-to use for sorting. Must be found in the <code>field</code> columns of <code>data</code>.</p></td>
-    </tr>
-    <tr>
-      <th>sort_levels</th>
-      <td><p>a scalar logical vector. If <code>TRUE</code>, sort is done on
-<code>sort_variable</code>'s levels, else on relative changes. Default: <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>weighted</th>
-      <td><p>a scalar <code><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></code> vector.
-If <code>TRUE</code> adjusts portoflio weights with respect to sorting variable, else
-equal weights are used. Defaults to <code>FALSE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>ranking_period</th>
-      <td><p>a scalar integer vector. Specifies number of periods in term
-of <code>update_frequency</code> looking backward for averaging <code>sort_variable</code>.
-Default: 1 (sort on last observation).</p></td>
-    </tr>
-    <tr>
-      <th>long_threshold</th>
-      <td><p>a scalar numeric vector. Specifies the threshold for short
-positions. Default: 0.5.</p></td>
-    </tr>
-    <tr>
-      <th>short_threshold</th>
-      <td><p>a scalar numeric vector. Specifies the threshold for long
-positions. Default: 0.5.</p></td>
+      <th>object</th>
+      <td><p>an S4 object of class <a href='FamaMcBeth-class.html'>FamaMcBeth</a>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An S4 object of class <code><a href='AssetPricingFactor-class.html'>AssetPricingFactor</a></code>.</p>
+    <p>An object of class 'lm' with Fama-McBeth
+  cross-sectional regression results.</p>
     
 
   </div>

@@ -31,6 +31,9 @@
     <loc>https://bautheac.github.io/factorem/reference/OI_nearby_factor-methods.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/factorem/reference/PressureFactor-class.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/factorem/reference/TSFactor-class.html</loc>
   </url>
   <url>
@@ -49,10 +52,19 @@
     <loc>https://bautheac.github.io/factorem/reference/famamcbeth.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/factorem/reference/get_betas-methods.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/factorem/reference/get_call-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/get_data-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/get_lambda-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/get_means-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/get_name-methods.html</loc>
@@ -74,6 +86,9 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/pressure_factor-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/show-methods.html</loc>

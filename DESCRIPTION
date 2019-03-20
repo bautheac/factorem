@@ -25,6 +25,7 @@ Imports:
     tibble (>= 1.4.2),
     tidyr (>= 0.8.1),
     tidyselect (>= 0.2.4),
+    timeDate (>= 3043.102),
     utils,
     xts (>= 0.11.0)
 Remotes: 
