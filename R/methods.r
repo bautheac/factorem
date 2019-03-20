@@ -481,7 +481,7 @@ setMethod("market_factor",
             positions <- dplyr::group_by(temp, date) %>% dplyr::mutate(name = ticker, position = ifelse(long, "long", "short")) %>%
               dplyr::select(date, name, position) %>% dplyr::ungroup() %>% dplyr::arrange(date, position)
 
-            temp <- dplyr::group_by(temp, ticker) %>% dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:n()) %>%
+            temp <- dplyr::group_by(temp, ticker) %>% dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:dplyr::n()) %>%
               dplyr::ungroup() %>% dplyr::group_by(date) %>% dplyr::summarise(factor = mean(value, na.rm = T)) %>%
               dplyr::ungroup() %>% dplyr::mutate(year = lubridate::year(date))
             temp$factor <- if (long) temp$factor else temp$factor * -1L
@@ -492,7 +492,7 @@ setMethod("market_factor",
 
             temp <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
-            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n()) %>%
+            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
               dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
 
@@ -524,7 +524,7 @@ setMethod("market_factor",
               dplyr::select(date, name, position) %>% dplyr::ungroup() %>% dplyr::arrange(date, position)
 
             temp <- dplyr::filter(data, field == "PX_LAST") %>% dplyr::select(-field) %>% dplyr::group_by(ticker) %>%
-              dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:n()) %>%
+              dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:dplyr::n()) %>%
               dplyr::ungroup() %>% dplyr::group_by(date) %>% dplyr::summarise(factor = mean(value, na.rm = T)) %>%
               dplyr::ungroup() %>% dplyr::mutate(year = lubridate::year(date))
             temp$factor <- if (long) temp$factor else temp$factor * -1L
@@ -535,7 +535,7 @@ setMethod("market_factor",
 
             temp <- if (return_frequency == "day") { dplyr::mutate(temp, unit = lubridate::yday(date)) }
             else { dplyr::mutate(temp, unit = do.call(what = !! return_frequency, args = list(date))) }
-            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == n()) %>%
+            temp <- dplyr::select(temp, -factor) %>% dplyr::group_by(year, unit) %>% dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
               dplyr::ungroup()
             returns <- dplyr::left_join(returns, temp, by = c("year", "unit")) %>% dplyr::select(date, factor)
 

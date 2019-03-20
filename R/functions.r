@@ -42,13 +42,13 @@ factor_positions <- function(data, update_frequency, sort_variable, sort_levels,
   positions <- if (sort_levels){
     dplyr::group_by(positions, name) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
-      dplyr::slice(ranking_period:n()) %>%
+      dplyr::slice(ranking_period:dplyr::n()) %>%
       dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   } else {
     dplyr::group_by(positions, name) %>% dplyr::mutate(value = (value/dplyr::lag(value, 1L)) - 1L) %>%
-      dplyr::slice(2L:n()) %>%
+      dplyr::slice(2L:dplyr::n()) %>%
       dplyr::mutate(average = RcppRoll::roll_meanr(value, n = ranking_period, na.rm = T)) %>%
-      dplyr::slice(ranking_period:n()) %>%
+      dplyr::slice(ranking_period:dplyr::n()) %>%
       dplyr::select(name, date, year, unit, average) %>% dplyr::ungroup()
   }
 
@@ -136,10 +136,10 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
   else { dplyr::mutate(price, unit = do.call(what = !! update_frequency, args = list(date))) }
   data <-  dplyr::select(data, name = ticker, date, year, unit, value) %>%
     dplyr::group_by(name) %>% dplyr::mutate(return = value/dplyr::lag(value, 1L) - 1L ) %>%
-    dplyr::slice(2L:n()) %>% dplyr::ungroup() %>% dplyr::select(name, date, year, unit, return)
+    dplyr::slice(2L:dplyr::n()) %>% dplyr::ungroup() %>% dplyr::select(name, date, year, unit, return)
 
   positions <- tibble::as_tibble(positions) %>% tidyr::nest(name:position) %>%
-    dplyr::mutate(data = dplyr::lag(data, 1L)) %>% dplyr::slice(2L:n()) %>% tidyr::unnest()
+    dplyr::mutate(data = dplyr::lag(data, 1L)) %>% dplyr::slice(2L:dplyr::n()) %>% tidyr::unnest()
 
   returns <- dplyr::left_join(data, positions, by = c("name", "year", "unit")) %>%
     dplyr::filter(! is.na(position)) %>% dplyr::group_by(position, date) %>%
@@ -156,7 +156,7 @@ factor_returns <- function(data, positions, update_frequency, return_frequency, 
   data <- if (return_frequency == "day") { dplyr::mutate(price, unit = lubridate::yday(date)) }
   else { dplyr::mutate(price, unit = do.call(what = !! return_frequency, args = list(date))) }
   data <- dplyr::select(data, date, year, unit) %>% dplyr::group_by(year, unit) %>%
-    dplyr::filter(dplyr::row_number() == n()) %>% dplyr::ungroup()
+    dplyr::filter(dplyr::row_number() == dplyr::n()) %>% dplyr::ungroup()
 
   dplyr::left_join(returns, data, by = c("year", "unit")) %>% dplyr::select(date, long, short, factor) %>%
     data.table::as.data.table()
