@@ -517,6 +517,9 @@ setGeneric("OI_aggregate_factor",
 #'   If 'TRUE' adjusts portoflio weights with respect to sorting variable
 #'   values, else equal weights are used. Defaults to 'FALSE'.
 #'
+#' @param risk_adjusted a scalar \code{\link[base]{logical}} vector.
+#'   If 'TRUE' returns a reward/risk mometum factor, else returns a classic
+#'   momentum factor. Defaults to 'FALSE'.
 #'
 #' @description Sorts on past returns.
 #'
@@ -530,6 +533,7 @@ setGeneric("OI_aggregate_factor",
 #'
 #' @importClassesFrom pullit EquityMarket FuturesTS
 #' @importFrom data.table data.table
+#' @importFrom lubridate yday week month quarter semester year
 #' @importFrom Rdpack reprompt
 #' @importFrom tibble tibble
 #'
@@ -539,9 +543,7 @@ setGeneric("momentum_factor",
            function(data, update_frequency = "week", return_frequency = "day",
                     ranking_period = 4L,
                     long_threshold = 0.5, short_threshold = 0.5,
-                    weighted = F) standardGeneric("momentum_factor"))
-
-
+                    weighted = F, risk_adjusted = F) standardGeneric("momentum_factor"))
 
 ## term structure ####
 #' Term structure factor
