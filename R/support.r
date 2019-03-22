@@ -1,12 +1,12 @@
 
-check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_variables = NULL,
-                         price_variable = NULL, price_variables = NULL, update_frequency = NULL,
-                         return_frequency = NULL,  ranking_period = NULL, long_threshold = NULL,
-                         short_threshold = NULL, sort_levels = NULL, geometric = NULL,
-                         front = NULL, back = NULL, positions = NULL, long = NULL,
-                         factor_returns = NULL, assets_dates = NULL, factor_dates = NULL,
-                         weighted = NULL, format = NULL, underlying = NULL, unit = NULL,
-                         participant = NULL){
+function(name = NULL, data = NULL, sort_variable = NULL, sort_variables = NULL,
+         price_variable = NULL, price_variables = NULL, update_frequency = NULL,
+         return_frequency = NULL,  ranking_period = NULL, long_threshold = NULL,
+         short_threshold = NULL, sort_levels = NULL, geometric = NULL,
+         front = NULL, back = NULL, positions = NULL, long = NULL,
+         factor_returns = NULL, assets_dates = NULL, factor_dates = NULL,
+         weighted = NULL, risk_adjusted = NULL, format = NULL, underlying = NULL,
+         unit = NULL, participant = NULL){
   if(! is.null(name))
     if(! rlang::is_scalar_character(name))
       stop("Parameter 'name' must be supplied as a scalar character vector.")
@@ -35,7 +35,7 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
     if(! all(rlang::is_scalar_character(return_frequency),
              return_frequency %in% c("year", "semester", "quarter", "month", "week", "day")))
       stop("Parameter 'return_frequency' must be supplied as a scalar character vector;
-            one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
+           one of 'year', 'semester', 'quarter', 'month', 'week' or 'day'.")
 
   if(! is.null(ranking_period))
     if(! rlang::is_scalar_integer(ranking_period))
@@ -45,7 +45,7 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
     if(! all(rlang::is_scalar_double(long_threshold), rlang::is_scalar_double(short_threshold),
              c(long_threshold, short_threshold) >= 0L, c(long_threshold, short_threshold) <= 1L))
       stop("Parameters 'long_threshold' & 'short_threshold' must be supplied as a scalar numeric
-            vector; values must be between 0 and 1.")
+           vector; values must be between 0 and 1.")
 
   if(! is.null(sort_levels))
     if(! rlang::is_scalar_logical(sort_levels))
@@ -75,8 +75,12 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
       stop("Assets & factor returns dates unmatch.")
 
   if(! is.null(weighted))
-    if(! rlang::is_scalar_logical(long))
+    if(! rlang::is_scalar_logical(weighted))
       stop("Parameter 'weighted' must be supplied as a scalar logical vector (TRUE or FALSE).")
+
+  if(! is.null(risk_adjusted))
+    if(! rlang::is_scalar_logical(risk_adjusted))
+      stop("Parameter 'risk_adjusted' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
   if(! is.null(format)){
     utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())

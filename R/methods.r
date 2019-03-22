@@ -383,6 +383,68 @@ setMethod("momentum_factor",
 )
 
 
+## futures momentum factor ####
+
+#' @rdname momentum_factor-methods
+#' @aliases momentum_factor,AssetPricingFactor
+#'
+#' @export
+setMethod("momentum_factor",
+          signature(data = "FuturesTS"),
+          function(data, update_frequency, return_frequency, ranking_period,
+                   long_threshold, short_threshold, weighted, risk_adjusted){
+
+            check_params(update_frequency = update_frequency, return_frequency = return_frequency,
+                         ranking_period = ranking_period, long_threshold = long_threshold,
+                         short_threshold = short_threshold, weighted = weighted, risk_adjusted = risk_adjusted)
+
+            `frequency function` <- if (update_frequency == "day") "yday" else update_frequency
+
+            tickers <- dplyr::select(data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
+
+            price <- dplyr::left_join(data@data, tickers, by = "ticker") %>% dplyr::filter(position == 1L) %>%
+              dplyr::select(ticker = `active contract ticker`, field, date, value)
+
+            data <- if (risk_adjusted){
+
+              `reward/risk` <- dplyr::filter(price, field == "PX_LAST") %>% dplyr::select(-field) %>%
+                dplyr::mutate(year = lubridate::year(date),
+                              unit = do.call(`frequency function`, args = list(date))) %>%
+                dplyr::group_by(ticker, year, unit) %>% dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+                dplyr::group_by(ticker) %>% dplyr::mutate(value = (value / dplyr::lag(value, 1L)) - 1L) %>%
+                dplyr::slice(2L:dplyr::n()) %>%
+                dplyr::mutate(reward = zoo::rollapplyr(value, width = ranking_period,
+                                                       FUN = function(x) mean(x, na.rm = T), by = 1L, by.column = F, fill = NA),
+                              risk = zoo::rollapplyr(value, width = ranking_period,
+                                                     FUN = function(x) sd(x, na.rm = T), by = 1L, by.column = F, fill = NA),
+                              `reward/risk` = reward / risk) %>% dplyr::select(ticker, date, `reward/risk`) %>%
+                tidyr::gather(field, value, -c(ticker, date)) %>% dplyr::ungroup()
+
+              data <- dplyr::filter(price, field == "PX_LAST") %>% dplyr::bind_rows(`reward/risk`)
+
+              factorem(name = "futures reward/risk momentum", data = data, update_frequency = update_frequency,
+                       return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "reward/risk",
+                       sort_levels = T, ranking_period = 1L, long_threshold = long_threshold,
+                       short_threshold = short_threshold, weighted = weighted)
+
+            } else {
+
+              factorem(name = "futures momentum", data = price, update_frequency = update_frequency,
+                       return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "PX_LAST",
+                       sort_levels = F, ranking_period = ranking_period, long_threshold = long_threshold,
+                       short_threshold = short_threshold, weighted = weighted)
+
+            }
+
+            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns,
+                         data = data@data, parameters = data@parameters, call = match.call())
+          }
+)
+
+
+
+
+
 
 
 
@@ -395,18 +457,45 @@ setMethod("momentum_factor",
 setMethod("momentum_factor",
           signature(data = "EquityMarket"),
           function(data, update_frequency, return_frequency, ranking_period,
-                   long_threshold, short_threshold, weighted){
+                   long_threshold, short_threshold, weighted, risk_adjusted){
 
             check_params(update_frequency = update_frequency, return_frequency = return_frequency,
-                         ranking_period = ranking_period, long_threshold = long_threshold,
-                         short_threshold = short_threshold)
+                         ranking_period = ranking_period,
+                         long_threshold = long_threshold, short_threshold = short_threshold,
+                         weighted = weighted, risk_adjusted = risk_adjusted)
 
             price <- dplyr::filter(data@data, field == "PX_LAST") %>% dplyr::select(ticker, field, date, value)
 
-            data <- factorem(name = "equity momentum", data = price, update_frequency = update_frequency,
-                             return_frequency = return_frequency, price_variable = "PX_LAST",
-                             sort_variable = "PX_LAST", sort_levels = F, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
+            data <- if (risk_adjusted){
+
+              `reward/risk` <- dplyr::filter(price, field == "PX_LAST") %>% dplyr::select(-field) %>%
+                dplyr::mutate(year = lubridate::year(date),
+                              unit = do.call(`frequency function`, args = list(date))) %>%
+                dplyr::group_by(ticker, year, unit) %>% dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+                dplyr::group_by(ticker) %>% dplyr::mutate(value = (value / dplyr::lag(value, 1L)) - 1L) %>%
+                dplyr::slice(2L:dplyr::n()) %>%
+                dplyr::mutate(reward = zoo::rollapplyr(value, width = ranking_period,
+                                                       FUN = function(x) mean(x, na.rm = T), by = 1L, by.column = F, fill = NA),
+                              risk = zoo::rollapplyr(value, width = ranking_period,
+                                                     FUN = function(x) sd(x, na.rm = T), by = 1L, by.column = F, fill = NA),
+                              `reward/risk` = reward / risk) %>% dplyr::select(ticker, date, `reward/risk`) %>%
+                tidyr::gather(field, value, -c(ticker, date)) %>% dplyr::ungroup()
+
+              data <- dplyr::filter(price, field == "PX_LAST") %>% dplyr::bind_rows(`reward/risk`)
+
+              factorem(name = "equity reward/risk momentum", data = data, update_frequency = update_frequency,
+                       return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "reward/risk",
+                       sort_levels = T, ranking_period = 1L, long_threshold = long_threshold,
+                       short_threshold = short_threshold, weighted = weighted)
+
+            } else {
+
+              factorem(name = "equity momentum", data = price, update_frequency = update_frequency,
+                       return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "PX_LAST",
+                       sort_levels = F, ranking_period = ranking_period, long_threshold = long_threshold,
+                       short_threshold = short_threshold, weighted = weighted)
+
+            }
 
             methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns,
                          data = data@data, parameters = data@parameters, call = match.call())

@@ -10,15 +10,23 @@
 \usage{
 momentum_factor(data, update_frequency = "week",
   return_frequency = "day", ranking_period = 4L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F,
+  risk_adjusted = F)
 
 \S4method{momentum_factor}{FuturesTS}(data, update_frequency = "week",
   return_frequency = "day", ranking_period = 4L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F,
+  risk_adjusted = F)
+
+\S4method{momentum_factor}{FuturesTS}(data, update_frequency = "week",
+  return_frequency = "day", ranking_period = 4L,
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F,
+  risk_adjusted = F)
 
 \S4method{momentum_factor}{EquityMarket}(data, update_frequency = "week",
   return_frequency = "day", ranking_period = 4L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+  long_threshold = 0.5, short_threshold = 0.5, weighted = F,
+  risk_adjusted = F)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}} or
@@ -50,6 +58,10 @@ the threshold for long positions. Default: 0.5.}
 \item{weighted}{a scalar \code{\link[base]{logical}} vector.
 If 'TRUE' adjusts portoflio weights with respect to sorting variable
 values, else equal weights are used. Defaults to 'FALSE'.}
+
+\item{risk_adjusted}{a scalar \code{\link[base]{logical}} vector.
+If 'TRUE' returns a reward/risk mometum factor, else returns a classic
+momentum factor. Defaults to 'FALSE'.}
 }
 \value{
 An S4 object of class \code{\linkS4class{MomentumFactor}}.
