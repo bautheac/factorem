@@ -1,5 +1,9 @@
 
+
+
+
 check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_variables = NULL,
+
          price_variable = NULL, price_variables = NULL, update_frequency = NULL,
          return_frequency = NULL,  ranking_period = NULL, long_threshold = NULL,
          short_threshold = NULL, sort_levels = NULL, geometric = NULL,
