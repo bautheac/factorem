@@ -43,4 +43,4 @@ setClass("MarketFactor", contains = "AssetPricingFactor")
 #' @export
 setClass("FamaMcBeth",
          representation(betas = "data.table", means = "data.table", data = "data.table",
-                        lambda = "lm", call = "call"))
+                        lambdas = "data.table", call = "call"))

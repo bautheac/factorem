@@ -60,7 +60,11 @@ An S4 object of class \code{\linkS4class{AssetPricingFactor}}.
 Provided with futures contract front price data
   from Bloomberg retrieved with
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-  term structure factor.
-
-Sorts on relative price difference between specified front and back.
+  term structure factor. The futures term structure factor
+  \insertCite{szymanowska_anatomy_2014,fuertes_commodity_2015}{factorem}
+  is concerned with the shape (steepness) of the futures term structure
+  and sorts on roll yield.
+}
+\references{
+\insertAllCited{}
 }

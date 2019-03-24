@@ -57,5 +57,14 @@ An S4 object of class \code{\linkS4class{CHPFactor}}.
 Provided with futures contract front price and term
   structure aggregated position data from Bloomberg retrieved with
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}},
-  construct commercial hedging pressure factor.
+  construct commercial hedging pressure factor. The futures commercial
+  hedging pressure factor is based on the well-known hedging pressure-based
+  theory \insertCite{anderson_hedger_1983,chang_returns_1985,cootner_returns_1960,dusak_futures_1973,hicks_value_1939,hirshleifer_risk_1988,hirshleifer_determinants_1989,hirshleifer_hedging_1990,kolb_is_1992,keynes_treatise_1930}{factorem}
+  which postulates that futures prices for a given commodity are inversely
+  related to the extent that commercial hedgers are short or long and the
+  mimicking portfolio here aims at capturing the impact of hedging pressure
+  as a systemic factor \insertCite{basu_capturing_2013}{factorem}.
+}
+\references{
+\insertAllCited{}
 }

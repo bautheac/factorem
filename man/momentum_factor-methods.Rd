@@ -18,11 +18,6 @@ momentum_factor(data, update_frequency = "week",
   long_threshold = 0.5, short_threshold = 0.5, weighted = F,
   risk_adjusted = F)
 
-\S4method{momentum_factor}{FuturesTS}(data, update_frequency = "week",
-  return_frequency = "day", ranking_period = 4L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F,
-  risk_adjusted = F)
-
 \S4method{momentum_factor}{EquityMarket}(data, update_frequency = "week",
   return_frequency = "day", ranking_period = 4L,
   long_threshold = 0.5, short_threshold = 0.5, weighted = F,
@@ -70,7 +65,12 @@ An S4 object of class \code{\linkS4class{MomentumFactor}}.
 Provided with futures contract front or equity price data
   from Bloomberg retrieved with
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-  momentum factor.
-
-Sorts on past returns.
+  momentum factor. The momentum factor sorts on prior asset returns and
+  is popular in the equity
+  \insertCite{carhart1997persistence,fama2012size}{factorem} as well as
+  commodity futures \insertCite{miffre2007momentum}{factorem} asset
+  pricing literature.
+}
+\references{
+\insertAllCited{}
 }

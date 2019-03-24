@@ -3,7 +3,7 @@ title: factor'em!
 author: Olivier Bauthéac
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: REFERENCES.bib
+bibliography: "../inst/REFERENCES.bib"
 vignette: >
   %\VignetteIndexEntry{factor'em!}
   %\VignetteEngine{knitr::rmarkdown}
@@ -39,7 +39,7 @@ get_data(equity_data_market)
 ```
 
 
-```{r `pullit equity storethat`, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+```{r `pullit equity storethat`, echo = FALSE, message = FALSE, warning = FALSE, eval = F}
 library(pullit); library(lubridate); storethat <- "../data-raw/storethat.sqlite"
 
 tickers_equity <- c("ADM US Equity", "CIVI US Equity", "GBX US Equity", "LIND US Equity", 
@@ -56,7 +56,7 @@ get_data(equity_data_market)
 ```
 
 From there, constuct a bespoke asset pricing factor using the factorem function. I.e., an equity momentum factor:
-```{r `factorem factor`, message = FALSE, warning = FALSE, eval = TRUE}
+```{r `factorem factor`, message = FALSE, warning = FALSE, eval = F}
 library(factorem)
 
 ranking_period = 1L
@@ -133,7 +133,7 @@ futures_CHP <- CHP_factor(price_data = futures_data_TS, CHP_data = futures_data_
 The open interest factor relates to futures market liquidity and is popular in the literature, in particular in the context of commodity markets research [@hong_what_2012]. It comes in two flavours in factorem, nearby and aggregate.
 
 ##### nearby
-The nearby open interest factor is concerned with liquidity at the very front end of the term structure where it sort on nearby front contract's open interest:
+The nearby open interest factor is concerned with liquidity at the very front end of the term structure where it sorts on nearby front contract's open interest:
 ```{r `futures OI nearby`, message = FALSE, warning = FALSE}
 ranking_period = 1L
 futures_OI_nearby <- OI_nearby_factor(data = futures_data_TS, ranking_period = ranking_period)
@@ -151,7 +151,7 @@ futures_OI_aggregate <- OI_aggregate_factor(price_data = futures_data_market,
 ```
 
 #### term structure
-The futures term structure factor [@szymanowska_anatomy_2014; @fuertes_commodity_2015] is concerned with the shape (steepness) of the futures term structure and sort on roll yield:
+The futures term structure factor [@szymanowska_anatomy_2014; @fuertes_commodity_2015] is concerned with the shape (steepness) of the futures term structure and sorts on roll yield:
 ```{r `futures TS`, message = FALSE, warning = FALSE}
 ranking_period = 1L
 futures_TS <- TS_factor(data = futures_data_market, ranking_period = ranking_period)
@@ -162,27 +162,27 @@ futures_TS <- TS_factor(data = futures_data_market, ranking_period = ranking_per
 
 Accessor methods allow access to the content of the factor output:
 ### name
-```{r `factor name`, eval = TRUE}
+```{r `factor name`, eval = F}
 get_name(factor)
 ```
 ### positions
-```{r `factor positions`, eval = TRUE}
+```{r `factor positions`, eval = F}
 get_positions(factor)
 ```
 ### returns
-```{r `factor returns`, eval = TRUE}
+```{r `factor returns`, eval = F}
 get_returns(factor)
 ```
 ### data initially supplied
-```{r `factor data`, eval = TRUE}
+```{r `factor data`, eval = F}
 get_data(factor)
 ```
 ### parameters
-```{r `factor params`, eval = TRUE}
+```{r `factor params`, eval = F}
 get_parameters(factor)
 ```
 ### function call
-```{r `factor call`, eval = TRUE}
+```{r `factor call`, eval = F}
 get_call(factor)
 ```
 
@@ -190,7 +190,7 @@ get_call(factor)
 ## summary
 A summary method returns a performance summary of the corresponding facotr:
 ### function call
-```{r `factor summary`, eval = TRUE}
+```{r `factor summary`, eval = F}
 summary(factor)
 ```
 
@@ -199,14 +199,14 @@ summary(factor)
 The [plotit](https://bautheac.github.io/plotit/) package, also part of the finRes suite, provides plot methods for the factor objects returned by the functions above:
 
 ### performance overview
-```{r `plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+```{r `plot performance`, fig.width = 7.5, fig.height = 5.5, fig.fullwidth = TRUE, eval = F, message = FALSE, warning = FALSE}
 library(plotit)
 
 plot(factor, type = "performance")
 ```
 
 ### positions overview
-```{r `plot positions`, fig.width = 7.5, fig.height = 6.5, fig.fullwidth = TRUE, eval = TRUE}
+```{r `plot positions`, fig.width = 7.5, fig.height = 6.5, fig.fullwidth = TRUE, eval = F}
 plot(factor, type = "positions")
 ```
   

@@ -3,7 +3,7 @@ title: factor'em!
 author: Olivier Bauthéac
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: REFERENCES.bib
+bibliography: "../inst/REFERENCES.bib"
 vignette: >
   %\VignetteIndexEntry{factor'em!}
   %\VignetteEngine{knitr::rmarkdown}
@@ -133,7 +133,7 @@ futures_CHP <- CHP_factor(price_data = futures_data_TS, CHP_data = futures_data_
 The open interest factor relates to futures market liquidity and is popular in the literature, in particular in the context of commodity markets research [@hong_what_2012]. It comes in two flavours in factorem, nearby and aggregate.
 
 ##### nearby
-The nearby open interest factor is concerned with liquidity at the very front end of the term structure where it sort on nearby front contract's open interest:
+The nearby open interest factor is concerned with liquidity at the very front end of the term structure where it sorts on nearby front contract's open interest:
 ```{r `futures OI nearby`, message = FALSE, warning = FALSE}
 ranking_period = 1L
 futures_OI_nearby <- OI_nearby_factor(data = futures_data_TS, ranking_period = ranking_period)
@@ -151,7 +151,7 @@ futures_OI_aggregate <- OI_aggregate_factor(price_data = futures_data_market,
 ```
 
 #### term structure
-The futures term structure factor [@szymanowska_anatomy_2014; @fuertes_commodity_2015] is concerned with the shape (steepness) of the futures term structure and sort on roll yield:
+The futures term structure factor [@szymanowska_anatomy_2014; @fuertes_commodity_2015] is concerned with the shape (steepness) of the futures term structure and sorts on roll yield:
 ```{r `futures TS`, message = FALSE, warning = FALSE}
 ranking_period = 1L
 futures_TS <- TS_factor(data = futures_data_market, ranking_period = ranking_period)

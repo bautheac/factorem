@@ -58,7 +58,13 @@ An S4 object of class \code{\linkS4class{OIFactor}}.
 Provided with futures contract front price and aggregate open
   interest data from Bloomberg retrieved with
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-  aggregate open interest growth (OI) factor.
-
-Basu & Bautheac.
+  aggregate open interest growth (OI) factor. The open interest factor relates
+  to futures market liquidity and is popular in the literature, in particular in the
+  context of commodity markets research \insertCite{hong_what_2012}{factorem}. The
+  aggregate open interest factor \insertCite{basu_financiallization_2018}{factorem}
+  is concerned with liquidity over the whole futures term strucutre and sorts on open
+  interest aggregated (summed up) over the futures term structure.
+}
+\references{
+\insertAllCited{}
 }

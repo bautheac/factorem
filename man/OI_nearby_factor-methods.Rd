@@ -50,7 +50,12 @@ An S4 object of class \code{\linkS4class{OIFactor}}.
 \description{
 Provided with futures contract front price and open interest data from
   Bloomberg retrieved with \href{https://github.com/bautheac/pullit/}{\pkg{pullit}},
-  construct open interest growth (OI) nearby factor.
-
-Following Hong & Yogo.
+  construct open interest growth (OI) nearby factor. The open interest factor relates
+  to futures market liquidity and is popular in the literature, in particular in the
+  context of commodity markets research \insertCite{hong_what_2012}{factorem}. The
+  nearby open interest factor is concerned with liquidity at the very front end of
+  the term structure where it sorts on nearby front contract's open interest.
+}
+\references{
+\insertAllCited{}
 }

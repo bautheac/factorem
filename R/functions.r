@@ -245,11 +245,15 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
 }
 
 
+
+
 #' Fama-McBeth cross-sectional regression
 #'
 #'
-#' @description Given two dataframes of assets returns and factor returns respectively,
-#'   performs a Fama-McBeth two-pass cross-sectional regression.
+#' @description Given two dataframes of assets returns and factors returns respectively,
+#'   performs a two-pass cross-sectional regression following
+#'   \insertCite{fama1973risk;textual}{factorem}. The method attempts to test the
+#'   relationship between assets average return and systematic factor risk.
 #'
 #'
 #' @param assets_returns a dataframe with dates in the first column and assets returns
@@ -258,31 +262,97 @@ factorem <- function(name = "", data, update_frequency = "month", return_frequen
 #' @param factor_returns a dataframe with dates in the first column and factor returns
 #'   in the second.
 #'
+#' @param means a scalar logical vector. If \code{TRUE}, the second step of the
+#'   cross-sectional regression is implemented with asset mean returns. In this
+#'   setting, tests of significance for the correpsonding lambda coefficients are
+#'   performed with autocorrelation and heteroskedasticity robust standard errors,
+#'   following \insertCite{newey1987simple;textual}{factorem}. If \code{FALSE},
+#'   asset returns are regressed on the corresponding betas for each observation
+#'   date. The corresponding lambda coefficients are averaged and significance is
+#'   tested using classic mean t-tests.
+#'
+#'
 #' @return An S4 object of class \code{\linkS4class{FamaMcBeth}}.
 #'
 #'
+#' @references
+#'     \insertAllCited{}
+#'
 #' @export
-famamcbeth <- function(assets_returns, factor_returns){
+famamcbeth <- function(assets_returns, factor_returns, means){
 
   check_params(factor_returns = factor_returns, assets_dates = assets_returns$date,
                factor_dates = factor_returns$date)
 
-  tickers <- names(assets_returns)[names(assets_returns) != "date" ]
-  data <- dplyr::full_join(assets_returns, factor_returns, by = "date")
+  data <- dplyr::inner_join(assets_returns, factor_returns, by = "date")
+  assets <- names(assets_returns)[names(assets_returns) != "date" ]
+  factors <- names(factor_returns)[names(factor_returns) != "date" ]
 
-  betas <- lapply(tickers, function(x){ formula <- as.formula(paste0("`", x, "` ~ factor"))
-  lm(formula, data = data) }) %>% setNames(tickers)
-  betas <- data.table::data.table(ticker = tickers, beta = betas)
-  means <- data.table::data.table(ticker = tickers, mean = apply(dplyr::select(data, tickers),
+  if (means) famamcbeth_means(data, assets, factors) else
+    famamcbeth_whole(data, assets, factors)
+
+}
+
+
+famamcbeth_means <- function(data, assets, factors){
+
+  betas <- lapply(assets, function(x){
+    formula <- as.formula(paste0("`", x, "` ~ `", paste(factors, collapse = "` + `"), "`"))
+    lm(formula, data = data) }) %>% setNames(assets)
+  betas <- data.table::data.table(ticker = assets, beta = betas)
+  means <- data.table::data.table(ticker = assets, mean = apply(dplyr::select(data, assets),
                                                                  mean, MARGIN = 2L, na.rm = T))
 
-  coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) broom::tidy(y) %>%
-                                                            dplyr::filter(term == "factor") %>%
-                                                            dplyr::select(estimate) %>% purrr::flatten_dbl())) %>%
-    tidyr::unnest(beta)
+  coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) {
+    broom::tidy(y) %>% dplyr::filter(term %in% paste0("`", factors, "`")) %>%
+      dplyr::mutate(term = factors) %>% dplyr::select(term, estimate) %>%
+      tidyr::spread(term, estimate)})) %>% tidyr::unnest(beta)
 
-  data <- dplyr::full_join(means, coefficients, by = "ticker") %>% data.table::as.data.table()
-  formula <- as.formula("mean ~ beta"); lambda <- lm(formula, data = data)
+  sample <- dplyr::full_join(means, coefficients, by = "ticker") %>% data.table::as.data.table()
+  formula <- as.formula(paste0("mean ~ `", paste(factors, collapse = "` + `"), "`"))
+  lambdas <- lm(formula, data = sample)
+  lambdas <- broom::tidy(lmtest::coeftest(lambdas, vcov = sandwich::vcovHAC(lambdas))) %>%
+    data.table::as.data.table()
 
-  methods::new("FamaMcBeth", betas = betas, means = means, lambda = lambda, data = data, call = match.call())
+  methods::new("FamaMcBeth", betas = data.table::as.data.table(coefficients), means = means,
+               lambdas = lambdas, data = data.table::as.data.table(data), call = match.call())
 }
+
+
+famamcbeth_whole <- function(data, assets, factors){
+
+  betas <- lapply(assets, function(x){
+    formula <- as.formula(paste0("`", x, "` ~ `", paste(factors, collapse = "` + `"), "`"))
+    lm(formula, data = data) }) %>% setNames(assets)
+  betas <- data.table::data.table(ticker = assets, beta = betas)
+  means <- data.table::data.table(ticker = assets, mean = apply(dplyr::select(data, assets),
+                                                                mean, MARGIN = 2L, na.rm = T))
+
+  coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) {
+    broom::tidy(y) %>% dplyr::filter(term %in% paste0("`", factors, "`")) %>%
+      dplyr::mutate(term = factors) %>% dplyr::select(term, estimate) %>%
+      tidyr::spread(term, estimate)})) %>% tidyr::unnest(beta)
+
+  lambdas <- lapply(1L:nrow(data), function(x){
+    sample <- dplyr::slice(data[, assets], x) %>% tidyr::gather(ticker, return) %>%
+      dplyr::left_join(coefficients, by = "ticker")
+    formula <- as.formula(paste0("return ~ `", paste(factors, collapse = "` + `"), "`"))
+    broom::tidy(lm(formula, data = sample)) %>% dplyr::select(term, estimate) %>%
+      tidyr::spread(term, estimate) %>% dplyr::mutate(date = dplyr::slice(data, x)$date) %>%
+      dplyr::select(date, dplyr::everything())
+  }) %>% dplyr::bind_rows() %>% setNames(c("date", "(Intercept)", factors))
+
+  lambdas <- lapply(c("(Intercept)", factors), function(x){
+    broom::tidy(t.test(x = dplyr::select(lambdas, x) %>% purrr::flatten_dbl(), mu = 0)) %>%
+      dplyr::mutate(term = x, std.error = estimate / statistic) %>%
+      dplyr::select(term, estimate, std.error, statistic, p.value)
+  }) %>% dplyr::bind_rows() %>% data.table::as.data.table()
+
+  methods::new("FamaMcBeth", betas = data.table::as.data.table(coefficients), means = means,
+               lambdas = lambdas, data = data.table::as.data.table(data), call = match.call())
+}
+
+
+
+
+

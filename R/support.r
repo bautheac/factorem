@@ -70,7 +70,7 @@ check_params <- function(name = NULL, data = NULL, sort_variable = NULL, sort_va
       stop("Parameter 'long' must be supplied as a scalar logical vector (TRUE or FALSE).")
 
   if(! is.null(factor_returns))
-    if(ncol(factor_returns) > 2L | ! all.equal(c("date", "factor"), names(factor_returns)))
+    if(ncol(factor_returns) < 2L)
       stop("Parameter 'factor_returns' must be supplied as a dataframe including 2 columns: 'date' and
            'factor' containing dates and corresponding factor returns respectively.")
 

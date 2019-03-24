@@ -46,7 +46,7 @@ setMethod("show", signature(object = "FamaMcBeth"), function(object) {
       "\n\nSlots inlude\n",
       "  betas: access with get_betas()\n",
       "  means: access with get_means()\n",
-      "  lamdba: access with get_lamdba()\n",
+      "  lamdbas: access with get_lamdbas()\n",
       "  data: access with get_data()\n",
       "  call: access with get_call()")
 })
@@ -99,13 +99,13 @@ setMethod("get_data", "AssetPricingFactor", function(object) object@data)
 #' @export
 setMethod("get_data", "FamaMcBeth", function(object) object@data)
 
-## lambda ####
-#' @rdname get_lambda-methods
+## lambdas ####
+#' @rdname get_lambdas-methods
 #'
-#' @aliases get_lambda,FamaMcBeth
+#' @aliases get_lambdas,FamaMcBeth
 #'
 #' @export
-setMethod("get_lambda", "FamaMcBeth", function(object) object@lambda)
+setMethod("get_lambdas", "FamaMcBeth", function(object) object@lambdas)
 
 ## means ####
 #' @rdname get_means-methods
@@ -351,38 +351,6 @@ setMethod("OI_aggregate_factor",
 
 
 
-
-## futures momentum factor ####
-
-#' @rdname momentum_factor-methods
-#' @aliases momentum_factor,AssetPricingFactor
-#'
-#' @export
-setMethod("momentum_factor",
-          signature(data = "FuturesTS"),
-          function(data, update_frequency, return_frequency, ranking_period,
-                   long_threshold, short_threshold, weighted){
-
-            check_params(update_frequency = update_frequency, return_frequency = return_frequency,
-                         ranking_period = ranking_period, long_threshold = long_threshold,
-                         short_threshold = short_threshold)
-
-            tickers <- dplyr::select(data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
-
-            price <- dplyr::left_join(data@data, tickers, by = "ticker") %>% dplyr::filter(position == 1L) %>%
-              dplyr::select(ticker = `active contract ticker`, field, date, value)
-
-            data <- factorem(name = "futures momentum", data = price, update_frequency = update_frequency,
-                             return_frequency = return_frequency, price_variable = "PX_LAST", sort_variable = "PX_LAST",
-                             sort_levels = F, ranking_period = ranking_period, long_threshold = long_threshold,
-                             short_threshold = short_threshold, weighted = weighted)
-
-            methods::new("MomentumFactor", name = data@name, positions = data@positions, returns = data@returns,
-                         data = data@data, parameters = data@parameters, call = match.call())
-          }
-)
-
-
 ## futures momentum factor ####
 
 #' @rdname momentum_factor-methods
@@ -406,6 +374,10 @@ setMethod("momentum_factor",
               dplyr::select(ticker = `active contract ticker`, field, date, value)
 
             data <- if (risk_adjusted){
+
+              if(ranking_period < 2L)
+                stop("Parameter 'name' must be supplied as a scalar integer vector with a value > 1. Need more
+                     than 1 observation to calculate mean and standard deviation.")
 
               `reward/risk` <- dplyr::filter(price, field == "PX_LAST") %>% dplyr::select(-field) %>%
                 dplyr::mutate(year = lubridate::year(date),

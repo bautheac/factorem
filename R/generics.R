@@ -63,25 +63,27 @@ setGeneric(name = "get_call", function(object) standardGeneric("get_call"))
 #' @export
 setGeneric("get_data", function(object) standardGeneric("get_data"))
 
-## lambda ####
-#' Accesses the \code{lambda} slot of S4 objects of class \linkS4class{FamaMcBeth}
+## lambdas ####
+#' Accesses the \code{lambdas} slot of S4 objects of class \linkS4class{FamaMcBeth}
 #'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
 #'
-#' @description Access method for the \code{lambda} slot of S4 objects of class
+#' @description Access method for the \code{lambdas} slot of S4 objects of class
 #'   \linkS4class{FamaMcBeth} from the
 #'   \href{https://github.com/bautheac/factorem/}{\pkg{factorem}} package.
 #'
 #' @param object an S4 object of class \linkS4class{FamaMcBeth}.
 #'
-#' @return An object of class 'lm' with Fama-McBeth
-#'   cross-sectional regression results.
+#' @return A \link[data.table]{data.table} showing Fama-McBeth cross-sectional
+#' regression summary including lambda estimates and corresponding standard errors,
+#' t-stats and p-values.
+#'
 #'
 #' @docType methods
 #'
-#' @rdname get_lambda-methods
+#' @rdname get_lambdas-methods
 #'
 #' @export
-setGeneric("get_lambda", function(object) standardGeneric("get_lambda"))
+setGeneric("get_lambdas", function(object) standardGeneric("get_lambdas"))
 
 ## means ####
 #' Accesses the \code{means} slot of S4 objects of class \linkS4class{FamaMcBeth}
@@ -196,7 +198,13 @@ setGeneric("get_returns", function(object) standardGeneric("get_returns"))
 #' @description Provided with futures contract front price and term
 #'   structure aggregated position data from Bloomberg retrieved with
 #'   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}},
-#'   construct commercial hedging pressure factor.
+#'   construct commercial hedging pressure factor. The futures commercial
+#'   hedging pressure factor is based on the well-known hedging pressure-based
+#'   theory \insertCite{anderson_hedger_1983,chang_returns_1985,cootner_returns_1960,dusak_futures_1973,hicks_value_1939,hirshleifer_risk_1988,hirshleifer_determinants_1989,hirshleifer_hedging_1990,kolb_is_1992,keynes_treatise_1930}{factorem}
+#'   which postulates that futures prices for a given commodity are inversely
+#'   related to the extent that commercial hedgers are short or long and the
+#'   mimicking portfolio here aims at capturing the impact of hedging pressure
+#'   as a systemic factor \insertCite{basu_capturing_2013}{factorem}.
 #'
 #'
 #' @param price_data an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -232,7 +240,12 @@ setGeneric("get_returns", function(object) standardGeneric("get_returns"))
 #'   If 'TRUE' adjusts portoflio weights with respect to pressure, else
 #'   equal weights are used. Defaults to 'FALSE'.
 #'
+#'
 #' @return An S4 object of class \code{\linkS4class{CHPFactor}}.
+#'
+#'
+#' @references
+#'     \insertAllCited{}
 #'
 #'
 #' @docType methods
@@ -346,14 +359,17 @@ setGeneric("pressure_factor",
                     sort_levels = T, weighted = F) standardGeneric("pressure_factor"))
 
 
-
 ## OI nearby ####
 #' Open interest growth (OI) nearby factor
 #'
 #'
 #' @description Provided with futures contract front price and open interest data from
 #'   Bloomberg retrieved with \href{https://github.com/bautheac/pullit/}{\pkg{pullit}},
-#'   construct open interest growth (OI) nearby factor.
+#'   construct open interest growth (OI) nearby factor. The open interest factor relates
+#'   to futures market liquidity and is popular in the literature, in particular in the
+#'   context of commodity markets research \insertCite{hong_what_2012}{factorem}. The
+#'   nearby open interest factor is concerned with liquidity at the very front end of
+#'   the term structure where it sorts on nearby front contract's open interest.
 #'
 #'
 #' @param data an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -384,10 +400,12 @@ setGeneric("pressure_factor",
 #'   If 'TRUE' adjusts portoflio weights with respect to sorting variable
 #'   values, else equal weights are used. Defaults to 'FALSE'.
 #'
-#' @description Following Hong & Yogo.
-#'
 #'
 #' @return An S4 object of class \code{\linkS4class{OIFactor}}.
+#'
+#'
+#' @references
+#'     \insertAllCited{}
 #'
 #'
 #' @docType methods
@@ -415,7 +433,12 @@ setGeneric("OI_nearby_factor",
 #' @description Provided with futures contract front price and aggregate open
 #'   interest data from Bloomberg retrieved with
 #'   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-#'   aggregate open interest growth (OI) factor.
+#'   aggregate open interest growth (OI) factor. The open interest factor relates
+#'   to futures market liquidity and is popular in the literature, in particular in the
+#'   context of commodity markets research \insertCite{hong_what_2012}{factorem}. The
+#'   aggregate open interest factor \insertCite{basu_financiallization_2018}{factorem}
+#'   is concerned with liquidity over the whole futures term strucutre and sorts on open
+#'   interest aggregated (summed up) over the futures term structure.
 #'
 #'
 #' @param price_data an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -452,10 +475,11 @@ setGeneric("OI_nearby_factor",
 #'   values, else equal weights are used. Defaults to 'FALSE'.
 #'
 #'
-#' @description Basu & Bautheac.
-#'
-#'
 #' @return An S4 object of class \code{\linkS4class{OIFactor}}.
+#'
+#'
+#' @references
+#'     \insertAllCited{}
 #'
 #'
 #' @docType methods
@@ -484,7 +508,11 @@ setGeneric("OI_aggregate_factor",
 #' @description Provided with futures contract front or equity price data
 #'   from Bloomberg retrieved with
 #'   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-#'   momentum factor.
+#'   momentum factor. The momentum factor sorts on prior asset returns and
+#'   is popular in the equity
+#'   \insertCite{carhart1997persistence,fama2012size}{factorem} as well as
+#'   commodity futures \insertCite{miffre2007momentum}{factorem} asset
+#'   pricing literature.
 #'
 #'
 #' @param data an S4 object of class \code{\linkS4class{FuturesTS}} or
@@ -521,10 +549,12 @@ setGeneric("OI_aggregate_factor",
 #'   If 'TRUE' returns a reward/risk mometum factor, else returns a classic
 #'   momentum factor. Defaults to 'FALSE'.
 #'
-#' @description Sorts on past returns.
-#'
 #'
 #' @return An S4 object of class \code{\linkS4class{MomentumFactor}}.
+#'
+#'
+#' @references
+#'     \insertAllCited{}
 #'
 #'
 #' @docType methods
@@ -545,6 +575,7 @@ setGeneric("momentum_factor",
                     long_threshold = 0.5, short_threshold = 0.5,
                     weighted = F, risk_adjusted = F) standardGeneric("momentum_factor"))
 
+
 ## term structure ####
 #' Term structure factor
 #'
@@ -552,7 +583,10 @@ setGeneric("momentum_factor",
 #' @description Provided with futures contract front price data
 #'   from Bloomberg retrieved with
 #'   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}, construct
-#'   term structure factor.
+#'   term structure factor. The futures term structure factor
+#'   \insertCite{szymanowska_anatomy_2014,fuertes_commodity_2015}{factorem}
+#'   is concerned with the shape (steepness) of the futures term structure
+#'   and sorts on roll yield.
 #'
 #'
 #' @param data an S4 object of class \code{\linkS4class{FuturesTS}}.
@@ -592,10 +626,11 @@ setGeneric("momentum_factor",
 #'   values, else equal weights are used. Defaults to 'FALSE'.
 #'
 #'
-#' @description Sorts on relative price difference between specified front and back.
-#'
-#'
 #' @return An S4 object of class \code{\linkS4class{AssetPricingFactor}}.
+#'
+#'
+#' @references
+#'     \insertAllCited{}
 #'
 #'
 #' @docType methods
@@ -682,6 +717,7 @@ setGeneric("market_factor",
 #'
 #'
 #' @docType methods
+#'
 #'
 #' @rdname summary-methods
 #'

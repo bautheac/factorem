@@ -4,7 +4,7 @@
 \alias{famamcbeth}
 \title{Fama-McBeth cross-sectional regression}
 \usage{
-famamcbeth(assets_returns, factor_returns)
+famamcbeth(assets_returns, factor_returns, means)
 }
 \arguments{
 \item{assets_returns}{a dataframe with dates in the first column and assets returns
@@ -12,11 +12,25 @@ in subsequent columns.}
 
 \item{factor_returns}{a dataframe with dates in the first column and factor returns
 in the second.}
+
+\item{means}{a scalar logical vector. If \code{TRUE}, the second step of the
+cross-sectional regression is implemented with asset mean returns. In this
+setting, tests of significance for the correpsonding lambda coefficients are
+performed with autocorrelation and heteroskedasticity robust standard errors,
+following \insertCite{newey1987simple;textual}{factorem}. If \code{FALSE},
+asset returns are regressed on the corresponding betas for each observation
+date. The corresponding lambda coefficients are averaged and significance is
+tested using classic mean t-tests.}
 }
 \value{
 An S4 object of class \code{\linkS4class{FamaMcBeth}}.
 }
 \description{
-Given two dataframes of assets returns and factor returns respectively,
-  performs a Fama-McBeth two-pass cross-sectional regression.
+Given two dataframes of assets returns and factors returns respectively,
+  performs a two-pass cross-sectional regression following
+  \insertCite{fama1973risk;textual}{factorem}. The method attempts to test the
+  relationship between assets average return and systematic factor risk.
+}
+\references{
+\insertAllCited{}
 }
