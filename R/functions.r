@@ -304,7 +304,7 @@ famamcbeth_means <- function(data, assets, factors){
                                                                  mean, MARGIN = 2L, na.rm = T))
 
   coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) {
-    broom::tidy(y) %>% dplyr::filter(term %in% paste0("`", factors, "`")) %>%
+    broom::tidy(y) %>% dplyr::filter(term != "(Intercept)") %>%
       dplyr::mutate(term = factors) %>% dplyr::select(term, estimate) %>%
       tidyr::spread(term, estimate)})) %>% tidyr::unnest(beta)
 
@@ -329,7 +329,7 @@ famamcbeth_whole <- function(data, assets, factors){
                                                                 mean, MARGIN = 2L, na.rm = T))
 
   coefficients <- dplyr::mutate(betas, beta = purrr::map2(ticker, beta, function(x, y) {
-    broom::tidy(y) %>% dplyr::filter(term %in% paste0("`", factors, "`")) %>%
+    broom::tidy(y) %>% dplyr::filter(term != "(Intercept)") %>%
       dplyr::mutate(term = factors) %>% dplyr::select(term, estimate) %>%
       tidyr::spread(term, estimate)})) %>% tidyr::unnest(beta)
 
