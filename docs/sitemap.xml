@@ -13,31 +13,7 @@
     <loc>https://bautheac.github.io/factorem/reference/CHP_factor-methods.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/factorem/reference/FamaMcBeth-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/MarketFactor-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/MomentumFactor-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/OIFactor-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/OI_aggregate_factor-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/OI_nearby_factor-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/PressureFactor-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/TSFactor-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/factorem/reference/TS_factor-methods.html</loc>
+    <loc>https://bautheac.github.io/factorem/reference/factorem.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/factor_positions.html</loc>
@@ -46,7 +22,7 @@
     <loc>https://bautheac.github.io/factorem/reference/factor_returns.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/factorem/reference/factorem.html</loc>
+    <loc>https://bautheac.github.io/factorem/reference/FamaMcBeth-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/famamcbeth.html</loc>
@@ -61,7 +37,7 @@
     <loc>https://bautheac.github.io/factorem/reference/get_data-methods.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/factorem/reference/get_lambda-methods.html</loc>
+    <loc>https://bautheac.github.io/factorem/reference/get_lambdas-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/get_means-methods.html</loc>
@@ -79,13 +55,31 @@
     <loc>https://bautheac.github.io/factorem/reference/get_returns-methods.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/factorem/reference/MarketFactor-class.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/factorem/reference/market_factor-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/MomentumFactor-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/momentum_factor-methods.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/factorem/reference/OIFactor-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/OI_aggregate_factor-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/OI_nearby_factor-methods.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/factorem/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/PressureFactor-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/pressure_factor-methods.html</loc>
@@ -95,6 +89,12 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/reference/summary-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/TSFactor-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/factorem/reference/TS_factor-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/factorem/articles/factorem.html</loc>

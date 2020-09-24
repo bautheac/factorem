@@ -4,8 +4,14 @@
 \alias{factor_returns}
 \title{Get return time series for factor as well as for long and short legs independently.}
 \usage{
-factor_returns(data, positions, update_frequency, return_frequency,
-  price_variable, weighted)
+factor_returns(
+  data,
+  positions,
+  update_frequency,
+  return_frequency,
+  price_variable,
+  weighted
+)
 }
 \arguments{
 \item{data}{a dataframe/tibble. Columns must include \code{name},

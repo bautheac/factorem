@@ -7,19 +7,37 @@
 \alias{pressure_factor,AssetPricingFactor}
 \title{Market participant pressure factor}
 \usage{
-pressure_factor(price_data, position_data, format = "disaggregated",
-  underlying = "futures only", unit = "contracts",
+pressure_factor(
+  price_data,
+  position_data,
+  format = "disaggregated",
+  underlying = "futures only",
+  unit = "contracts",
   participant = "producer/merchant/processor/user",
-  update_frequency = "month", return_frequency = "day",
-  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  sort_levels = T, weighted = F)
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 6L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  sort_levels = T,
+  weighted = F
+)
 
-\S4method{pressure_factor}{FuturesTS,FuturesCFTC}(price_data,
-  position_data, format = "disaggregated", underlying = "futures only",
-  unit = "contracts", participant = "producer/merchant/processor/user",
-  update_frequency = "month", return_frequency = "day",
-  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  sort_levels = T, weighted = F)
+\S4method{pressure_factor}{FuturesTS,FuturesCFTC}(
+  price_data,
+  position_data,
+  format = "disaggregated",
+  underlying = "futures only",
+  unit = "contracts",
+  participant = "producer/merchant/processor/user",
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 6L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  sort_levels = T,
+  weighted = F
+)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.

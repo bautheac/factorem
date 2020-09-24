@@ -7,14 +7,29 @@
 \alias{TS_factor,AssetPricingFactor}
 \title{Term structure factor}
 \usage{
-TS_factor(data, update_frequency = "month", return_frequency = "day",
-  front = 1L, back = 2L, ranking_period = 1L, long_threshold = 0.5,
-  short_threshold = 0.5, weighted = F)
+TS_factor(
+  data,
+  update_frequency = "month",
+  return_frequency = "day",
+  front = 1L,
+  back = 2L,
+  ranking_period = 1L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 
-\S4method{TS_factor}{FuturesTS}(data, update_frequency = "month",
-  return_frequency = "day", front = 1L, back = 2L,
-  ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5,
-  weighted = F)
+\S4method{TS_factor}{FuturesTS}(
+  data,
+  update_frequency = "month",
+  return_frequency = "day",
+  front = 1L,
+  back = 2L,
+  ranking_period = 1L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}.
