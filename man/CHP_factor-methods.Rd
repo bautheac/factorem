@@ -7,14 +7,27 @@
 \alias{CHP_factor,AssetPricingFactor}
 \title{Commercial hedging pressure (CHP) factor}
 \usage{
-CHP_factor(price_data, CHP_data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 6L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+CHP_factor(
+  price_data,
+  CHP_data,
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 6L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 
-\S4method{CHP_factor}{FuturesTS,FuturesCFTC}(price_data, CHP_data,
-  update_frequency = "month", return_frequency = "day",
-  ranking_period = 6L, long_threshold = 0.5, short_threshold = 0.5,
-  weighted = F)
+\S4method{CHP_factor}{FuturesTS,FuturesCFTC}(
+  price_data,
+  CHP_data,
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 6L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 }
 \arguments{
 \item{price_data}{an S4 object of class \code{\linkS4class{FuturesTS}}.

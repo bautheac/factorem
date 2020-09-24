@@ -7,13 +7,25 @@
 \alias{OI_nearby_factor,AssetPricingFactor}
 \title{Open interest growth (OI) nearby factor}
 \usage{
-OI_nearby_factor(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 1L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+OI_nearby_factor(
+  data,
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 1L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 
-\S4method{OI_nearby_factor}{FuturesTS}(data, update_frequency = "month",
-  return_frequency = "day", ranking_period = 1L,
-  long_threshold = 0.5, short_threshold = 0.5, weighted = F)
+\S4method{OI_nearby_factor}{FuturesTS}(
+  data,
+  update_frequency = "month",
+  return_frequency = "day",
+  ranking_period = 1L,
+  long_threshold = 0.5,
+  short_threshold = 0.5,
+  weighted = F
+)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}}.

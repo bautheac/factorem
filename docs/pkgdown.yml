@@ -1,8 +1,9 @@
-pandoc: 1.19.2.1
-pkgdown: 1.3.0
+pandoc: 2.7.3
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   factorem: factorem.html
+last_built: 2020-09-24T10:39Z
 urls:
   reference: https://bautheac.github.io/factorem/reference
   article: https://bautheac.github.io/factorem/articles

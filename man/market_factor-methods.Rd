@@ -10,11 +10,9 @@
 \usage{
 market_factor(data, return_frequency = "month", long = T)
 
-\S4method{market_factor}{FuturesTS}(data, return_frequency = "month",
-  long = T)
+\S4method{market_factor}{FuturesTS}(data, return_frequency = "month", long = T)
 
-\S4method{market_factor}{EquityMarket}(data, return_frequency = "month",
-  long = T)
+\S4method{market_factor}{EquityMarket}(data, return_frequency = "month", long = T)
 }
 \arguments{
 \item{data}{an S4 object of class \code{\linkS4class{FuturesTS}} or
