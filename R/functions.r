@@ -178,7 +178,7 @@ factor_returns <- function(
 
   returns <- dplyr::group_by(returns, year, unit) %>%
     dplyr::summarise_at(
-      dplyr::vars(long, short, factor), dplyr::funs(return_cumulative)
+      dplyr::vars(long, short, factor), .funs = return_cumulative
     ) %>%
     dplyr::ungroup()
 
