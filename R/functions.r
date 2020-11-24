@@ -129,36 +129,74 @@ factor_shorts <- function(data, short_threshold, weighted){
 #'
 #' @importFrom lubridate month quarter semester week
 #' @importFrom magrittr "%<>%"
-factor_returns <- function(data, positions, update_frequency, return_frequency, price_variable, weighted){
+factor_returns <- function(
+  data, positions, update_frequency, return_frequency, price_variable, weighted
+){
 
-  price <- dplyr::filter(data, field == !! price_variable) %>% dplyr::mutate(year = lubridate::year(date))
-  data <- if (update_frequency == "day") { dplyr::mutate(price, unit = lubridate::yday(date)) }
-  else { dplyr::mutate(price, unit = do.call(what = !! update_frequency, args = list(date))) }
+  price <- dplyr::filter(data, field == !! price_variable) %>%
+    dplyr::mutate(year = lubridate::year(date))
+
+  data <- if (update_frequency == "day") {
+    dplyr::mutate(price, unit = lubridate::yday(date))
+  } else {
+      dplyr::mutate(
+        price, unit = do.call(what = !! update_frequency, args = list(date))
+      )
+  }
+
   data <-  dplyr::select(data, name = ticker, date, year, unit, value) %>%
-    dplyr::group_by(name) %>% dplyr::mutate(return = value/dplyr::lag(value, 1L) - 1L ) %>%
-    dplyr::slice(2L:dplyr::n()) %>% dplyr::ungroup() %>% dplyr::select(name, date, year, unit, return)
+    dplyr::group_by(name) %>%
+    dplyr::mutate(return = value/dplyr::lag(value, 1L) - 1L ) %>%
+    dplyr::slice(2L:dplyr::n()) %>%
+    dplyr::ungroup() %>% dplyr::select(name, date, year, unit, return)
 
-  positions <- tibble::as_tibble(positions) %>% tidyr::nest(name:position) %>%
-    dplyr::mutate(data = dplyr::lag(data, 1L)) %>% dplyr::slice(2L:dplyr::n()) %>% tidyr::unnest()
+  positions <- tibble::as_tibble(positions) %>%
+    tidyr::nest(data = name:position) %>%
+    dplyr::mutate(data = dplyr::lag(data, 1L)) %>%
+    dplyr::slice(2L:dplyr::n()) %>%
+    tidyr::unnest(cols = c(data))
 
   returns <- dplyr::left_join(data, positions, by = c("name", "year", "unit")) %>%
-    dplyr::filter(! is.na(position)) %>% dplyr::group_by(position, date) %>%
-    dplyr::summarise(mean = if(weighted) return %*% weight else mean(return, na.rm = T)) %>%
+    dplyr::filter(! is.na(position)) %>%
+    dplyr::group_by(position, date) %>%
+    dplyr::summarise(
+      mean = if(weighted) return %*% weight else mean(return, na.rm = T)
+    ) %>%
     dplyr::ungroup() %>% tidyr::spread(position, mean) %>%
     dplyr::mutate(short = short * -1L, year = lubridate::year(date)) %>%
-    dplyr::mutate(factor = apply(.[, c("long", "short")], mean, MARGIN = 1L, na.rm = T))
-  returns <- if (return_frequency == "day") { dplyr::mutate(returns, unit = lubridate::yday(date)) }
-  else { dplyr::mutate(returns, unit = do.call(what = !! return_frequency, args = list(date))) }
+    dplyr::mutate(
+      factor = apply(.[, c("long", "short")], mean, MARGIN = 1L, na.rm = T)
+    )
+
+  returns <- if (return_frequency == "day") {
+    dplyr::mutate(returns, unit = lubridate::yday(date))
+  } else {
+    dplyr::mutate(
+      returns, unit = do.call(what = !! return_frequency, args = list(date))
+    )
+  }
+
   returns <- dplyr::group_by(returns, year, unit) %>%
-    dplyr::summarise_at(dplyr::vars(long, short, factor), dplyr::funs(return_cumulative)) %>%
+    dplyr::summarise_at(
+      dplyr::vars(long, short, factor), dplyr::funs(return_cumulative)
+    ) %>%
     dplyr::ungroup()
 
-  data <- if (return_frequency == "day") { dplyr::mutate(price, unit = lubridate::yday(date)) }
-  else { dplyr::mutate(price, unit = do.call(what = !! return_frequency, args = list(date))) }
-  data <- dplyr::select(data, date, year, unit) %>% dplyr::group_by(year, unit) %>%
-    dplyr::filter(dplyr::row_number() == dplyr::n()) %>% dplyr::ungroup()
+  data <- if (return_frequency == "day") {
+    dplyr::mutate(price, unit = lubridate::yday(date))
+  } else {
+    dplyr::mutate(
+      price, unit = do.call(what = !! return_frequency, args = list(date))
+    )
+  }
 
-  dplyr::left_join(returns, data, by = c("year", "unit")) %>% dplyr::select(date, long, short, factor) %>%
+  data <- dplyr::select(data, date, year, unit) %>%
+    dplyr::group_by(year, unit) %>%
+    dplyr::filter(dplyr::row_number() == dplyr::n()) %>%
+    dplyr::ungroup()
+
+  dplyr::left_join(returns, data, by = c("year", "unit")) %>%
+    dplyr::select(date, long, short, factor) %>%
     data.table::as.data.table()
 }
 
