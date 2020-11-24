@@ -169,47 +169,100 @@ setMethod("CHP_factor",
           function(price_data, CHP_data, update_frequency, return_frequency,
                    ranking_period, long_threshold, short_threshold, weighted){
 
-            check_params(update_frequency = update_frequency, return_frequency = return_frequency,
-                         ranking_period = ranking_period, long_threshold = long_threshold,
-                         short_threshold = short_threshold)
+            check_params(update_frequency = update_frequency,
+                         return_frequency = return_frequency,
+                         ranking_period = ranking_period,
+                         long_threshold = long_threshold,
+                         short_threshold = short_threshold
+            )
 
-            utils::data(list = c("tickers_cftc"), package = "BBGsymbols", envir = environment())
-            start <- min(unique(c(price_data@data$date, position_data@data$date)))
-            end <- max(unique(c(price_data@data$date, position_data@data$date)))
-            holydays <- timeDate::holidayNYSE(lubridate::year(as.Date(start)):(lubridate::year(as.Date(end)) + 1L))
-            calendar <- bizdays::create.calendar(name = "NYSE", holidays = holydays, weekdays = c("saturday", "sunday"))
 
-            tickers <- dplyr::select(price_data@term_structure_tickers, `active contract ticker`, ticker, position = `TS position`)
+            utils::data(
+              list = c("tickers_cftc"), package = "BBGsymbols",
+              envir = environment()
+            )
+
+
+            start <- min(
+              unique(c(price_data@data$date, CHP_data@data$date))
+            )
+            end <- max(
+              unique(c(price_data@data$date, CHP_data@data$date))
+            )
+
+
+            holydays <- timeDate::holidayNYSE(
+              lubridate::year(as.Date(start)):(lubridate::year(as.Date(end)) + 1L)
+            )
+
+            calendar <- bizdays::create.calendar(
+              name = "NYSE", holidays = holydays, weekdays = c("saturday", "sunday")
+              )
+
+            tickers <- dplyr::select(
+              price_data@term_structure_tickers, `active contract ticker`,
+              ticker, position = `TS position`
+            )
+
             dates <- dplyr::distinct(CHP_data@data, date) %>%
-              dplyr::mutate(adjusted = bizdays::add.bizdays(dates = as.Date(date), n = 3L, cal = calendar))
+              dplyr::mutate(
+                adjusted = bizdays::add.bizdays(
+                  dates = as.Date(date), n = 3L, cal = calendar
+                )
+              )
             CHP_data@data <- dplyr::left_join(CHP_data@data, dates, by = "date") %>%
-              dplyr::select(`active contract ticker`, ticker, field, date = adjusted, value) %>% data.table::as.data.table()
+              dplyr::select(
+                `active contract ticker`, ticker, field, date = adjusted, value
+              ) %>% data.table::as.data.table()
 
-            price_data <- dplyr::filter(price_data@data, field == "PX_LAST") %>% dplyr::left_join(tickers, by = "ticker") %>%
-              dplyr::filter(position == 1L) %>% dplyr::select(ticker = `active contract ticker`, field, date, value)
+            price_data <- dplyr::filter(price_data@data, field == "PX_LAST") %>%
+              dplyr::left_join(tickers, by = "ticker") %>%
+              dplyr::filter(position == 1L) %>%
+              dplyr::select(ticker = `active contract ticker`, field, date, value)
 
-            CHP_data <- dplyr::left_join(CHP_data@data, dplyr::select(tickers_cftc, format, underlying, unit, participant, position, ticker),
-                                         by = "ticker") %>%
-              dplyr::filter(format == "legacy", underlying == "futures only", unit == "contracts",
-                            participant == "commercial", position %in% c("long", "short")) %>%
-              dplyr::select(ticker = `active contract ticker`, position, date, value) %>%
+            CHP_data <- dplyr::left_join(
+              CHP_data@data,
+              dplyr::select(
+                tickers_cftc, format, underlying, unit, participant, position,
+                ticker
+                ),
+              by = "ticker") %>%
+              dplyr::filter(
+                format == "legacy", underlying == "futures only",
+                unit == "contracts", participant == "commercial",
+                position %in% c("long", "short")
+              ) %>%
+              dplyr::select(
+                ticker = `active contract ticker`, position, date, value
+              ) %>%
               dplyr::mutate(value = abs(value)) %>%
-              tidyr::spread(position, value) %>% dplyr::mutate(`inverse CHP` = (long + short) / long) %>%
-              dplyr::select(ticker, date, `inverse CHP`) %>% tidyr::gather(field, value, -c(ticker, date))
+              tidyr::spread(position, value) %>%
+              dplyr::mutate(`inverse CHP` = (long + short) / long) %>%
+              dplyr::select(ticker, date, `inverse CHP`) %>%
+              tidyr::gather(field, value, -c(ticker, date))
 
             if(! all(unique(CHP_data$ticker) %in% unique(price_data$ticker))){
-              names <- unique(CHP_data$ticker)[!which((unique(CHP_data$ticker) %in% unique(price_data$ticker)))]
+              names <- unique(CHP_data$ticker)[
+                !which((unique(CHP_data$ticker) %in% unique(price_data$ticker)))
+              ]
               stop(paste0("No price data for ", paste(names, collapse = ", "), "."))
             }
 
             data <- data.table::rbindlist(list(price_data, CHP_data), use.names = T)
 
-            data <- factorem(name = "CHP", data = data, update_frequency = update_frequency, return_frequency = return_frequency,
-                             price_variable = "PX_LAST", sort_variable = "inverse CHP", sort_levels = T, ranking_period = ranking_period,
-                             long_threshold = long_threshold, short_threshold = short_threshold, weighted = weighted)
+            data <- factorem(
+              name = "CHP", data = data, update_frequency = update_frequency,
+              return_frequency = return_frequency, price_variable = "PX_LAST",
+              sort_variable = "inverse CHP", sort_levels = T,
+              ranking_period = ranking_period, long_threshold = long_threshold,
+              short_threshold = short_threshold, weighted = weighted
+            )
 
-            methods::new("CHPFactor", name = data@name, positions = data@positions, returns = data@returns,
-                         data = data@data, parameters = data@parameters, call = match.call())
+            methods::new(
+              "CHPFactor", name = data@name, positions = data@positions,
+              returns = data@returns, data = data@data, parameters = data@parameters,
+              call = match.call()
+            )
           }
 )
 
