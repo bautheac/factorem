@@ -79,7 +79,7 @@ factor_positions <- function(
   dplyr::group_by(positions, year, unit) %>% dplyr::do({
 
     data <- dplyr::select(., date, name, average) %>%
-      dplyr::filter(complete.cases(.)) %>%
+      dplyr::filter(complete.cases(.), ! is.infinite(average)) %>%
       dplyr::arrange(dplyr::desc(average))
 
     long <- factor_longs(
@@ -112,8 +112,7 @@ factor_longs <- function(data, long_threshold, weighted){
         c((1L/NROW(averages)) * y, (1L/NROW(averages)) / y)
       }) %>% as.vector()
       weights <- if (NROW(averages) %% 2L != 0L)
-        {c(weights, 1L/NROW(averages))}
-      else {weights}
+        {c(weights, 1L/NROW(averages))} else {weights}
       dplyr::mutate(long, weight = sort(weights, decreasing = T) / sum(weights))
     }
   } else { dplyr::select(long, date, name, position) }
@@ -127,15 +126,17 @@ factor_shorts <- function(data, short_threshold, weighted){
     dplyr::arrange(average) %>% dplyr::select(date, name, weight = average) %>%
     dplyr::mutate(position = "short")
   if (weighted){
-    if (nrow(short) == 1L){ dplyr::mutate(short, weight = 1L) } else {
+    if (nrow(short) == 1L){ dplyr::mutate(short, weight = 1L) }
+    else {
       averages <- scales::rescale(short$weight)
       i <- floor(NROW(averages) / 2L)
       weights <- sapply(1L:i, function(x){
         y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
         c((1L/NROW(averages)) * y, (1L/NROW(averages)) / y)
       }) %>% as.vector()
-      weights <- if (NROW(averages) %% 2L != 0L) {c(weights, 1L/NROW(averages))}
-      else {weights}
+      weights <- if (NROW(averages) %% 2L != 0L) {
+        c(weights, 1L/NROW(averages))
+      } else {weights}
       dplyr::mutate(short, weight = sort(weights, decreasing = F) / sum(weights))
     }
   } else { dplyr::select(short, date, name, position) }
