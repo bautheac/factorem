@@ -633,11 +633,11 @@ setMethod("market_factor",
 
             check_params(return_frequency = return_frequency, long = long)
 
-            positions <- dplyr::filter(data, field == "PX_LAST") %>% dplyr::group_by(date) %>%
+            positions <- dplyr::filter(data@data, field == "PX_LAST") %>% dplyr::group_by(date) %>%
               dplyr::mutate(name = ticker, position = ifelse(long, "long", "short")) %>%
               dplyr::select(date, name, position) %>% dplyr::ungroup() %>% dplyr::arrange(date, position)
 
-            temp <- dplyr::filter(data, field == "PX_LAST") %>% dplyr::select(-field) %>% dplyr::group_by(ticker) %>%
+            temp <- dplyr::filter(data@data, field == "PX_LAST") %>% dplyr::select(-field) %>% dplyr::group_by(ticker) %>%
               dplyr::mutate(value = (value / dplyr::lag(value, 1L) - 1L)) %>% dplyr::slice(2L:dplyr::n()) %>%
               dplyr::ungroup() %>% dplyr::group_by(date) %>% dplyr::summarise(factor = mean(value, na.rm = T)) %>%
               dplyr::ungroup() %>% dplyr::mutate(year = lubridate::year(date))
@@ -657,7 +657,7 @@ setMethod("market_factor",
 
             methods::new("MarketFactor", name = "equity market", returns = data.table::as.data.table(returns),
                          positions = data.table::as.data.table(positions), data = data.table::as.data.table(data@data),
-                         parameters = parameters, call = deparse(match.call()))
+                         parameters = parameters, call = match.call())
           }
 )
 

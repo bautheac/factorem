@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   factorem: factorem.html
-last_built: 2020-09-24T11:13Z
+last_built: 2021-05-21T16:11Z
 urls:
   reference: https://bautheac.github.io/factorem/reference
   article: https://bautheac.github.io/factorem/articles

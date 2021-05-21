@@ -103,14 +103,17 @@ factor_longs <- function(data, long_threshold, weighted){
   ) %>%
     dplyr::select(date, name, weight = average) %>%
     dplyr::mutate(position = "long")
+  # browser()
   if (weighted){
     if (nrow(long) == 1L){ dplyr::mutate(long, weight = 1L) } else {
       averages <- scales::rescale(long$weight)
       i <- floor(NROW(averages) / 2L)
       weights <- sapply(1L:i, function(x){
+        # browser()
         y <- (averages[x] - averages[NROW(averages) - (x - 1L)]) / mean(averages, na.rm = T)
         c((1L/NROW(averages)) * y, (1L/NROW(averages)) / y)
       }) %>% as.vector()
+      # browser()
       weights <- if (NROW(averages) %% 2L != 0L)
         {c(weights, 1L/NROW(averages))} else {weights}
       dplyr::mutate(long, weight = sort(weights, decreasing = T) / sum(weights))
@@ -335,7 +338,7 @@ factorem <- function(
       "sort variable", "sort levels", "weighted", "ranking_period",
       "long_threshold", "short_threshold"
     ),
-    value = list(
+    value = c(
       name, update_frequency, return_frequency, price_variable, sort_variable,
       sort_levels, weighted, ranking_period, long_threshold, short_threshold)
     )
