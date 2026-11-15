@@ -6,7 +6,7 @@
 \alias{get_means,FamaMcBeth-method}
 \alias{get_means,FamaMcBeth}
 \title{Accesses the \code{means} slot of S4 objects of class \linkS4class{FamaMcBeth}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).}
 \usage{
 get_means(object)
 

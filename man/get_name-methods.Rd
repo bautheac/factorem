@@ -6,7 +6,7 @@
 \alias{get_name,AssetPricingFactor-method}
 \alias{get_name,AssetPricingFactor}
 \title{Accesses the \code{name} slot of S4 objects of class \linkS4class{AssetPricingFactor}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).}
 \usage{
 get_name(object)
 

@@ -2,10 +2,10 @@
 
 ## betas ####
 #' Accesses the \code{betas} slot of S4 objects of class \linkS4class{FamaMcBeth}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #' @description Access method for the \code{betas} slot of class \linkS4class{FamaMcBeth}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #' @param object an S4 object of class \linkS4class{FamaMcBeth}.
 #'
@@ -42,12 +42,12 @@ setGeneric(name = "get_call", function(object) standardGeneric("get_call"))
 
 # data ####
 #' Accesses the \code{data} slot of S4 objects of class \linkS4class{AssetPricingFactor}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #'
 #' @description Access method for the \code{data} slot of S4 objects of class
 #'   \linkS4class{AssetPricingFactor} from the
-#'   \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} package.
+#'   \href{https://dev.bautheac.net/factorem/}{\pkg{factorem}} package.
 #'
 #' @param object an S4 object of class \linkS4class{AssetPricingFactor}.
 #'
@@ -65,7 +65,7 @@ setGeneric("get_data", function(object) standardGeneric("get_data"))
 
 ## lambdas ####
 #' Accesses the \code{lambdas} slot of S4 objects of class \linkS4class{FamaMcBeth}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #' @description Access method for the \code{lambdas} slot of S4 objects of class
 #'   \linkS4class{FamaMcBeth} from the
@@ -87,7 +87,7 @@ setGeneric("get_lambdas", function(object) standardGeneric("get_lambdas"))
 
 ## means ####
 #' Accesses the \code{means} slot of S4 objects of class \linkS4class{FamaMcBeth}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #' @description Access method for the \code{means} slot of S4 objects of class
 #'   \linkS4class{FamaMcBeth} from the
@@ -106,7 +106,7 @@ setGeneric("get_means", function(object) standardGeneric("get_means"))
 
 ## name ####
 #' Accesses the \code{name} slot of S4 objects of class \linkS4class{AssetPricingFactor}
-#'   (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+#'   (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 #'
 #' @description Access method for the \code{name} slot of S4 objects of class
 #'   \linkS4class{AssetPricingFactor} from the

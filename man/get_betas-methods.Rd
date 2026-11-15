@@ -6,7 +6,7 @@
 \alias{get_betas,FamaMcBeth-method}
 \alias{get_betas,FamaMcBeth}
 \title{Accesses the \code{betas} slot of S4 objects of class \linkS4class{FamaMcBeth}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).}
 \usage{
 get_betas(object)
 
@@ -20,5 +20,5 @@ A data.table with asset betas.
 }
 \description{
 Access method for the \code{betas} slot of class \linkS4class{FamaMcBeth}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).
 }
