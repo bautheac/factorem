@@ -45,8 +45,6 @@ reference:
     contents:
       - summary
       - show,AssetPricingFactor-method
-      - factor_positions
-      - factor_returns
       - famamcbeth
   - title: classes
     desc: >
