@@ -37,13 +37,23 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        # pak reuses a cached build of a GitHub package whatever its commit or
+        # version, so a stale suite package from an earlier job would be
+        # installed. A cache under the job's temp folder starts empty.
+        env:
+          R_PKG_CACHE_DIR: ${{ runner.temp }}/pkgcache
         with:
           extra-packages: any::pkgdown, any::pkgload
           needs: website
 
+      - name: Install the package
+        # The article calls library(factorem), which pkgdown's load of the
+        # package does not provide.
+        run: R CMD INSTALL .
+
       - name: Build pkgdown site
-        # The articles read the synthetic database in inst/extdata, so they
-        # render without Bloomberg.
+        # The articles read the synthetic database that ships in pullit's
+        # inst/extdata, so they render without Bloomberg.
         shell: Rscript {0}
         run: |
           ov <- list(destination = "pkgdown-site")
