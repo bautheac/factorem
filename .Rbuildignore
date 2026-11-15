@@ -10,3 +10,4 @@
 ^README\.Rmd$
 ^\.travis\.yml$
 ^appveyor\.yml$
+^pkgdown-site$

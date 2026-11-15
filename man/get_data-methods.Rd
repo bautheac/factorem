@@ -8,7 +8,7 @@
 \alias{get_data,FamaMcBeth-method}
 \alias{get_data,FamaMcBeth}
 \title{Accesses the \code{data} slot of S4 objects of class \linkS4class{AssetPricingFactor}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).}
 \usage{
 get_data(object)
 
@@ -26,5 +26,5 @@ A \link[data.table]{data.table} showing for each Bloomberg ticker and
 \description{
 Access method for the \code{data} slot of S4 objects of class
   \linkS4class{AssetPricingFactor} from the
-  \href{https://bautheac.github.io/factorem/}{\pkg{factorem}} package.
+  \href{https://dev.bautheac.net/factorem/}{\pkg{factorem}} package.
 }

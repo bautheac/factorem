@@ -6,7 +6,7 @@
 \alias{get_lambdas,FamaMcBeth-method}
 \alias{get_lambdas,FamaMcBeth}
 \title{Accesses the \code{lambdas} slot of S4 objects of class \linkS4class{FamaMcBeth}
-  (\href{https://bautheac.github.io/factorem/}{\pkg{factorem}}).}
+  (\href{https://dev.bautheac.net/factorem/}{\pkg{factorem}}).}
 \usage{
 get_lambdas(object)
 
