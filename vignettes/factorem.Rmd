@@ -12,9 +12,8 @@ vignette: >
 <style> body {text-align: justify} </style>
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, eval = T, comment = "#>")
-folder <- "literature_files"; dir.create(folder)
-download.file("https://www.dropbox.com/s/htnd7o9nnkk8ng8/references.bib?dl=1", paste(folder, "references.bib", sep = "/"))
-path <- here::here("development", "storethat.sqlite")
+# The synthetic database that ships with pullit stands in for Bloomberg.
+path <- system.file("extdata", "storethat.sqlite", package = "pullit")
 ```
 
 [factorem](https://dev.bautheac.net/factorem/) belongs to the [finRes](https://dev.bautheac.net/finRes/) suite where it facilitates asset pricing research and factor investment backtesting. Install the development version with `devtools::install_github("bautheac/factorem")`.  
@@ -32,7 +31,7 @@ library(pullit); library(lubridate)
 tickers_equity <- c("LZB US Equity", "SGA US Equity", "AGCO US Equity", "CLR US Equity", 
                     "GHC US Equity", "MAN US Equity", "SITE US Equity", "AJRD US Equity", 
                     "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
-start <- "2016-01-01"; end <- "2017-12-31"
+start <- "2024-11-01"; end <- "2026-11-13"
 
 equity_data_market <- pull_equity_market(source = "Bloomberg", tickers_equity, start, end, verbose = FALSE)
 
@@ -47,7 +46,7 @@ tickers_equity <- c("LZB US Equity", "SGA US Equity", "AGCO US Equity", "CLR US 
                     "GHC US Equity", "MAN US Equity", "SITE US Equity", "AJRD US Equity", 
                     "COMM US Equity", "GME US Equity", "MEI US Equity", "SMP US Equity")
 # end <- Sys.Date(); start <- end - years(2L)
-start <- "2016-01-01"; end <- "2017-12-31"
+start <- "2024-11-01"; end <- "2026-11-13"
 
 equity_data_market <- pull_equity_market(
   source = "storethat", tickers = tickers_equity, start = start, end = end,
