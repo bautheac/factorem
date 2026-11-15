@@ -44,3 +44,4 @@ A \code{\link[data.table]{data.table}} with factor positions by rebalancing
 \description{
 Get time series of long and short factor positions
 }
+\keyword{internal}

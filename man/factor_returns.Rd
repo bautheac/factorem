@@ -40,3 +40,4 @@ A \code{\link[data.table]{data.table}} with factor returns by
 \description{
 Get return time series for factor as well as for long and short legs independently.
 }
+\keyword{internal}

@@ -34,6 +34,7 @@
 #'
 #' @importFrom lubridate week month quarter semester year
 #' @importFrom magrittr "%<>%"
+#' @keywords internal
 factor_positions <- function(
   data, update_frequency,
   sort_variable,
@@ -175,6 +176,7 @@ factor_shorts <- function(data, short_threshold, weighted){
 #'
 #' @importFrom lubridate month quarter semester week
 #' @importFrom magrittr "%<>%"
+#' @keywords internal
 factor_returns <- function(
   data, positions, update_frequency, return_frequency, price_variable, weighted
 ){
