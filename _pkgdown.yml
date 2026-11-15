@@ -24,6 +24,7 @@ reference:
       - CHP_factor
       - OI_nearby_factor
       - OI_aggregate_factor
+      - pressure_factor
       - TS_factor
   - title: accessors
     desc: >
@@ -35,11 +36,30 @@ reference:
       - get_data
       - get_parameters
       - get_call
+      - get_betas
+      - get_lambdas
+      - get_means
   - title: others
     desc: >
       Other bespoke methods:
     contents:
       - summary
+      - show,AssetPricingFactor-method
+      - factor_positions
+      - factor_returns
+      - famamcbeth
+  - title: classes
+    desc: >
+      Returned object classes:
+    contents:
+      - AssetPricingFactor-class
+      - MarketFactor-class
+      - MomentumFactor-class
+      - CHPFactor-class
+      - OIFactor-class
+      - PressureFactor-class
+      - TSFactor-class
+      - FamaMcBeth-class
 
 navbar:
   title: ~
