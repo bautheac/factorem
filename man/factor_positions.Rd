@@ -36,6 +36,9 @@ positions. Default: 0.5.}
 
 \item{short_threshold}{a scalar numeric vector. Specifies the threshold for short
 positions. Default: 0.5.}
+
+\item{weighted}{a scalar logical vector. If \code{TRUE},
+position weights follow the sorting variable, else equal weights are used.}
 }
 \value{
 A \code{\link[data.table]{data.table}} with factor positions by rebalancing

@@ -31,6 +31,9 @@ frequency of the returns output. Must be one of 'year', 'semester',
 \item{price_variable}{a scalar character vector. Specifies the name
 of the variable hosting asset prices. Must be found in the
 \code{field} columns of \code{data}.}
+
+\item{weighted}{a scalar logical vector. If \code{TRUE},
+position weights follow the sorting variable, else equal weights are used.}
 }
 \value{
 A \code{\link[data.table]{data.table}} with factor returns by

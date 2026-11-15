@@ -17,33 +17,30 @@ levels <- tibble::tibble(ticker = tickers, field = fields, date = dates, value =
 
 test_that("factor_positions return right positions (levels sort)", {
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>% data.table::as.data.table()
   expect_equal(factor_positions(data = levels, update_frequency = "day", sort_variable = "uniform", sort_levels = T,
-                                ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5), positions)
+                                ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5, weighted = FALSE), positions)
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>%
     dplyr::filter(! name %in% c("seventies", "sixties", "fifties", "twenties", "thirties", "forties")) %>%
     data.table::as.data.table()
   expect_equal(factor_positions(data = levels, update_frequency = "day", sort_variable = "uniform", sort_levels = T,
-                                ranking_period = 1L, long_threshold = 0.8, short_threshold = 0.2), positions)
+                                ranking_period = 1L, long_threshold = 0.8, short_threshold = 0.2, weighted = FALSE), positions)
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>%
     dplyr::filter(unit != 1L, ! name %in% c("seventies", "sixties", "fifties", "twenties", "thirties", "forties")) %>%
     data.table::as.data.table()
   expect_equal(factor_positions(data = levels, update_frequency = "day", sort_variable = "uniform", sort_levels = T,
-                                ranking_period = 2L, long_threshold = 0.8, short_threshold = 0.2), positions)
+                                ranking_period = 2L, long_threshold = 0.8, short_threshold = 0.2, weighted = FALSE), positions)
 
 
 })
@@ -59,33 +56,30 @@ returns <- tibble::tibble(ticker = tickers, field = fields, date = dates, value 
 
 test_that("factor_positions return right positions (returns sort)", {
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>% dplyr::filter(unit != 1L) %>% data.table::as.data.table()
   expect_equal(factor_positions(data = returns, update_frequency = "day", sort_variable = "uniform", sort_levels = F,
-                                ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5), positions)
+                                ranking_period = 1L, long_threshold = 0.5, short_threshold = 0.5, weighted = FALSE), positions)
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>%
     dplyr::filter(unit != 1L, ! name %in% c("seventies", "sixties", "fifties", "twenties", "thirties", "forties")) %>%
     data.table::as.data.table()
   expect_equal(factor_positions(data = returns, update_frequency = "day", sort_variable = "uniform", sort_levels = F,
-                                ranking_period = 1L, long_threshold = 0.8, short_threshold = 0.2), positions)
+                                ranking_period = 1L, long_threshold = 0.8, short_threshold = 0.2, weighted = FALSE), positions)
 
-  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date)) %>%
-    dplyr::select(-date)
+  periods <- tibble::tibble(date = sort(dates)) %>% dplyr::mutate(year = lubridate::year(date), unit = lubridate::yday(date))
   names <- rep(c("nineties", "eighties", "seventies", "sixties", "fifties", "ones", "tens", "twenties", "thirties", "forties"), 10L)
   positions <- rep(c(rep("long", 5L), rep("short", 5L)), 10L)
   positions <- dplyr::mutate(periods, name = names, position = positions) %>%
     dplyr::filter(! unit %in% 1L:2L, ! name %in% c("seventies", "sixties", "fifties", "twenties", "thirties", "forties")) %>%
     data.table::as.data.table()
   expect_equal(factor_positions(data = returns, update_frequency = "day", sort_variable = "uniform", sort_levels = F,
-                                ranking_period = 2L, long_threshold = 0.8, short_threshold = 0.2), positions)
+                                ranking_period = 2L, long_threshold = 0.8, short_threshold = 0.2, weighted = FALSE), positions)
 
 })
 

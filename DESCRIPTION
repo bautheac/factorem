@@ -30,7 +30,8 @@ Imports:
     tidyselect (>= 0.2.4),
     timeDate (>= 3043.102),
     utils,
-    xts (>= 0.11.0)
+    xts (>= 0.11.0),
+    zoo
 Remotes: 
     bautheac/BBGsymbols,
     bautheac/plotit,
