@@ -26,6 +26,9 @@
 #' @param long_threshold a scalar numeric vector. Specifies the threshold for
 #'   long positions. Default: 0.5.
 #'
+#' @param weighted a scalar \code{\link[base]{logical}} vector. If \code{TRUE},
+#'   position weights follow the sorting variable, else equal weights are used.
+#'
 #'
 #' @return A \code{\link[data.table]{data.table}} with factor positions by
 #'   rebalancing date. Columns include \code{date}, \code{name} and
@@ -100,7 +103,7 @@ factor_positions <- function(
 factor_longs <- function(data, long_threshold, weighted){
   long <-  dplyr::slice(
     data,
-    1L:(floor(nrow(data) * (1L - long_threshold)))
+    1L:(floor(round(nrow(data) * (1L - long_threshold), 8L)))
   ) %>%
     dplyr::select(date, name, weight = average) %>%
     dplyr::mutate(position = "long")
@@ -125,7 +128,7 @@ factor_longs <- function(data, long_threshold, weighted){
 factor_shorts <- function(data, short_threshold, weighted){
   short <- dplyr::slice(
     data,
-    (ceiling(nrow(data) * (1L - short_threshold)) + 1L):nrow(data)
+    (ceiling(round(nrow(data) * (1L - short_threshold), 8L)) + 1L):nrow(data)
   ) %>%
     dplyr::arrange(average) %>% dplyr::select(date, name, weight = average) %>%
     dplyr::mutate(position = "short")
@@ -168,6 +171,9 @@ factor_shorts <- function(data, short_threshold, weighted){
 #' @param price_variable a scalar character vector. Specifies the name
 #'   of the variable hosting asset prices. Must be found in the
 #'   \code{field} columns of \code{data}.
+#'
+#' @param weighted a scalar \code{\link[base]{logical}} vector. If \code{TRUE},
+#'   position weights follow the sorting variable, else equal weights are used.
 #'
 #' @return A \code{\link[data.table]{data.table}} with factor returns by
 #'   date and factor leg. Columns include \code{date}, \code{name} and
